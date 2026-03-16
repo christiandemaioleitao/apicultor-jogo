@@ -635,6 +635,7 @@ async function doCraft(rid){
   p.crafted[r.result.key]=(p.crafted[r.result.key]||0)+r.result.qty;
   await room.ref.update({players,ac:'craft'});
   msg(`✅ Fabricou ×${r.result.qty} ${CM[r.result.key]?.label}! Pode continuar trocando.`);
+  buildTabs(); // refresh modal to show updated resources and re-evaluate which recipes are available
 }
 
 // Install colmeia
@@ -942,18 +943,20 @@ function buildCraft(){
   h+=`<div class="minfo" style="margin-top:8px;">Seus recursos: <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">`;
   for(let[k,v] of Object.entries(p.raw||{}))if(v>0)
     h+=`<span style="background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;">${RM[k]?.icon||'?'} <strong>${v}</strong> ${RM[k]?.label||k}</span>`;
-  h+=`</div></div><div class="msec" style="margin-top:10px;"><h3>Receitas</h3><div class="rgrid">`;
+  h+=`</div></div><div class="msec" style="margin-top:10px;"><h3>Receitas</h3><div class="rgrid" id="recipes-grid"></div></div>`;
+  document.getElementById('tab-craft').innerHTML=h;
+  // Build recipe rows via DOM to avoid quote-escaping issues
+  const grid=document.getElementById('recipes-grid');
   for(let r of RECIPES){
     const can=!lk&&afford(p.raw||{},r.cost);
     const cs=Object.entries(r.cost).map(([k,v])=>`${RM[k]?.icon||k} ${v} ${RM[k]?.label||k}`).join(' + ');
     const ri=CM[r.result.key];
-    h+=`<div class="rr${can?'':' dis'}" onclick="${can?`doCraft('${r.id}')`:``}">
-      <span class="rc">${cs}</span><span class="ra">→</span>
-      <span class="rres"><span class="rq">×${r.result.qty}</span>${ri?.icon||'?'} ${ri?.label||r.result.key}</span>
-    </div>`;
+    const div=document.createElement('div');
+    div.className='rr'+(can?'':' dis');
+    div.innerHTML=`<span class="rc">${cs}</span><span class="ra">→</span><span class="rres"><span class="rq">×${r.result.qty}</span>${ri?.icon||'?'} ${ri?.label||r.result.key}</span>`;
+    if(can) div.addEventListener('click', ()=>doCraft(r.id));
+    grid.appendChild(div);
   }
-  h+=`</div></div>`;
-  document.getElementById('tab-craft').innerHTML=h;
 }
 
 function buildCol(){
@@ -973,16 +976,7 @@ function buildCol(){
   if(!slots.length){
     h+=`<p style="font-size:11px;color:var(--text3);margin-top:8px;">Nenhum Apiário adjacente a Fonte de Água disponível agora.</p>`;
   } else {
-    h+=`<div class="msec" style="margin-top:10px;"><h3>Locais disponíveis</h3><div class="rgrid">`;
-    for(let cell of slots){
-      const fb=nbrs(cell.col,cell.row,G.board||[]).filter(n=>n.placed&&n.placed.type==='fruit').length;
-      h+=`<div class="rr${ok?'':' dis'}" onclick="${ok?`installCol('${cell.id}')`:``}">
-        <span class="rc">📍 (${cell.col},${cell.row}) ${fb?'· 🍎×'+fb:''}</span>
-        <span class="ra">→</span>
-        <span class="rres">🍯 +1${fb?' (+'+fb+')':''} kg/turno</span>
-      </div>`;
-    }
-    h+=`</div></div>`;
+    h+=`<div class="msec" style="margin-top:10px;"><h3>Locais disponíveis</h3><div class="rgrid" id="col-slots-grid"></div></div>`;
   }
   h+=`</div>`;
   if((p.colmeias||[]).length){
@@ -992,6 +986,18 @@ function buildCol(){
     h+=`</div></div></div>`;
   }
   document.getElementById('tab-col').innerHTML=h;
+  // Build slot rows via DOM to avoid quote-escaping issues
+  if(slots.length){
+    const grid=document.getElementById('col-slots-grid');
+    for(let cell of slots){
+      const fb=nbrs(cell.col,cell.row,G.board||[]).filter(n=>n.placed&&n.placed.type==='fruit').length;
+      const div=document.createElement('div');
+      div.className='rr'+(ok?'':' dis');
+      div.innerHTML=`<span class="rc">📍 (${cell.col},${cell.row}) ${fb?'· 🍎×'+fb:''}</span><span class="ra">→</span><span class="rres">🍯 +1${fb?' (+'+fb+')':''} kg/turno</span>`;
+      if(ok) div.addEventListener('click', ()=>installCol(cell.id));
+      grid.appendChild(div);
+    }
+  }
 }
 
 // ════════════════════════════════════════════════════════
