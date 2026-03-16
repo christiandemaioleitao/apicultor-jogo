@@ -108,7 +108,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #abtn-col{background:rgba(66,165,245,.15);color:#42A5F5;border-color:rgba(66,165,245,.4);}
 #abtn-col.am{background:#42A5F5;color:#1A1208;border-color:#1565C0;}
 #abtn-col:hover:not(:disabled):not(.am){background:rgba(66,165,245,.28);}
-#turn-status{font-size:11px;color:var(--text3);font-style:italic;}
+#abtn-trade{background:rgba(171,71,188,.15);color:#CE93D8;border-color:rgba(171,71,188,.4);}
+#abtn-trade.am{background:#AB47BC;color:#fff;border-color:#7B1FA2;}
+#abtn-trade:hover:not(:disabled):not(.am){background:rgba(171,71,188,.28);}
+#abtn-trade:disabled{opacity:.28;cursor:not-allowed;}
+/* trade resource spinner rows */
+.trade-res-row{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;gap:8px;}
+.trade-res-row .tr-label{font-size:12px;color:var(--text2);flex:1;}
+.trade-qty-ctrl{display:flex;align-items:center;gap:6px;}
+.tq-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:'DM Sans',sans-serif;}
+.tq-btn:hover{background:var(--card2);}
+.tq-val{font-size:13px;font-weight:500;color:var(--text);min-width:18px;text-align:center;}
 
 /* MAIN */
 #main{display:flex;flex:1;min-height:0;}
@@ -286,6 +296,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <button class="act-btn" id="abtn-tile"  onclick="setMode('tile')">🌿 Colocar Tile</button>
     <button class="act-btn" id="abtn-craft" onclick="openModal('craft')">⚒ Trocas</button>
     <button class="act-btn" id="abtn-col"   onclick="openModal('col')">🐝 Colmeia</button>
+    <button class="act-btn" id="abtn-trade" onclick="openTradeModal()">🤝 Negociar</button>
     <span id="turn-status"></span>
   </div>
 </div>
@@ -320,6 +331,43 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div id="tab-craft" class="tab-pane"></div>
     <div id="tab-col"   class="tab-pane"></div>
     <div id="tab-upg"   class="tab-pane"></div>
+  </div>
+</div>
+
+<!-- TRADE MODAL (proposer) -->
+<div id="trade-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:110;align-items:center;justify-content:center;">
+  <div id="trade-box" style="background:#2A1E08;border:1px solid var(--border);border-radius:14px;width:min(560px,95vw);max-height:90vh;overflow-y:auto;padding:20px;">
+    <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--honey);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
+      <span>🤝 Proposta de Negociação</span>
+      <button onclick="closeTrade()" style="background:none;border:none;color:var(--text2);font-size:20px;cursor:pointer;">✕</button>
+    </div>
+    <div id="trade-content"></div>
+  </div>
+</div>
+
+<!-- TRADE INCOMING OVERLAY (receiver sees proposal, picks what to send back) -->
+<div id="trade-incoming" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:115;align-items:center;justify-content:center;">
+  <div style="background:#2A1E08;border:2px solid var(--honey);border-radius:14px;width:min(520px,95vw);max-height:90vh;overflow-y:auto;padding:20px;text-align:center;">
+    <div style="font-size:32px;margin-bottom:6px;">🤝</div>
+    <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--honey);margin-bottom:6px;">Proposta de Negociação!</div>
+    <div id="ti-from" style="font-size:12px;color:var(--text2);margin-bottom:14px;"></div>
+    <div id="ti-offer-display" style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;"></div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:10px;background:rgba(232,149,26,.08);border:1px solid rgba(232,149,26,.3);border-radius:8px;padding:10px;line-height:1.6;">
+      ⚠️ <strong style="color:var(--honey);">Troca às escuras:</strong> você pode entregar o que quiser. O outro jogador não saberá até a troca ser finalizada.
+    </div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px;text-align:left;">O que você vai entregar? (opcional — pode entregar nada)</div>
+    <div id="ti-my-resources" style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;"></div>
+    <div id="ti-btns" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
+  </div>
+</div>
+
+<!-- TRADE REVEAL OVERLAY (both players see what was actually exchanged) -->
+<div id="trade-reveal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:120;align-items:center;justify-content:center;">
+  <div style="background:#2A1E08;border:2px solid var(--border);border-radius:14px;width:min(480px,95vw);padding:24px;text-align:center;">
+    <div style="font-size:38px;margin-bottom:8px;">🤝</div>
+    <div style="font-family:'Playfair Display',serif;font-size:18px;color:var(--honey);margin-bottom:14px;">Resultado da Negociação</div>
+    <div id="tr-content" style="margin-bottom:18px;"></div>
+    <button onclick="closeTadeReveal()" style="background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:9px 24px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">Entendido</button>
   </div>
 </div>
 
@@ -581,6 +629,9 @@ function onUpdate(r){
   }
   if(my&&!r.tr) UI={mode:null,committed:false,pending:null};
 
+  // Handle trade state changes for all players
+  handleTradeUpdates(r);
+
   // Check if current player needs to draw an event card (only show for that player)
   if(my && r.pendingEvent && !pendingEvent){
     const evCard=EVENT_CARDS.find(e=>e.id===r.pendingEvent.id);
@@ -708,7 +759,7 @@ async function autoEndTurn(){
 
 function setMode(m){
   if(!myTurn())return;
-  if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':'colmeia'} neste turno.`);return;}
+  if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':G.ac==='trade'?'negociação':'colmeia'} neste turno.`);return;}
   if(m==='tile'){
     UI.mode='tile'; UI.committed=true;
     G.tr=true; // local optimistic
@@ -764,17 +815,9 @@ async function confirmPlace(){
 }
 
 function expandBoard(board){
-  // Ensure every placed cell has all 6 neighbours in the board array
-  const placed=board.filter(c=>c.placed);
-  const ids=new Set(board.map(c=>c.id));
-  for(let cell of placed){
-    for(let nb of allNbrs(cell.col,cell.row)){
-      if(!ids.has(nb.id)){
-        board.push({col:nb.col,row:nb.row,id:nb.id,placed:null});
-        ids.add(nb.id);
-      }
-    }
-  }
+  // Only add cells that were actually just placed — we no longer pre-populate
+  // all neighbours (that caused the ghost hexagons bug).
+  // validSlots() generates virtual neighbour cells on-the-fly for display.
   return board;
 }
 
@@ -892,10 +935,8 @@ async function upgradeCol(colIdx){
 // BOARD UTILS
 // ════════════════════════════════════════════
 function mkBoard(){
-  // Start with a modest grid; it expands as tiles are placed
-  const b=[];
-  for(let r=2;r<=4;r++) for(let c=3;c<=5;c++) b.push({col:c,row:r,id:`${c}_${r}`,placed:null});
-  return b;
+  // Start with just the center cell — the board grows as tiles are placed
+  return [{col:4,row:3,id:'4_3',placed:null}];
 }
 function mkDeck(){
   const d=[];
@@ -978,7 +1019,12 @@ function renderHeader(r){
   const ab=document.getElementById('abtn-col');
   ab.disabled=!my||(!!ac&&ac!=='col');
   ab.classList.toggle('am',ac==='col');
-  const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia'};
+  const ttb=document.getElementById('abtn-trade');
+  if(ttb){
+    ttb.disabled=!my||(!!ac&&ac!=='trade');
+    ttb.classList.toggle('am',ac==='trade');
+  }
+  const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia',trade:'🤝 Negociando'};
   const statusEl=document.getElementById('turn-status');
   if(statusEl) statusEl.textContent=(my&&ac)?`(${lb[ac]})` :'';
   if(costMultiplier>1){
@@ -1044,29 +1090,47 @@ function renderBoard(r){
   const board=r.board||[];
   const my=r.cp===me.idx, ac=r.ac;
 
-  // Compute viewport bounds from all cells
-  let minC=Infinity,maxC=-Infinity,minR=Infinity,maxR=-Infinity;
-  for(let c of board){if(c.col<minC)minC=c.col;if(c.col>maxC)maxC=c.col;if(c.row<minR)minR=c.row;if(c.row>maxR)maxR=c.row;}
-  // pad by 1
-  minC=Math.min(minC,0)-1; minR=Math.min(minR,0)-1;
-  maxC=Math.max(maxC,8)+1; maxR=Math.max(maxR,6)+1;
+  // Compute valid slots FIRST — only direct neighbours of placed tiles
+  const vSlots=(my&&UI.mode==='tile'&&!ac&&!UI.pending)?validSlots(board):[];
+  const vSet=new Set(vSlots.map(c=>c.id));
+  const vcSet=((!ac||ac==='col')&&my)?new Set(colSlots(board).map(c=>c.id)):new Set();
 
-  // offset to keep coords positive
+  // Build the set of cells to render:
+  //   1. All placed cells
+  //   2. ONLY empty cells that are valid slots (direct neighbours)
+  // Do NOT render non-adjacent empty cells — that was causing the ghost hexagons
+  const placedCells=board.filter(c=>c.placed);
+  const validSlotCells=vSlots; // already contains existing board cells + virtual ones
+
+  // Merge: placed + valid slots (deduped)
+  const renderSet=new Map();
+  for(let c of placedCells) renderSet.set(c.id,c);
+  for(let c of validSlotCells) if(!renderSet.has(c.id)) renderSet.set(c.id,c);
+  // Also add pending cell
+  if(UI.pending){
+    const pc=board.find(c=>c.id===UI.pending);
+    if(pc&&!renderSet.has(pc.id)) renderSet.set(pc.id,pc);
+  }
+
+  const allCells=[...renderSet.values()];
+
+  // Compute viewport bounds from all cells to render
+  let minC=Infinity,maxC=-Infinity,minR=Infinity,maxR=-Infinity;
+  for(let c of allCells){
+    if(c.col<minC)minC=c.col; if(c.col>maxC)maxC=c.col;
+    if(c.row<minR)minR=c.row; if(c.row>maxR)maxR=c.row;
+  }
+  // Fallback if no cells
+  if(!isFinite(minC)){minC=3;maxC=5;minR=2;maxR=4;}
+  // Add 1-cell padding around rendered area
+  minC-=1; minR-=1; maxC+=1; maxR+=1;
+
   const offC=-minC, offR=-minR;
   const cols=maxC-minC+1, rows=maxR-minR+1;
   const W=HEX_R*SQRT3*(cols+0.5)+30;
   const H=HEX_R*1.5*rows+HEX_R+20;
   svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
   svg.setAttribute('width',W); svg.setAttribute('height',H);
-
-  const vSlots=(my&&UI.mode==='tile'&&!ac&&!UI.pending)?validSlots(board):[];
-  const vSet=new Set(vSlots.map(c=>c.id));
-  const vcSet=((!ac||ac==='col')&&my)?new Set(colSlots(board).map(c=>c.id)):new Set();
-
-  // Render all board cells (shifted by offset)
-  const allCells=[...board];
-  // Also render virtual valid slots
-  for(let vs of vSlots){ if(!allCells.find(c=>c.id===vs.id)) allCells.push(vs); }
 
   for(let cell of allCells){
     const sc=cell.col+offC, sr=cell.row+offR;
@@ -1113,6 +1177,7 @@ function renderBoard(r){
       g.appendChild(makeTxt(x,y-4,null,'20',tdef(r.ct?.type||'forest').icon));
 
     } else if(vSet.has(cell.id)){
+      // Valid placement slot — direct neighbour of a placed tile
       g.setAttribute('class','hev');
       g.addEventListener('click',()=>placeTile(cell.id));
       const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
@@ -1120,11 +1185,8 @@ function renderBoard(r){
       poly.setAttribute('stroke','#6B5030');poly.setAttribute('stroke-width','1');poly.setAttribute('stroke-dasharray','5 3');
       g.appendChild(poly);
       g.appendChild(makeTxt(x,y,'#6B5030','22','+'));
-    } else {
-      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
-      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#120D04');poly.setAttribute('stroke','#1A1208');poly.setAttribute('stroke-width','0.5');
-      g.appendChild(poly);
     }
+    // Do NOT render a fallback empty hex for any other cell — only placed + valid slots are shown
     svg.appendChild(g);
   }
 }
@@ -1307,7 +1369,354 @@ function showWinner(r){
   document.getElementById('winner-screen').classList.add('open');
 }
 
-function goLobby(){if(room.listener&&room.ref)room.ref.off('value',room.listener);location.reload();}
+// ════════════════════════════════════════════
+// TRADE (NEGOCIAÇÃO ÀS ESCURAS)
+// ════════════════════════════════════════════
+// Flow:
+//  1. Proposer opens trade modal, picks target player and what they CLAIM to offer
+//     (they can actually send anything — trades are blind)
+//  2. Firebase: G.trade = { from, to, claimedOffer:{}, status:'pending', proposerActual:null, receiverActual:null }
+//  3. Target sees incoming overlay, picks what they want to send back (also blind)
+//  4. Both submit their "actual" deliveries simultaneously via Firebase
+//  5. When both sides have submitted, resources are swapped and reveal overlay shows both sides
+
+// Local trade state
+let tradeOfferLocal = {}; // proposer's claimed offer (for display)
+let tradeMyActual   = {}; // what I'm actually sending
+
+function openTradeModal(){
+  if(!myTurn()){msg('Não é a sua vez!');return;}
+  if(G.ac&&G.ac!=='trade'){msg('Você já escolheu outra ação neste turno.');return;}
+  if(G.trade&&G.trade.status!=='done'){msg('Já há uma negociação em andamento.');return;}
+  const players=G.players||[];
+  if(players.length<2){msg('Precisa de pelo menos 2 jogadores para negociar.');return;}
+
+  const p=players[me.idx]||{};
+  const raw=p.raw||{};
+  tradeOfferLocal={};
+  tradeMyActual={};
+
+  // Build the trade modal content
+  let html=`<div style="font-size:12px;color:var(--text2);margin-bottom:12px;">
+    Negocie com outro jogador. Você pode combinar uma troca verbalmente — mas lembre-se:
+    <span style="color:var(--honey);font-weight:500;"> a troca é às escuras!</span> Cada lado entrega o que quiser sem que o outro veja.
+  </div>`;
+
+  // Step 1: choose target player
+  html+=`<div style="margin-bottom:14px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:7px;">Com quem negociar?</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;" id="trade-target-btns">`;
+  players.forEach((pl,i)=>{
+    if(i===me.idx)return;
+    html+=`<button id="trade-target-${i}" style="background:var(--card2);border:2px solid ${P_COLORS[i]};border-radius:8px;padding:7px 14px;color:${P_COLORS[i]};font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;"
+      onclick="selectTradeTarget(${i})">${pl.name}</button>`;
+  });
+  html+=`</div></div>`;
+
+  // Step 2: what to offer (claimed)
+  html+=`<div id="trade-offer-section" style="display:none;margin-bottom:14px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px;">O que você <em>declara</em> oferecer?</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Isto é o que o outro jogador verá. O que você <em>realmente</em> entregará é definido na próxima etapa.</div>
+    <div id="trade-offer-rows" style="display:flex;flex-direction:column;gap:5px;"></div>
+  </div>`;
+
+  // Step 3: what to actually send (hidden from receiver until reveal)
+  html+=`<div id="trade-actual-section" style="display:none;margin-bottom:14px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px;">O que você <em>realmente</em> vai entregar?</div>
+    <div style="font-size:11px;color:#CE93D8;background:rgba(171,71,188,.1);border:1px solid rgba(171,71,188,.3);border-radius:6px;padding:8px;margin-bottom:8px;">🤫 Isso só será revelado após o outro jogador confirmar a troca. Você pode entregar diferente do que declarou.</div>
+    <div id="trade-actual-rows" style="display:flex;flex-direction:column;gap:5px;"></div>
+  </div>`;
+
+  html+=`<div id="trade-send-btn-wrap" style="display:none;">
+    <button id="trade-send-btn" onclick="sendTradeProposal()"
+      style="width:100%;background:var(--honey);color:#1A1208;border:none;border-radius:9px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">
+      Enviar Proposta →
+    </button>
+  </div>`;
+
+  document.getElementById('trade-content').innerHTML=html;
+  document.getElementById('trade-overlay').style.display='flex';
+}
+
+let tradeTargetIdx=-1;
+function selectTradeTarget(idx){
+  tradeTargetIdx=idx;
+  // Highlight selected
+  document.querySelectorAll('[id^="trade-target-"]').forEach(b=>{
+    b.style.opacity=b.id===`trade-target-${idx}`?'1':'0.4';
+    b.style.transform=b.id===`trade-target-${idx}`?'scale(1.04)':'scale(1)';
+  });
+  buildTradeResourceRows();
+  document.getElementById('trade-offer-section').style.display='block';
+  document.getElementById('trade-actual-section').style.display='block';
+  document.getElementById('trade-send-btn-wrap').style.display='block';
+}
+
+function buildTradeResourceRows(){
+  const p=(G.players||[])[me.idx]||{};
+  const raw=p.raw||{};
+  // Claimed offer
+  const offerGrid=document.getElementById('trade-offer-rows');
+  offerGrid.innerHTML='';
+  Object.entries(RM).forEach(([k,m])=>{
+    const max=raw[k]||0;
+    if(max===0)return;
+    tradeOfferLocal[k]=tradeOfferLocal[k]||0;
+    const row=makeTradeRow(m,k,max,'offer');
+    offerGrid.appendChild(row);
+  });
+  if(offerGrid.children.length===0){
+    offerGrid.innerHTML=`<p style="font-size:11px;color:var(--text3)">Você não tem recursos para oferecer.</p>`;
+  }
+  // Actual delivery
+  const actualGrid=document.getElementById('trade-actual-rows');
+  actualGrid.innerHTML='';
+  Object.entries(RM).forEach(([k,m])=>{
+    const max=raw[k]||0;
+    if(max===0)return;
+    tradeMyActual[k]=tradeMyActual[k]||0;
+    const row=makeTradeRow(m,k,max,'actual');
+    actualGrid.appendChild(row);
+  });
+  if(actualGrid.children.length===0){
+    actualGrid.innerHTML=`<p style="font-size:11px;color:var(--text3)">Você não tem recursos para entregar.</p>`;
+  }
+}
+
+function makeTradeRow(m,k,max,ns){
+  const row=document.createElement('div');
+  row.className='trade-res-row';
+  row.innerHTML=`<span class="tr-label">${m.icon} ${m.label} (você tem: ${max})</span>
+    <div class="trade-qty-ctrl">
+      <button class="tq-btn" onclick="adjTrade('${ns}','${k}',-1)">−</button>
+      <span class="tq-val" id="tq-${ns}-${k}">0</span>
+      <button class="tq-btn" onclick="adjTrade('${ns}','${k}',+1)">+</button>
+    </div>`;
+  return row;
+}
+
+function adjTrade(ns,k,delta){
+  const p=(G.players||[])[me.idx]||{};
+  const max=(p.raw||{})[k]||0;
+  const store=ns==='offer'?tradeOfferLocal:tradeMyActual;
+  store[k]=Math.max(0,Math.min(max,(store[k]||0)+delta));
+  const el=document.getElementById(`tq-${ns}-${k}`);
+  if(el) el.textContent=store[k];
+}
+
+async function sendTradeProposal(){
+  if(!myTurn())return;
+  if(tradeTargetIdx<0){msg('Escolha um jogador para negociar.');return;}
+  // Build clean objects (only keys with qty > 0)
+  const claimed={};
+  const actual={};
+  Object.entries(tradeOfferLocal).forEach(([k,v])=>{if(v>0)claimed[k]=v;});
+  Object.entries(tradeMyActual).forEach(([k,v])=>{if(v>0)actual[k]=v;});
+
+  // Check proposer actually has what they claim to deliver (actual)
+  const pRaw=(G.players||[])[me.idx]?.raw||{};
+  for(let[k,v] of Object.entries(actual)){
+    if((pRaw[k]||0)<v){msg(`Você não tem ${RM[k]?.label} suficiente para entregar.`);return;}
+  }
+
+  const tradeData={
+    from: me.idx,
+    to: tradeTargetIdx,
+    fromName: me.name,
+    toName: (G.players||[])[tradeTargetIdx]?.name||'?',
+    claimedOffer: claimed,       // what proposer says they'll send (visible to receiver)
+    fromActual: actual,          // what proposer actually sends (hidden until reveal)
+    toActual: null,              // filled by receiver
+    status: 'pending',           // pending → responded → done
+    ts: Date.now()
+  };
+
+  await room.ref.update({trade: tradeData, ac:'trade'});
+  closeTrade();
+  msg('Proposta enviada! Aguardando resposta...');
+}
+
+function closeTrade(){
+  document.getElementById('trade-overlay').style.display='none';
+  tradeTargetIdx=-1; tradeOfferLocal={}; tradeMyActual={};
+}
+
+// ── Receiver side ──
+function showIncomingTrade(trade){
+  // Show claimed offer
+  const claimedStr=Object.keys(trade.claimedOffer||{}).length
+    ?Object.entries(trade.claimedOffer).map(([k,v])=>`<strong>${v}</strong> ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')
+    :'<em>Nada (ele vai receber sem dar nada em troca)</em>';
+
+  document.getElementById('ti-from').textContent=`${trade.fromName} quer negociar com você`;
+  document.getElementById('ti-offer-display').innerHTML=
+    `<div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Ele diz que vai te enviar:</div>
+     <div style="font-size:13px;color:var(--text);">${claimedStr}</div>`;
+
+  // Build my resource rows for response
+  const p=(G.players||[])[me.idx]||{};
+  const raw=p.raw||{};
+  const myResContainer=document.getElementById('ti-my-resources');
+  myResContainer.innerHTML='';
+  tradeMyActual={};
+
+  let hasResources=false;
+  Object.entries(RM).forEach(([k,m])=>{
+    const max=raw[k]||0;
+    if(max===0)return;
+    hasResources=true;
+    tradeMyActual[k]=0;
+    const row=document.createElement('div');
+    row.className='trade-res-row';
+    row.innerHTML=`<span class="tr-label">${m.icon} ${m.label} (você tem: ${max})</span>
+      <div class="trade-qty-ctrl">
+        <button class="tq-btn" onclick="adjTrade('actual','${k}',-1)">−</button>
+        <span class="tq-val" id="tq-actual-${k}">0</span>
+        <button class="tq-btn" onclick="adjTrade('actual','${k}',+1)">+</button>
+      </div>`;
+    myResContainer.appendChild(row);
+  });
+  if(!hasResources){
+    myResContainer.innerHTML=`<p style="font-size:11px;color:var(--text3)">Você não tem recursos para entregar (pode aceitar mesmo assim).</p>`;
+  }
+
+  // Buttons
+  const btns=document.getElementById('ti-btns');
+  btns.innerHTML='';
+  const acceptBtn=document.createElement('button');
+  acceptBtn.textContent='Confirmar Entrega →';
+  acceptBtn.style.cssText='background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:9px 20px;font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;cursor:pointer;';
+  acceptBtn.onclick=()=>respondTrade(trade,true);
+  const refuseBtn=document.createElement('button');
+  refuseBtn.textContent='Recusar';
+  refuseBtn.style.cssText='background:transparent;color:var(--red);border:1px solid rgba(229,57,53,.4);border-radius:8px;padding:9px 20px;font-family:\'DM Sans\',sans-serif;font-size:13px;cursor:pointer;';
+  refuseBtn.onclick=()=>respondTrade(trade,false);
+  btns.appendChild(acceptBtn);
+  btns.appendChild(refuseBtn);
+
+  document.getElementById('trade-incoming').style.display='flex';
+}
+
+async function respondTrade(trade, accepted){
+  document.getElementById('trade-incoming').style.display='none';
+  if(!accepted){
+    // Cancel trade
+    await room.ref.update({trade:{...clone(trade),status:'refused'}});
+    msg(`Você recusou a proposta de ${trade.fromName}.`);
+    return;
+  }
+  // Check receiver has what they're delivering
+  const pRaw=(G.players||[])[me.idx]?.raw||{};
+  const actual={};
+  Object.entries(tradeMyActual).forEach(([k,v])=>{if(v>0)actual[k]=v;});
+  for(let[k,v] of Object.entries(actual)){
+    if((pRaw[k]||0)<v){
+      // Silently cap (trade is blind, they said they'd send more than they have — send 0 for that resource)
+      actual[k]=Math.min(v,pRaw[k]||0);
+    }
+  }
+  const updated={...clone(trade), toActual:actual, status:'responded'};
+  await room.ref.update({trade:updated});
+  msg('Resposta enviada! Aguardando o resultado...');
+}
+
+// ── Finalize trade (called when status becomes 'responded', run by proposer's client) ──
+async function finalizeTrade(trade){
+  if(trade.from!==me.idx)return; // only proposer finalizes
+  const players=clone(G.players||[]);
+  const proposer=players[trade.from];
+  const receiver=players[trade.to];
+  proposer.raw=proposer.raw||{};
+  receiver.raw=receiver.raw||{};
+
+  const fromSends=trade.fromActual||{};
+  const toSends=trade.toActual||{};
+
+  // Transfer: proposer sends to receiver
+  for(let[k,v] of Object.entries(fromSends)){
+    const actual=Math.min(v,(proposer.raw[k]||0));
+    proposer.raw[k]=(proposer.raw[k]||0)-actual;
+    receiver.raw[k]=(receiver.raw[k]||0)+actual;
+  }
+  // Transfer: receiver sends to proposer
+  for(let[k,v] of Object.entries(toSends)){
+    const actual=Math.min(v,(receiver.raw[k]||0));
+    receiver.raw[k]=(receiver.raw[k]||0)-actual;
+    proposer.raw[k]=(proposer.raw[k]||0)+actual;
+  }
+
+  const doneTrade={...clone(trade),status:'done'};
+  await room.ref.update({players, trade:doneTrade});
+}
+
+function showTradeReveal(trade){
+  const fromSends=trade.fromActual||{};
+  const toSends=trade.toActual||{};
+  const fStr=Object.keys(fromSends).length
+    ?Object.entries(fromSends).map(([k,v])=>`<strong>${v}</strong> ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')
+    :'<em>nada</em>';
+  const tStr=Object.keys(toSends).length
+    ?Object.entries(toSends).map(([k,v])=>`<strong>${v}</strong> ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')
+    :'<em>nada</em>';
+  const clStr=Object.keys(trade.claimedOffer||{}).length
+    ?Object.entries(trade.claimedOffer).map(([k,v])=>`${v} ${RM[k]?.icon||k}`).join(', ')
+    :'nada';
+
+  const honestFrom=JSON.stringify(fromSends)===JSON.stringify(trade.claimedOffer||{});
+
+  document.getElementById('tr-content').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="background:var(--card2);border-radius:9px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">📣 ${trade.fromName} declarou enviar:</div>
+        <div style="font-size:13px;color:var(--text2);">${clStr}</div>
+      </div>
+      <div style="background:var(--card2);border-radius:9px;padding:12px;border:1px solid ${honestFrom?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">📦 ${trade.fromName} <em>realmente</em> enviou:</div>
+        <div style="font-size:13px;color:${honestFrom?'var(--green)':'var(--red)'};">${fStr} ${honestFrom?'✅':'⚠️ (diferente do combinado!)'}</div>
+      </div>
+      <div style="background:var(--card2);border-radius:9px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">📦 ${trade.toName} enviou:</div>
+        <div style="font-size:13px;color:var(--text);">${tStr}</div>
+      </div>
+    </div>`;
+  document.getElementById('trade-reveal').style.display='flex';
+}
+
+function closeTadeReveal(){
+  document.getElementById('trade-reveal').style.display='none';
+  // After reveal, if it's still my turn (proposer), auto end
+  if(G&&G.cp===me.idx&&G.ac==='trade'){
+    setTimeout(()=>autoEndTurn(),500);
+  }
+}
+
+// ── Hook into onUpdate to react to trade state changes ──
+function handleTradeUpdates(r){
+  const trade=r.trade;
+  if(!trade||trade.status==='done'||trade.status==='refused')return;
+
+  // Receiver: show incoming if addressed to me and still pending
+  if(trade.to===me.idx&&trade.status==='pending'){
+    if(document.getElementById('trade-incoming').style.display==='none'||
+       document.getElementById('trade-incoming').style.display===''){
+      showIncomingTrade(trade);
+    }
+  }
+  // Proposer: finalize when receiver has responded
+  if(trade.from===me.idx&&trade.status==='responded'){
+    finalizeTrade(trade);
+  }
+  // Both: show reveal when done
+  if(trade.status==='done'&&!document.getElementById('trade-reveal').style.display.includes('flex')){
+    showTradeReveal(trade);
+  }
+  // Receiver: show refused
+  if(trade.from===me.idx&&trade.status==='refused'){
+    msg(`${trade.toName} recusou sua proposta.`);
+    document.getElementById('trade-incoming').style.display='none';
+    autoEndTurn();
+  }
+}
 function msg(t){document.getElementById('msg-bar').textContent=t;}
 document.getElementById('inp-code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
 </script>
