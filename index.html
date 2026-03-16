@@ -15,12 +15,10 @@
 body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-6l22-13V19L28 6 6 19v28L28 60z' fill='%23ffffff' fill-opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
 #app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;}
-
-/* ══ SCREENS ══ */
 .screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center;}
 .screen.hidden{display:none;}
 
-/* ══ LOBBY ══ */
+/* LOBBY */
 .lobby-box{background:#2A1E08;border:1px solid var(--border);border-radius:18px;padding:36px 44px;text-align:center;max-width:460px;width:92%;}
 .logo-bee{font-size:60px;margin-bottom:6px;}
 .logo-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--honey);margin-bottom:3px;}
@@ -42,7 +40,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .pc-btn:hover,.pc-btn.sel{border-color:var(--honey);background:rgba(232,149,26,.15);color:var(--honey);}
 .err{font-size:12px;color:var(--red);text-align:center;min-height:18px;margin-top:4px;}
 
-/* ══ WAITING ROOM ══ */
+/* WAITING ROOM */
 .wait-box{background:#2A1E08;border:1px solid var(--border);border-radius:18px;padding:32px 40px;text-align:center;max-width:420px;width:92%;}
 .wait-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--honey);margin-bottom:6px;}
 .wait-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
@@ -58,12 +56,27 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #btn-start-room.ready{opacity:1;pointer-events:all;}
 #btn-start-room.ready:hover{background:var(--wax);}
 
-/* ══ TURN WAIT BANNER ══ */
+/* TURN BANNER */
 #turn-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:80;background:rgba(20,12,3,.97);border-top:2px solid var(--border);padding:12px 20px;text-align:center;font-size:13px;color:var(--text2);}
 #turn-banner.show{display:block;}
 #turn-banner strong{color:var(--honey);}
 
-/* ══ REVEAL ══ */
+/* EVENT CARD OVERLAY */
+#event-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:400;align-items:center;justify-content:center;}
+#event-overlay.open{display:flex;}
+.ev-box{background:#2A1E08;border:2px solid var(--honey);border-radius:16px;padding:28px 34px;max-width:420px;width:92%;text-align:center;}
+.ev-icon{font-size:52px;margin-bottom:8px;}
+.ev-title{font-family:'Playfair Display',serif;font-size:20px;color:var(--honey);margin-bottom:6px;}
+.ev-name{font-size:13px;font-weight:500;color:var(--text);margin-bottom:12px;}
+.ev-effect{font-size:12px;color:var(--text2);background:rgba(229,57,53,.08);border:1px solid rgba(229,57,53,.3);border-radius:8px;padding:10px;margin-bottom:10px;line-height:1.6;}
+.ev-mitigation{font-size:12px;color:var(--text2);background:rgba(67,160,71,.08);border:1px solid rgba(67,160,71,.3);border-radius:8px;padding:10px;margin-bottom:16px;line-height:1.6;}
+.ev-mitigation strong{color:#66BB6A;}
+.ev-btns{display:flex;gap:8px;justify-content:center;flex-wrap:wrap;}
+.ev-btn-accept{background:var(--red);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.ev-btn-mitigate{background:var(--green);color:#fff;border:none;border-radius:8px;padding:8px 20px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+.ev-btn-accept:disabled,.ev-btn-mitigate:disabled{opacity:.3;cursor:not-allowed;}
+
+/* REVEAL */
 #reveal-screen{position:fixed;inset:0;background:rgba(10,7,2,.94);z-index:250;display:flex;align-items:center;justify-content:center;}
 #reveal-screen.hidden{display:none;}
 .rv-box{background:#2A1E08;border:1px solid var(--border);border-radius:16px;padding:28px 36px;text-align:center;max-width:380px;width:90%;}
@@ -75,7 +88,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #btn-rv-ok{background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
 #btn-rv-ok:hover{background:var(--wax);}
 
-/* ══ HEADER ══ */
+/* HEADER */
 #header{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:linear-gradient(90deg,#2A1E08,#3D2A0C);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;flex-wrap:wrap;}
 #game-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--honey);letter-spacing:1px;}
 .turn-badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--text2);}
@@ -95,11 +108,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #abtn-col{background:rgba(66,165,245,.15);color:#42A5F5;border-color:rgba(66,165,245,.4);}
 #abtn-col.am{background:#42A5F5;color:#1A1208;border-color:#1565C0;}
 #abtn-col:hover:not(:disabled):not(.am){background:rgba(66,165,245,.28);}
-#btn-end{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;}
-#btn-end:hover{background:var(--card2);color:var(--text);}
 #turn-status{font-size:11px;color:var(--text3);font-style:italic;}
 
-/* ══ MAIN ══ */
+/* MAIN */
 #main{display:flex;flex:1;min-height:0;}
 .sidebar{width:182px;flex-shrink:0;overflow-y:auto;padding:6px 5px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:5px;}
 .sidebar.right{border-right:none;border-left:1px solid var(--border);}
@@ -121,13 +132,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .aitem{background:rgba(244,166,28,.08);border:1px solid rgba(244,166,28,.2);border-radius:5px;padding:3px 6px;color:var(--text2);font-size:10px;}
 .aitem strong{color:var(--text);}
 
-/* ══ BOARD ══ */
+/* BOARD */
 #board-container{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:10px;background:#120D04;}
 #board-svg{display:block;}
 .hev{cursor:pointer;}.hev polygon{transition:fill .12s;}.hev:hover polygon{fill:#4A3A10!important;}
 .hcv{cursor:pointer;}.hcv polygon{transition:fill .12s;}.hcv:hover polygon{fill:#1A3A5A!important;}
 
-/* ══ BOTTOM ══ */
+/* BOTTOM */
 #bottom-bar{flex-shrink:0;background:var(--card);border-top:1px solid var(--border);padding:6px 12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
 .blabel{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
 .t-hidden{background:var(--card2);border:1.5px dashed var(--border);border-radius:9px;padding:6px 12px;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);}
@@ -140,13 +151,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #deck-count{font-size:11px;color:var(--text3);}
 #msg-bar{margin-left:auto;font-size:12px;color:var(--honey);font-style:italic;max-width:280px;text-align:right;min-height:14px;}
 
-/* ══ MODAL ══ */
+/* MODAL */
 #modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;align-items:center;justify-content:center;}
 #modal-overlay.open{display:flex;}
-#modal-box{background:#2A1E08;border:1px solid var(--border);border-radius:13px;width:min(620px,95vw);max-height:88vh;overflow-y:auto;padding:16px;}
+#modal-box{background:#2A1E08;border:1px solid var(--border);border-radius:13px;width:min(640px,95vw);max-height:88vh;overflow-y:auto;padding:16px;}
 .mtitle{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--honey);margin-bottom:3px;display:flex;justify-content:space-between;align-items:center;}
 .mclose{cursor:pointer;background:none;border:none;color:var(--text2);font-size:20px;line-height:1;}
-.modal-tabs{display:flex;gap:5px;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:9px;}
+.modal-tabs{display:flex;gap:5px;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:9px;flex-wrap:wrap;}
 .mtab{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;transition:all .12s;}
 .mtab.active{background:var(--honey);color:#1A1208;border-color:var(--honey-dark);font-weight:500;}
 .tab-pane{display:none;}.tab-pane.active{display:block;}
@@ -168,8 +179,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .chip.ok{border-color:var(--green);color:var(--green);background:rgba(67,160,71,.1);}
 .chip.bad{border-color:var(--red);color:var(--red);background:rgba(229,57,53,.1);}
 .note{font-size:11px;color:var(--text3);padding:7px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--border);margin-bottom:8px;}
+.upgrade-box{background:rgba(232,149,26,.05);border:1px solid rgba(232,149,26,.25);border-radius:9px;padding:11px;margin-top:10px;}
+.upgrade-box h3{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--wax-dark);margin-bottom:7px;}
 
-/* ══ WINNER ══ */
+/* WINNER */
 #winner-screen{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;}
 #winner-screen.open{display:flex;}
 .wbox{background:#2A1E08;border:1px solid var(--honey);border-radius:16px;padding:26px 34px;text-align:center;max-width:460px;width:90%;}
@@ -191,7 +204,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <body>
 <div id="app">
 
-<!-- ══ LOBBY ══ -->
+<!-- LOBBY -->
 <div id="lobby-screen" class="screen">
   <div class="lobby-box">
     <div class="logo-bee">🐝</div>
@@ -214,7 +227,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
-<!-- ══ WAITING ROOM ══ -->
+<!-- WAITING ROOM -->
 <div id="waiting-screen" class="screen hidden">
   <div class="wait-box">
     <div class="wait-title" id="wait-title">Sala criada! 🐝</div>
@@ -230,10 +243,25 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
-<!-- ══ TURN WAIT BANNER ══ -->
+<!-- TURN BANNER -->
 <div id="turn-banner">Aguardando <strong id="wt-name">—</strong> jogar...</div>
 
-<!-- ══ REVEAL ══ -->
+<!-- EVENT OVERLAY -->
+<div id="event-overlay">
+  <div class="ev-box">
+    <div class="ev-icon" id="ev-icon">🃏</div>
+    <div class="ev-title">Carta de Evento!</div>
+    <div class="ev-name" id="ev-name"></div>
+    <div class="ev-effect" id="ev-effect"></div>
+    <div class="ev-mitigation" id="ev-mitigation"></div>
+    <div class="ev-btns">
+      <button class="ev-btn-accept" id="ev-btn-accept">Aceitar efeito</button>
+      <button class="ev-btn-mitigate" id="ev-btn-mitigate" style="display:none">Usar mitigação</button>
+    </div>
+  </div>
+</div>
+
+<!-- REVEAL -->
 <div id="reveal-screen" class="hidden">
   <div class="rv-box">
     <div class="rv-whose" id="rv-whose"></div>
@@ -244,7 +272,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
-<!-- ══ HEADER ══ -->
+<!-- HEADER -->
 <div id="header">
   <div style="display:flex;align-items:center;gap:10px;">
     <div id="game-title"><span>🐝</span> Apicultor</div>
@@ -258,18 +286,18 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <button class="act-btn" id="abtn-tile"  onclick="setMode('tile')">🌿 Colocar Tile</button>
     <button class="act-btn" id="abtn-craft" onclick="openModal('craft')">⚒ Trocas</button>
     <button class="act-btn" id="abtn-col"   onclick="openModal('col')">🐝 Colmeia</button>
-    <button id="btn-end" onclick="endTurn()">Encerrar Turno →</button>
+    <span id="turn-status"></span>
   </div>
 </div>
 
-<!-- ══ MAIN ══ -->
+<!-- MAIN -->
 <div id="main">
   <div id="sb-left"></div>
   <div id="board-container"><svg id="board-svg"></svg></div>
   <div id="sb-right"></div>
 </div>
 
-<!-- ══ BOTTOM ══ -->
+<!-- BOTTOM -->
 <div id="bottom-bar">
   <span class="blabel">Tile:</span>
   <div id="deck-preview"></div>
@@ -277,7 +305,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div id="msg-bar"></div>
 </div>
 
-<!-- ══ MODAL ══ -->
+<!-- MODAL -->
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="mtitle">
@@ -287,13 +315,15 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div class="modal-tabs">
       <button class="mtab" id="tab-craft-btn" onclick="switchTab('craft')">⚒ Trocas</button>
       <button class="mtab" id="tab-col-btn"   onclick="switchTab('col')">🐝 Montar Colmeia</button>
+      <button class="mtab" id="tab-upg-btn"   onclick="switchTab('upg')">📦 Aumentar Apiário</button>
     </div>
     <div id="tab-craft" class="tab-pane"></div>
     <div id="tab-col"   class="tab-pane"></div>
+    <div id="tab-upg"   class="tab-pane"></div>
   </div>
 </div>
 
-<!-- ══ WINNER ══ -->
+<!-- WINNER -->
 <div id="winner-screen">
   <div class="wbox">
     <div class="wbee">🐝</div>
@@ -306,33 +336,28 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 
 </div>
 
-<!-- Firebase SDKs -->
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
 
 <script>
-// ╔══════════════════════════════════════════════════════╗
-// ║  FIREBASE — substitua com seu próprio firebaseConfig ║
-// ╚══════════════════════════════════════════════════════╝
 firebase.initializeApp({
-    apiKey: "AIzaSyBm-yB8-k5yGUsjFQmEuiMbbikOXpBRtjs",
-  authDomain: "apicultor-board-game.firebaseapp.com",
-  databaseURL: "https://apicultor-board-game-default-rtdb.firebaseio.com",
-  projectId: "apicultor-board-game",
-  storageBucket: "apicultor-board-game.firebasestorage.app",
-  messagingSenderId: "211567947450",
-  appId: "1:211567947450:web:b220a02ee3129fd4231c83",
-  measurementId: "G-MMV1CBY77T"
+  apiKey:"AIzaSyBm-yB8-k5yGUsjFQmEuiMbbikOXpBRtjs",
+  authDomain:"apicultor-board-game.firebaseapp.com",
+  databaseURL:"https://apicultor-board-game-default-rtdb.firebaseio.com",
+  projectId:"apicultor-board-game",
+  storageBucket:"apicultor-board-game.firebasestorage.app",
+  messagingSenderId:"211567947450",
+  appId:"1:211567947450:web:b220a02ee3129fd4231c83"
 });
 const db = firebase.database();
 
-// ════════════════════════════════════════════════════════
-// CONSTANTES DO JOGO
-// ════════════════════════════════════════════════════════
-const SQRT3 = Math.sqrt(3), HEX_R = 44;
-const P_COLORS = ['#F4A61C','#42A5F5','#66BB6A','#EF9A9A'];
+// ════════════════════════════════════════════
+// CONSTANTES
+// ════════════════════════════════════════════
+const SQRT3=Math.sqrt(3), HEX_R=44;
+const P_COLORS=['#F4A61C','#42A5F5','#66BB6A','#EF9A9A'];
 
-const TILE_VARIANTS = [
+const TILE_VARIANTS=[
   {type:'forest',label:'Floresta',          icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:1}},
   {type:'forest',label:'Floresta',          icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:2}},
   {type:'field', label:'Campo',             icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:1}},
@@ -345,71 +370,107 @@ const TILE_VARIANTS = [
   {type:'fruit', label:'Árvores Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:2}},
   {type:'water', label:'Fonte de Água',     icon:'💧',color:'#0D47A1',stroke:'#1565C0',yields:{}},
 ];
-const TYPE_COUNTS = {forest:10,field:10,apiary:10,fruit:10,water:10};
+const TYPE_COUNTS={forest:10,field:10,apiary:10,fruit:10,water:10};
 
-const RM = { // Resource Meta
+const RM={
   madeira:      {icon:'🪵',label:'Madeira'},
   erva_cidreira:{icon:'🌿',label:'Erva Cidreira'},
   cera:         {icon:'🕯️',label:'Cera'},
   propolis:     {icon:'🟤',label:'Própolis'},
   geleia_real:  {icon:'👑',label:'Geleia Real'},
 };
-const CM = { // Crafted Meta
+const CM={
   ninho:        {icon:'🏠',label:'Ninho'},
   melgueira:    {icon:'📦',label:'Melgueira'},
   chama_enxame: {icon:'🔥',label:'Chama Enxame'},
   abelha_rainha:{icon:'👑',label:'Abelha Rainha'},
 };
-const RECIPES = [
+const RECIPES=[
   {id:'r1',cost:{madeira:2},                 result:{key:'ninho',        qty:1}},
   {id:'r2',cost:{madeira:2},                 result:{key:'melgueira',    qty:1}},
   {id:'r3',cost:{propolis:1,erva_cidreira:1},result:{key:'chama_enxame',qty:1}},
   {id:'r4',cost:{geleia_real:2},             result:{key:'abelha_rainha',qty:1}},
 ];
-const COL_REQ = {ninho:1,melgueira:1,chama_enxame:1,abelha_rainha:1};
+const COL_REQ={ninho:1,melgueira:1,chama_enxame:1,abelha_rainha:1};
 
-// ════════════════════════════════════════════════════════
-// SESSION (local — não vai ao Firebase)
-// ════════════════════════════════════════════════════════
-let me = {name:'',idx:-1};
-let room = {code:'',ref:null,listener:null,n:0};
-let G = null; // espelho do estado Firebase
-let UI = {mode:null,committed:false,pending:null}; // estado local de UI
+// Custo da melgueira extra: base 2 madeiras + 1 por melgueira já existente além da primeira
+// col.mel = número de melgueiras instaladas (começa em 1 ao montar)
+// Custo pra próxima = 2 + col.mel  (2ª custa 3, 3ª custa 4, etc.)
+function nextMelgueiraCost(col){ return 2 + (col.mel||1); }
 
-// ════════════════════════════════════════════════════════
+// Honey concedido ao MONTAR a colmeia e ao ADICIONAR melgueiras:
+// - Montar: 1 kg fixo
+// - Cada melgueira extra: +1 kg fixo (bônus de frutíferas não se repete, é calculado no momento da montagem)
+// Produção total = 1 + extras (mel permanece acumulado, não produz por rodada)
+
+// CARTAS DE EVENTO
+// Disparadas quando mel >= 5 (por player, uma vez por limiar: 5, 10, 15...)
+const EVENT_CARDS=[
+  {
+    id:'saque',
+    icon:'🦹',
+    name:'Saqueamento de Mel',
+    effect:'Você foi saqueado! Deve ceder 1 kg de mel ao jogador com menor quantidade.',
+    mitigation:'Se tiver Própolis em estoque, descarte 1 unidade para vedar a caixa e ignorar o evento.',
+    mitigItem:'propolis', mitigQty:1,
+  },
+  {
+    id:'tamandua',
+    icon:'🐜',
+    name:'Tamanduá-Bandeira!',
+    effect:'O Tamanduá atacou seu apiário! Você perde 2 kg de mel.',
+    mitigation:'Se tiver Madeira em estoque, descarte 3 unidades para construir uma cerca e se proteger.',
+    mitigItem:'madeira', mitigQty:3,
+  },
+  {
+    id:'custos',
+    icon:'📈',
+    name:'Aumento dos Custos de Produção',
+    effect:'Os custos de produção dobraram! Melgueiras e Ninhos ficam 2× mais caros neste turno.',
+    mitigation:null, // sem mitigação
+    mitigItem:null, mitigQty:0,
+  },
+];
+
+// ════════════════════════════════════════════
+// SESSION
+// ════════════════════════════════════════════
+let me={name:'',idx:-1};
+let room={code:'',ref:null,listener:null,n:0};
+let G=null;
+let UI={mode:null,committed:false,pending:null};
+// local event state (only for current player's overlay)
+let pendingEvent=null; // {card, playerIdx}
+let costMultiplier=1;  // 1 or 2, set by "custos" event card, resets next turn
+
+// ════════════════════════════════════════════
 // LOBBY
-// ════════════════════════════════════════════════════════
-let _n = 0;
+// ════════════════════════════════════════════
+let _n=0;
 function selN(n){
   _n=n;
   document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2));
   upCreate();
 }
 document.getElementById('inp-name').addEventListener('input',upCreate);
-function upCreate(){
-  document.getElementById('btn-create').disabled = !document.getElementById('inp-name').value.trim()||!_n;
-}
+function upCreate(){ document.getElementById('btn-create').disabled=!document.getElementById('inp-name').value.trim()||!_n; }
 function setErr(m){document.getElementById('lobby-err').textContent=m;}
-
-function genCode(){
-  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
-  return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('');
-}
+function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
 
 async function createRoom(){
   const name=document.getElementById('inp-name').value.trim();
   if(!name||!_n){setErr('Preencha nome e número de jogadores.');return;}
-  setErr('');
-  me.name=name; me.idx=0;
-  room.code=genCode(); room.n=_n;
-  room.ref=db.ref('rooms/'+room.code);
+  setErr(''); me.name=name; me.idx=0;
+  room.code=genCode(); room.n=_n; room.ref=db.ref('rooms/'+room.code);
   const deck=mkDeck(); shuffle(deck);
+  const evDeck=mkEventDeck();
   await room.ref.set({
-    code:room.code, status:'waiting', n:_n,
+    code:room.code,status:'waiting',n:_n,
     players:[{name,color:P_COLORS[0]}],
-    deck, board:mkBoard(),
-    cp:0, turn:1, di:1, ct:deck[0],
-    ac:null, tr:false, over:false,
+    deck,board:mkBoard(),evDeck,
+    cp:0,turn:1,di:1,ct:deck[0],
+    ac:null,tr:false,over:false,
+    costMult:1, // global cost multiplier (resets each turn)
     ts:Date.now()
   });
   subscribe(); showWait(room.code);
@@ -428,9 +489,7 @@ async function joinRoom(){
   if(r.status==='finished'){setErr('Partida já encerrada.');return;}
   const cur=(r.players||[]).length;
   if(cur>=r.n){setErr('Sala cheia!');return;}
-  me.name=name; me.idx=cur;
-  room.code=code; room.n=r.n;
-  room.ref=db.ref('rooms/'+code);
+  me.name=name; me.idx=cur; room.code=code; room.n=r.n; room.ref=db.ref('rooms/'+code);
   await room.ref.child('players').child(me.idx).set({name,color:P_COLORS[me.idx]});
   setErr(''); subscribe(); showWait(code);
 }
@@ -440,30 +499,27 @@ function showWait(code){
   document.getElementById('waiting-screen').classList.remove('hidden');
   document.getElementById('disp-code').textContent=code;
 }
-
 function copyCode(){
   navigator.clipboard.writeText(room.code).then(()=>{
     const el=document.getElementById('disp-code'),t=el.textContent;
     el.textContent='COPIADO!';setTimeout(()=>el.textContent=t,1500);
   });
 }
-
 async function startRoom(){
   if(me.idx!==0)return;
-  const s=await room.ref.get(), r=s.val();
+  const s=await room.ref.get(),r=s.val();
   if((r.players||[]).length<2){alert('Aguarde pelo menos 2 jogadores.');return;}
   await room.ref.update({status:'playing'});
 }
-
 async function leaveRoom(){
   if(room.listener)room.ref.off('value',room.listener);
   if(room.ref)await room.ref.child('players').child(me.idx).remove();
   location.reload();
 }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // FIREBASE SUBSCRIPTION
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 function subscribe(){
   if(room.listener)room.ref.off('value',room.listener);
   room.listener=room.ref.on('value',snap=>{
@@ -476,7 +532,9 @@ function subscribe(){
         document.getElementById('lobby-screen').classList.add('hidden');
         buildSidebars(r);
       }
-      G=r; onUpdate(r);
+      G=r;
+      costMultiplier=r.costMult||1;
+      onUpdate(r);
     }
   });
 }
@@ -488,80 +546,164 @@ function renderWait(r){
       const p=players[i];
       return `<div class="slot">
         <span class="slot-dot" style="background:${p?P_COLORS[i]:'var(--border)'}"></span>
-        ${p
-          ?`<span class="slot-name">${p.name}</span>${i===me.idx?'<span class="slot-you">Você</span>':''}`
-          :`<span class="slot-empty">Aguardando...</span>`}
+        ${p?`<span class="slot-name">${p.name}</span>${i===me.idx?'<span class="slot-you">Você</span>':''}`:`<span class="slot-empty">Aguardando...</span>`}
       </div>`;
     }).join('');
   const sb=document.getElementById('btn-start-room');
-  if(me.idx===0){
-    sb.style.display='block';
-    sb.classList.toggle('ready',players.length>=2);
-  } else {
-    sb.style.display='none';
-    document.getElementById('wait-title').textContent='Aguardando o host iniciar...';
-    document.getElementById('wait-sub').textContent='A partida começa quando todos entrarem.';
-  }
+  if(me.idx===0){sb.style.display='block';sb.classList.toggle('ready',players.length>=2);}
+  else{sb.style.display='none';document.getElementById('wait-title').textContent='Aguardando o host iniciar...';}
 }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // GAME STATE UPDATE
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 function onUpdate(r){
   if(r.over){renderAll(r);showWinner(r);return;}
   const my=r.cp===me.idx;
-  // Banner
-  if(my){
-    document.getElementById('turn-banner').classList.remove('show');
-  } else {
+  // banner
+  if(my){document.getElementById('turn-banner').classList.remove('show');}
+  else{
     document.getElementById('turn-banner').classList.add('show');
     const cp=(r.players||[])[r.cp];
     document.getElementById('wt-name').textContent=cp?cp.name:'...';
   }
-  // Reveal
+  // reveal
   if(my&&!r.tr&&r.status==='playing'&&r.ct){
     const td=tdef(r.ct.type);
     const ys=Object.entries(r.ct.yields||{}).length
       ?Object.entries(r.ct.yields).map(([k,v])=>`+${v} ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(' · ')
       :'Sem recursos';
     document.getElementById('rv-whose').textContent=`Sua vez, ${me.name}!`;
-    document.getElementById('rv-preview').innerHTML=`
-      <div class="rv-icon">${td.icon}</div>
-      <div class="rv-name">${td.label}</div>
-      <div class="rv-yields">${ys}</div>`;
+    document.getElementById('rv-preview').innerHTML=`<div class="rv-icon">${td.icon}</div><div class="rv-name">${td.label}</div><div class="rv-yields">${ys}</div>`;
     document.getElementById('reveal-screen').classList.remove('hidden');
   } else {
     document.getElementById('reveal-screen').classList.add('hidden');
   }
-  // Reset UI at start of my turn
   if(my&&!r.tr) UI={mode:null,committed:false,pending:null};
+
+  // Check if current player needs to draw an event card (only show for that player)
+  if(my && r.pendingEvent && !pendingEvent){
+    const evCard=EVENT_CARDS.find(e=>e.id===r.pendingEvent.id);
+    if(evCard) showEventOverlay(evCard, r.pendingEvent);
+  } else if(!r.pendingEvent){
+    document.getElementById('event-overlay').classList.remove('open');
+    pendingEvent=null;
+  }
+
   renderAll(r);
 }
 
-// ════════════════════════════════════════════════════════
-// PLAYER WRITES
-// ════════════════════════════════════════════════════════
-function myTurn(){
-  if(!G||G.cp!==me.idx){msg('Não é a sua vez!');return false;}
-  return true;
+// ════════════════════════════════════════════
+// EVENT CARD LOGIC
+// ════════════════════════════════════════════
+function mkEventDeck(){
+  // 3 copies of each card, shuffled
+  const d=[...EVENT_CARDS,...EVENT_CARDS,...EVENT_CARDS];
+  shuffle(d); return d.map(e=>e.id);
 }
+
+// Called after honey changes: check if player crossed a 5kg milestone
+function checkEventTrigger(players, evDeck, playerIdx){
+  const p=players[playerIdx];
+  const honey=p.honey||0;
+  const milestones=p.milestones||[];
+  // find all multiples of 5 up to honey that haven't been triggered
+  const nextMilestone=milestones.length>0?(milestones[milestones.length-1]+5):5;
+  if(honey>=nextMilestone && (evDeck||[]).length>0){
+    const evId=(evDeck||[])[0];
+    const newDeck=(evDeck||[]).slice(1);
+    p.milestones=[...(p.milestones||[]),nextMilestone];
+    return{evId, newDeck};
+  }
+  return null;
+}
+
+function showEventOverlay(card, evData){
+  pendingEvent=evData;
+  document.getElementById('ev-icon').textContent=card.icon;
+  document.getElementById('ev-name').textContent=card.name;
+  document.getElementById('ev-effect').innerHTML='<strong>Efeito:</strong> '+card.effect;
+
+  const p=(G.players||[])[me.idx]||{};
+  const mitigBtn=document.getElementById('ev-btn-mitigate');
+  const acceptBtn=document.getElementById('ev-btn-accept');
+
+  if(card.mitigation){
+    document.getElementById('ev-mitigation').innerHTML='<strong>Mitigação:</strong> '+card.mitigation;
+    document.getElementById('ev-mitigation').style.display='block';
+    const hasMitig=card.mitigItem&&((p.raw||{})[card.mitigItem]||0)>=card.mitigQty;
+    mitigBtn.style.display='inline-block';
+    mitigBtn.disabled=!hasMitig;
+    mitigBtn.textContent=hasMitig?`Usar mitigação (descarta ${card.mitigQty} ${RM[card.mitigItem]?.icon||''})`:'Sem recursos para mitigar';
+  } else {
+    document.getElementById('ev-mitigation').style.display='none';
+    mitigBtn.style.display='none';
+  }
+
+  acceptBtn.onclick=()=>resolveEvent(card,false);
+  mitigBtn.onclick=()=>resolveEvent(card,true);
+  document.getElementById('event-overlay').classList.add('open');
+}
+
+async function resolveEvent(card, mitigated){
+  if(!myTurn())return;
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  let evDeck=clone(G.evDeck||[]);
+
+  if(mitigated && card.mitigItem){
+    // consume mitigation item
+    p.raw=p.raw||{};
+    p.raw[card.mitigItem]=(p.raw[card.mitigItem]||0)-card.mitigQty;
+    msg(`✅ Mitigação usada! Evento ignorado.`);
+  } else {
+    // apply effect
+    if(card.id==='saque'){
+      // transfer 1 kg to player with least honey
+      const honeys=players.map((pl,i)=>({i,h:pl.honey||0}));
+      const minIdx=honeys.filter(x=>x.i!==me.idx).sort((a,b)=>a.h-b.h)[0]?.i;
+      if(minIdx!==undefined && (p.honey||0)>0){
+        p.honey=Math.max(0,(p.honey||0)-1);
+        players[minIdx].honey=(players[minIdx].honey||0)+1;
+        msg(`🦹 Saqueado! 1 kg cedido para ${players[minIdx].name}.`);
+      }
+    } else if(card.id==='tamandua'){
+      p.honey=Math.max(0,(p.honey||0)-2);
+      msg(`🐜 Tamanduá atacou! Perdeu 2 kg de mel.`);
+    } else if(card.id==='custos'){
+      // double costs for this turn (stored globally, resets on next endTurn)
+      await room.ref.update({costMult:2});
+      costMultiplier=2;
+      msg(`📈 Custos dobrados neste turno!`);
+    }
+  }
+
+  document.getElementById('event-overlay').classList.remove('open');
+  pendingEvent=null;
+  await room.ref.update({players, evDeck, pendingEvent:null});
+}
+
+// ════════════════════════════════════════════
+// PLAYER WRITES
+// ════════════════════════════════════════════
+function myTurn(){if(!G||G.cp!==me.idx){msg('Não é a sua vez!');return false;}return true;}
 
 async function confirmReveal(){
   if(!myTurn())return;
   document.getElementById('reveal-screen').classList.add('hidden');
   UI={mode:null,committed:false,pending:null};
   await room.ref.update({tr:true});
-  msg(`${me.name}: escolha uma ação — tile, trocas ou colmeia.`);
+  msg(`${me.name}: escolha — colocar tile, trocas ou colmeia.`);
 }
 
-async function endTurn(){
-  if(!myTurn())return;
-  if(!G.ac){msg('Faça pelo menos uma ação antes de encerrar!');return;}
+// Auto endTurn — called internally after an action completes
+async function autoEndTurn(){
   const np=(G.cp+1)%(G.players||[]).length;
   const nt=np===0?G.turn+1:G.turn;
   const nc=(G.deck||[])[G.di]||null;
   UI={mode:null,committed:false,pending:null};
-  await room.ref.update({cp:np,turn:nt,ct:nc,di:G.di+1,ac:null,tr:false,over:!nc,status:!nc?'finished':'playing'});
+  // reset cost multiplier on turn end
+  await room.ref.update({cp:np,turn:nt,ct:nc,di:G.di+1,ac:null,tr:false,over:!nc,status:!nc?'finished':'playing',costMult:1});
 }
 
 function setMode(m){
@@ -569,24 +711,22 @@ function setMode(m){
   if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':'colmeia'} neste turno.`);return;}
   if(m==='tile'){
     UI.mode='tile'; UI.committed=true;
-    // Reveal tile in bottom bar
     G.tr=true; // local optimistic
     renderAll(G);
-    msg('Tile revelado! Clique em um espaço verde para posicionar.');
+    msg('Tile revelado! Clique em um espaço para posicionar.');
   } else {
     UI.mode=m; renderAll(G);
     openModal(m==='craft'?'craft':'col');
   }
 }
 
-// Tile placement
+// ── Tile placement (infinite board: grows automatically) ──
 function placeTile(id){
   if(!myTurn())return;
   if(UI.mode!=='tile'){msg('Ative "Colocar Tile" primeiro.');return;}
   if(G.ac&&G.ac!=='tile'){msg('Você já escolheu outra ação.');return;}
-  const cell=(G.board||[]).find(c=>c.id===id);
-  if(!cell||cell.placed)return;
-  if(!validSlots(G.board).find(c=>c.id===id)){msg('Posição inválida — deve ser adjacente a outro tile.');return;}
+  const board=G.board||[];
+  // For infinite board: id is always a valid neighbour slot
   UI.pending=id; renderAll(G);
   msg('Confirme a posição ou cancele para escolher outro lugar.');
 }
@@ -594,51 +734,88 @@ function placeTile(id){
 async function confirmPlace(){
   if(!myTurn())return;
   const id=UI.pending; if(!id)return;
-  const board=clone(G.board||[]);
+  let board=clone(G.board||[]);
+  // Add cell if it doesn't exist yet (infinite board)
+  if(!board.find(c=>c.id===id)){
+    const [col,row]=id.split('_').map(Number);
+    board.push({col,row,id,placed:null});
+  }
   const cell=board.find(c=>c.id===id); if(!cell)return;
   cell.placed={...G.ct};
+
+  // Expand board: add empty neighbours around every placed cell
+  board=expandBoard(board);
+
   const players=clone(G.players||[]);
   const p=players[me.idx]; p.raw=p.raw||{};
   for(let[k,v] of Object.entries(G.ct.yields||{})) p.raw[k]=(p.raw[k]||0)+v;
-  harvest(board,players);
+
+  // No honey harvest on placement (honey only on colmeia install/upgrade)
+
+  let evDeck=clone(G.evDeck||[]);
+  let pendingEventData=null;
+
   UI.pending=null; UI.mode=null;
   const ys=Object.entries(G.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k}`).join(' ')||'(sem recursos)';
-  await room.ref.update({board,players,ac:'tile'});
-  msg(`✅ Tile colocado! ${ys} — encerre o turno.`);
+  await room.ref.update({board,players,ac:'tile',evDeck,pendingEvent:pendingEventData});
+  msg(`✅ Tile colocado! ${ys}`);
+  // Auto end turn after tile placement
+  setTimeout(()=>autoEndTurn(),800);
 }
 
-function cancelPlace(){
-  UI.pending=null; renderAll(G);
-  msg('Cancelado. Clique em outro espaço verde.');
-}
-
-function harvest(board,players){
-  for(let pi=0;pi<players.length;pi++){
-    const p=players[pi];
-    for(let col of (p.colmeias||[])){
-      const c=board.find(x=>x.id===col.cellId); if(!c)continue;
-      col.fb=nbrs(c.col,c.row,board).filter(n=>n.placed&&n.placed.type==='fruit').length;
-      p.honey=(p.honey||0)+1+col.fb;
+function expandBoard(board){
+  // Ensure every placed cell has all 6 neighbours in the board array
+  const placed=board.filter(c=>c.placed);
+  const ids=new Set(board.map(c=>c.id));
+  for(let cell of placed){
+    for(let nb of allNbrs(cell.col,cell.row)){
+      if(!ids.has(nb.id)){
+        board.push({col:nb.col,row:nb.row,id:nb.id,placed:null});
+        ids.add(nb.id);
+      }
     }
   }
+  return board;
 }
 
-// Craft
+function cancelPlace(){UI.pending=null;renderAll(G);msg('Cancelado.');}
+
+// ── Craft (trocas) ──
 async function doCraft(rid){
   if(!myTurn())return;
   if(G.ac&&G.ac!=='craft'){msg('Ação bloqueada neste turno.');return;}
   const r=RECIPES.find(x=>x.id===rid); if(!r)return;
   const players=clone(G.players||[]);
   const p=players[me.idx]; p.raw=p.raw||{}; p.crafted=p.crafted||{};
-  if(!afford(p.raw,r.cost)){msg('Recursos insuficientes.');return;}
-  for(let[k,v] of Object.entries(r.cost))p.raw[k]-=v;
+  // Apply cost multiplier (event card "custos")
+  const mult=costMultiplier||1;
+  const effectiveCost={};
+  for(let[k,v] of Object.entries(r.cost)) effectiveCost[k]=v*mult;
+  if(!afford(p.raw,effectiveCost)){msg(`Recursos insuficientes.${mult>1?' (custos dobrados!)':`</br>`}`);return;}
+  for(let[k,v] of Object.entries(effectiveCost))p.raw[k]-=v;
   p.crafted[r.result.key]=(p.crafted[r.result.key]||0)+r.result.qty;
   await room.ref.update({players,ac:'craft'});
-  msg(`✅ Fabricou ×${r.result.qty} ${CM[r.result.key]?.label}! Pode continuar trocando.`);
-  buildTabs(); // refresh modal to show updated resources and re-evaluate which recipes are available
+  msg(`✅ Fabricou ×${r.result.qty} ${CM[r.result.key]?.label}!`);
+  buildTabs();
+  // Check if any more crafts are possible with current resources; if not, auto end turn
+  setTimeout(()=>checkAutoEndCraft(players,me.idx),400);
 }
 
-// Install colmeia
+function checkAutoEndCraft(players,idx){
+  // If no recipe is affordable anymore, auto end turn
+  const p=(players||[])[idx]||{};
+  const mult=costMultiplier||1;
+  const canCraft=RECIPES.some(r=>{
+    const ec={};for(let[k,v] of Object.entries(r.cost))ec[k]=v*mult;
+    return afford(p.raw||{},ec);
+  });
+  if(!canCraft){
+    msg('Sem mais trocas possíveis — encerrando turno automaticamente.');
+    setTimeout(()=>autoEndTurn(),900);
+  }
+}
+
+// ── Install colmeia ──
 async function installCol(id){
   if(!myTurn())return;
   if(G.ac&&G.ac!=='col'){msg('Ação bloqueada neste turno.');return;}
@@ -649,26 +826,75 @@ async function installCol(id){
   }
   const players=clone(G.players||[]);
   const p=players[me.idx]; p.crafted=p.crafted||{};
-  if(!Object.entries(COL_REQ).every(([k,q])=>(p.crafted[k]||0)>=q)){
-    msg('Itens insuficientes para montar a colmeia.');return;
-  }
+  if(!Object.entries(COL_REQ).every(([k,q])=>(p.crafted[k]||0)>=q)){msg('Itens insuficientes.');return;}
   for(let[k,q] of Object.entries(COL_REQ))p.crafted[k]-=q;
   const brd=clone(board);
   brd.find(c=>c.id===id).placed.hasCol=me.idx;
   const fb=nbrs(cell.col,cell.row,board).filter(n=>n.placed&&n.placed.type==='fruit').length;
   p.colmeias=p.colmeias||[];
-  p.colmeias.push({cellId:id,fb});
-  await room.ref.update({board:brd,players,ac:'col'});
-  msg(`🐝 Colmeia instalada! +1 kg/turno${fb?' (🍎×'+fb+' bônus)':''}.`);
+  // mel = kg ganhos ao montar (1 base + frutas adj.)
+  const honeyGained=1+fb;
+  p.honey=(p.honey||0)+honeyGained;
+  p.colmeias.push({cellId:id,fb,mel:1}); // mel = number of melgueiras (starts at 1)
+
+  // Check event trigger
+  let evDeck=clone(G.evDeck||[]);
+  let pendingEventData=null;
+  const trig=checkEventTrigger(players,evDeck,me.idx);
+  if(trig){evDeck=trig.newDeck;pendingEventData={id:trig.evId,target:me.idx};}
+
+  await room.ref.update({board:brd,players,ac:'col',evDeck,pendingEvent:pendingEventData});
+  msg(`🐝 Colmeia instalada! +${honeyGained} kg de mel.`);
   closeModal();
+  // Check event for current player
+  if(pendingEventData){
+    const card=EVENT_CARDS.find(e=>e.id===pendingEventData.id);
+    if(card) showEventOverlay(card, pendingEventData);
+  }
+  // Auto end turn
+  setTimeout(()=>autoEndTurn(),pendingEventData?2000:800);
 }
 
-// ════════════════════════════════════════════════════════
+// ── Upgrade colmeia (add melgueira) ──
+async function upgradeCol(colIdx){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='col'){msg('Ação bloqueada neste turno.');return;}
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  p.raw=p.raw||{}; p.colmeias=p.colmeias||[];
+  const col=p.colmeias[colIdx]; if(!col)return;
+  const cost=nextMelgueiraCost(col);
+  if((p.raw.madeira||0)<cost){msg(`Madeira insuficiente. Custo: ${cost} 🪵`);return;}
+  p.raw.madeira-=cost;
+  col.mel=(col.mel||1)+1;
+  // +1 kg de mel pela nova melgueira
+  p.honey=(p.honey||0)+1;
+
+  // Check event trigger
+  let evDeck=clone(G.evDeck||[]);
+  let pendingEventData=null;
+  const trig=checkEventTrigger(players,evDeck,me.idx);
+  if(trig){evDeck=trig.newDeck;pendingEventData={id:trig.evId,target:me.idx};}
+
+  await room.ref.update({players,ac:'col',evDeck,pendingEvent:pendingEventData});
+  msg(`📦 Melgueira adicionada! +1 kg de mel. Total: ${p.honey} kg`);
+  buildTabs();
+  if(pendingEventData){
+    const card=EVENT_CARDS.find(e=>e.id===pendingEventData.id);
+    if(card) showEventOverlay(card,pendingEventData);
+    setTimeout(()=>autoEndTurn(),2000);
+  } else {
+    setTimeout(()=>autoEndTurn(),800);
+  }
+}
+
+// ════════════════════════════════════════════
 // BOARD UTILS
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 function mkBoard(){
+  // Start with a modest grid; it expands as tiles are placed
   const b=[];
-  for(let r=0;r<7;r++)for(let c=0;c<9;c++)b.push({col:c,row:r,id:`${c}_${r}`,placed:null});
+  for(let r=2;r<=4;r++) for(let c=3;c<=5;c++) b.push({col:c,row:r,id:`${c}_${r}`,placed:null});
   return b;
 }
 function mkDeck(){
@@ -687,24 +913,45 @@ function clone(x){return JSON.parse(JSON.stringify(x));}
 function afford(raw,cost){return Object.entries(cost).every(([k,v])=>(raw[k]||0)>=v);}
 function tdef(t){return TILE_VARIANTS.find(v=>v.type===t)||TILE_VARIANTS[0];}
 
-function hctr(col,row){
-  return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10, y:HEX_R*1.5*row+HEX_R+10};
-}
+function hctr(col,row){return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10,y:HEX_R*1.5*row+HEX_R+10};}
 function hpts(cx,cy,r){
   return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(cx+r*Math.cos(a)).toFixed(2)},${(cy+r*Math.sin(a)).toFixed(2)}`;}).join(' ');
 }
+function getDirs(row){
+  return row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]];
+}
+function allNbrs(col,row){
+  return getDirs(row).map(([dc,dr])=>({col:col+dc,row:row+dr,id:`${col+dc}_${row+dr}`}));
+}
 function nbrs(col,row,board){
-  const dirs=row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]];
   const map=new Map((board||[]).map(c=>[c.id,c]));
-  return dirs.map(([dc,dr])=>map.get(`${col+dc}_${row+dr}`)).filter(Boolean);
+  return allNbrs(col,row).map(n=>map.get(n.id)).filter(Boolean);
 }
+
+// ── Valid slots: ALL empty neighbours of any placed tile (infinite board) ──
 function validSlots(board){
-  const pl=(board||[]).filter(c=>c.placed);
-  if(!pl.length)return[(board||[]).find(c=>c.col===4&&c.row===3)||(board||[])[0]];
-  const occ=new Set(pl.map(c=>c.id)),v=new Set();
-  for(let c of pl)for(let n of nbrs(c.col,c.row,board))if(!occ.has(n.id))v.add(n.id);
-  return(board||[]).filter(c=>v.has(c.id));
+  const placed=(board||[]).filter(c=>c.placed);
+  if(!placed.length){
+    const center=(board||[]).find(c=>c.col===4&&c.row===3)||(board||[])[0];
+    return center?[center]:[];
+  }
+  const occ=new Set(placed.map(c=>c.id));
+  const valid=new Set();
+  for(let cell of placed){
+    for(let nb of allNbrs(cell.col,cell.row)){
+      if(!occ.has(nb.id)) valid.add(nb.id);
+    }
+  }
+  // Return existing board cells + any virtual cells that are valid
+  const existing=(board||[]).filter(c=>valid.has(c.id));
+  const existingIds=new Set(existing.map(c=>c.id));
+  const virtual=[...valid].filter(id=>!existingIds.has(id)).map(id=>{
+    const [col,row]=id.split('_').map(Number);
+    return{col,row,id,placed:null,_virtual:true};
+  });
+  return [...existing,...virtual];
 }
+
 function colSlots(board){
   return(board||[]).filter(c=>{
     if(!c.placed||c.placed.type!=='apiary'||c.placed.hasCol!==undefined)return false;
@@ -712,13 +959,10 @@ function colSlots(board){
   });
 }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // RENDER
-// ════════════════════════════════════════════════════════
-function renderAll(r){
-  if(!r)return;
-  renderHeader(r); renderBoard(r); renderSidebars2(r); renderBottom(r);
-}
+// ════════════════════════════════════════════
+function renderAll(r){if(!r)return;renderHeader(r);renderBoard(r);renderSidebars2(r);renderBottom(r);}
 
 function renderHeader(r){
   document.getElementById('h-turn').textContent=r.turn||1;
@@ -734,14 +978,18 @@ function renderHeader(r){
   const ab=document.getElementById('abtn-col');
   ab.disabled=!my||(!!ac&&ac!=='col');
   ab.classList.toggle('am',ac==='col');
-  document.getElementById('btn-end').disabled=!my;
   const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia'};
-  document.getElementById('turn-status').textContent=(my&&ac)?`(${lb[ac]})` :'';
+  const statusEl=document.getElementById('turn-status');
+  if(statusEl) statusEl.textContent=(my&&ac)?`(${lb[ac]})` :'';
+  if(costMultiplier>1){
+    const statusEl=document.getElementById('turn-status');
+    if(statusEl) statusEl.textContent+=' 📈 Custos×2!';
+  }
 }
 
 function buildSidebars(r){
   const n=(r.players||[]).length;
-  const lp=[0,2].filter(i=>i<n), rp=[1,3].filter(i=>i<n);
+  const lp=[0,2].filter(i=>i<n),rp=[1,3].filter(i=>i<n);
   function mkSb(pis,side){
     const sb=document.createElement('div');
     sb.className=`sidebar${side==='right'?' right':''}`;
@@ -769,7 +1017,7 @@ function buildSidebars(r){
 
 function renderSidebars2(r){
   for(let pi=0;pi<(r.players||[]).length;pi++){
-    const p=(r.players||[])[pi], act=r.cp===pi;
+    const p=(r.players||[])[pi],act=r.cp===pi;
     const pnl=document.getElementById(`pnl-${pi}`);
     if(pnl)pnl.className=`panel${act?' ap':''}${pi===me.idx?' me':''}`;
     const pt=document.getElementById(`ptag-${pi}`);
@@ -783,7 +1031,8 @@ function renderSidebars2(r){
     const pa=document.getElementById(`pa-${pi}`);
     if(pa){
       const cols=p.colmeias||[];
-      pa.innerHTML=cols.length?cols.map((c,i)=>`<div class="aitem">Colmeia ${i+1}: <strong>+1 kg/t</strong>${c.fb?' 🍎×'+c.fb:''}</div>`).join('')
+      pa.innerHTML=cols.length
+        ?cols.map((c,i)=>`<div class="aitem">Colmeia ${i+1}: <strong>${c.mel||1} melgueira${(c.mel||1)>1?'s':''}</strong> · ${(c.honey_total||0)} kg total${c.fb?' 🍎×'+c.fb:''}</div>`).join('')
         :'<span style="font-size:10px;color:var(--text3)">Nenhuma ainda</span>';
     }
   }
@@ -792,16 +1041,38 @@ function renderSidebars2(r){
 function renderBoard(r){
   const svg=document.getElementById('board-svg');
   svg.innerHTML='';
-  const W=HEX_R*SQRT3*(9.5)+30,H=HEX_R*1.5*7+HEX_R+20;
-  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
-  svg.setAttribute('width',W);svg.setAttribute('height',H);
-  const board=r.board||[], my=r.cp===me.idx, ac=r.ac;
-  const vt=(my&&UI.mode==='tile'&&!ac&&!UI.pending)?new Set(validSlots(board).map(c=>c.id)):new Set();
-  const vc=(!ac||ac==='col')?new Set(colSlots(board).map(c=>c.id)):new Set();
+  const board=r.board||[];
+  const my=r.cp===me.idx, ac=r.ac;
 
-  for(let cell of board){
-    const{x,y}=hctr(cell.col,cell.row);
+  // Compute viewport bounds from all cells
+  let minC=Infinity,maxC=-Infinity,minR=Infinity,maxR=-Infinity;
+  for(let c of board){if(c.col<minC)minC=c.col;if(c.col>maxC)maxC=c.col;if(c.row<minR)minR=c.row;if(c.row>maxR)maxR=c.row;}
+  // pad by 1
+  minC=Math.min(minC,0)-1; minR=Math.min(minR,0)-1;
+  maxC=Math.max(maxC,8)+1; maxR=Math.max(maxR,6)+1;
+
+  // offset to keep coords positive
+  const offC=-minC, offR=-minR;
+  const cols=maxC-minC+1, rows=maxR-minR+1;
+  const W=HEX_R*SQRT3*(cols+0.5)+30;
+  const H=HEX_R*1.5*rows+HEX_R+20;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+
+  const vSlots=(my&&UI.mode==='tile'&&!ac&&!UI.pending)?validSlots(board):[];
+  const vSet=new Set(vSlots.map(c=>c.id));
+  const vcSet=((!ac||ac==='col')&&my)?new Set(colSlots(board).map(c=>c.id)):new Set();
+
+  // Render all board cells (shifted by offset)
+  const allCells=[...board];
+  // Also render virtual valid slots
+  for(let vs of vSlots){ if(!allCells.find(c=>c.id===vs.id)) allCells.push(vs); }
+
+  for(let cell of allCells){
+    const sc=cell.col+offC, sr=cell.row+offR;
+    const{x,y}=hctr(sc,sr);
     const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+
     if(cell.placed){
       const td=tdef(cell.placed.type);
       g.setAttribute('class','hex-placed');
@@ -809,43 +1080,29 @@ function renderBoard(r){
       poly.setAttribute('points',hpts(x,y,HEX_R-1.5));
       poly.setAttribute('fill',td.color);poly.setAttribute('stroke',td.stroke);poly.setAttribute('stroke-width','1.5');
       g.appendChild(poly);
-      if(vc.has(cell.id)&&my){
+      if(vcSet.has(cell.id)&&my){
         const hl=document.createElementNS('http://www.w3.org/2000/svg','polygon');
-        hl.setAttribute('points',hpts(x,y,HEX_R-1.5));
-        hl.setAttribute('fill','none');hl.setAttribute('stroke','#42A5F5');
-        hl.setAttribute('stroke-width','2.5');hl.setAttribute('stroke-dasharray','4 2');
+        hl.setAttribute('points',hpts(x,y,HEX_R-1.5));hl.setAttribute('fill','none');
+        hl.setAttribute('stroke','#42A5F5');hl.setAttribute('stroke-width','2.5');hl.setAttribute('stroke-dasharray','4 2');
         g.appendChild(hl);
-        g.setAttribute('class','hex-placed hcv');
-        g.style.cursor='pointer';
+        g.setAttribute('class','hex-placed hcv');g.style.cursor='pointer';
         g.addEventListener('click',()=>openModal('col'));
       }
       if(cell.placed.hasCol!==undefined){
         const pc=P_COLORS[cell.placed.hasCol]||'#fff';
         const mk=document.createElementNS('http://www.w3.org/2000/svg','circle');
-        mk.setAttribute('cx',x);mk.setAttribute('cy',y-HEX_R+14);
-        mk.setAttribute('r','9');mk.setAttribute('fill',pc);mk.setAttribute('opacity','0.9');
+        mk.setAttribute('cx',x);mk.setAttribute('cy',y-HEX_R+14);mk.setAttribute('r','9');mk.setAttribute('fill',pc);mk.setAttribute('opacity','0.9');
         g.appendChild(mk);
-        const mt=document.createElementNS('http://www.w3.org/2000/svg','text');
-        mt.setAttribute('x',x);mt.setAttribute('y',y-HEX_R+14);
-        mt.setAttribute('text-anchor','middle');mt.setAttribute('dominant-baseline','central');
-        mt.setAttribute('fill','#1A1208');mt.setAttribute('font-size','9');mt.setAttribute('font-weight','700');
-        mt.textContent=cell.placed.hasCol+1;
+        const mt=makeTxt(x,y-HEX_R+14,'#1A1208','9',(cell.placed.hasCol+1).toString());mt.setAttribute('font-weight','700');
         g.appendChild(mt);
       }
-      const ico=document.createElementNS('http://www.w3.org/2000/svg','text');
-      ico.setAttribute('x',x);ico.setAttribute('y',y-6);
-      ico.setAttribute('text-anchor','middle');ico.setAttribute('dominant-baseline','central');
-      ico.setAttribute('font-size','20');ico.textContent=tdef(cell.placed.type).icon;
-      g.appendChild(ico);
+      g.appendChild(makeTxt(x,y-6,null,'20',tdef(cell.placed.type).icon));
       const ye=Object.entries(cell.placed.yields||{});
-      if(!ye.length){
-        const t=makeTxt(x,y+13,'rgba(255,255,255,0.4)','9','sem recurso');g.appendChild(t);
-      } else {
-        ye.forEach(([k,v],i)=>g.appendChild(makeTxt(x,y+10+i*13,'rgba(255,255,255,0.85)','10',`+${v}${RM[k]?.icon||k}`)));
-      }
+      if(!ye.length){g.appendChild(makeTxt(x,y+13,'rgba(255,255,255,0.4)','9','sem recurso'));}
+      else ye.forEach(([k,v],i)=>g.appendChild(makeTxt(x,y+10+i*13,'rgba(255,255,255,0.85)','10',`+${v}${RM[k]?.icon||k}`)));
+
     } else if(UI.pending===cell.id){
       const td=tdef(r.ct?.type||'forest');
-      g.setAttribute('class','hex-placed');
       const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
       poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill',td.color);poly.setAttribute('stroke','#FFD54F');poly.setAttribute('stroke-width','3');
       g.appendChild(poly);
@@ -853,8 +1110,9 @@ function renderBoard(r){
       p2.setAttribute('points',hpts(x,y,HEX_R+2));p2.setAttribute('fill','none');p2.setAttribute('stroke','#FFD54F');
       p2.setAttribute('stroke-width','2');p2.setAttribute('stroke-dasharray','4 3');p2.setAttribute('opacity','0.7');
       g.appendChild(p2);
-      const ico=makeTxt(x,y-4,null,'20',td.icon);g.appendChild(ico);
-    } else if(vt.has(cell.id)){
+      g.appendChild(makeTxt(x,y-4,null,'20',tdef(r.ct?.type||'forest').icon));
+
+    } else if(vSet.has(cell.id)){
       g.setAttribute('class','hev');
       g.addEventListener('click',()=>placeTile(cell.id));
       const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
@@ -864,7 +1122,7 @@ function renderBoard(r){
       g.appendChild(makeTxt(x,y,'#6B5030','22','+'));
     } else {
       const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
-      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#1A1208');poly.setAttribute('stroke','#231808');poly.setAttribute('stroke-width','1');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#120D04');poly.setAttribute('stroke','#1A1208');poly.setAttribute('stroke-width','0.5');
       g.appendChild(poly);
     }
     svg.appendChild(g);
@@ -876,8 +1134,7 @@ function makeTxt(x,y,fill,fs,content){
   t.setAttribute('x',x);t.setAttribute('y',y);
   t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');
   if(fill)t.setAttribute('fill',fill);
-  t.setAttribute('font-size',fs);
-  t.textContent=content;
+  t.setAttribute('font-size',fs);t.textContent=content;
   return t;
 }
 
@@ -898,7 +1155,7 @@ function renderBottom(r){
       <button id="btn-no" onclick="cancelPlace()">✕ Cancelar</button>
     </div>`;
   } else if(!my||!r.tr){
-    pre.innerHTML=`<div class="t-hidden"><span style="font-size:20px">🎴</span><span>${my?'Selecione "Colocar Tile" para ver o tile':'Tile oculto'}</span></div>`;
+    pre.innerHTML=`<div class="t-hidden"><span style="font-size:20px">🎴</span><span>${my?'Selecione "Colocar Tile" para ver':'Tile oculto'}</span></div>`;
   } else {
     const td=tdef(r.ct.type);
     const y=Object.entries(r.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')||'sem recursos';
@@ -911,15 +1168,15 @@ function renderBottom(r){
   cnt.textContent=`${rem} tile${rem!==1?'s':''} restante${rem!==1?'s':''}`;
 }
 
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 // MODAL
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 let curTab='craft';
 function openModal(tab){
   if(!myTurn())return;
-  const t=tab==='col'?'col':'craft';
+  const t=tab==='col'||tab==='upg'?'col':'craft';
   if(G&&G.ac&&G.ac!==t){msg('Ação bloqueada neste turno.');return;}
-  curTab=tab||'craft'; buildTabs(); 
+  curTab=tab||'craft';buildTabs();
   document.getElementById('modal-overlay').classList.add('open');
   switchTab(curTab);
 }
@@ -931,30 +1188,31 @@ function switchTab(tab){
   document.getElementById(`tab-${tab}`).classList.add('active');
   document.getElementById(`tab-${tab}-btn`).classList.add('active');
 }
-function buildTabs(){buildCraft();buildCol();}
+function buildTabs(){buildCraft();buildCol();buildUpgrade();}
 
 function buildCraft(){
   if(!G)return;
   const p=(G.players||[])[me.idx]||{};
   const lk=G.ac&&G.ac!=='craft';
+  const mult=costMultiplier||1;
   let h=lk
     ?`<div class="note" style="color:var(--red);">🚫 Você já escolheu <strong>${G.ac==='tile'?'colocar tile':'colmeia'}</strong> neste turno.</div>`
-    :`<div class="note">⚒ Trocas são <strong>ilimitadas</strong> neste turno!</div>`;
+    :`<div class="note">⚒ Trocas são <strong>ilimitadas</strong> neste turno!${mult>1?' <span style="color:var(--red);"> 📈 Custos ×2!</span>':''}</div>`;
   h+=`<div class="minfo" style="margin-top:8px;">Seus recursos: <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">`;
   for(let[k,v] of Object.entries(p.raw||{}))if(v>0)
     h+=`<span style="background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;">${RM[k]?.icon||'?'} <strong>${v}</strong> ${RM[k]?.label||k}</span>`;
-  h+=`</div></div><div class="msec" style="margin-top:10px;"><h3>Receitas</h3><div class="rgrid" id="recipes-grid"></div></div>`;
+  h+=`</div></div><div class="msec" style="margin-top:10px;"><h3>Receitas${mult>1?' (custos dobrados!)':''}</h3><div class="rgrid" id="recipes-grid"></div></div>`;
   document.getElementById('tab-craft').innerHTML=h;
-  // Build recipe rows via DOM to avoid quote-escaping issues
   const grid=document.getElementById('recipes-grid');
   for(let r of RECIPES){
-    const can=!lk&&afford(p.raw||{},r.cost);
-    const cs=Object.entries(r.cost).map(([k,v])=>`${RM[k]?.icon||k} ${v} ${RM[k]?.label||k}`).join(' + ');
+    const ec={};for(let[k,v] of Object.entries(r.cost))ec[k]=v*mult;
+    const can=!lk&&afford(p.raw||{},ec);
+    const cs=Object.entries(ec).map(([k,v])=>`${RM[k]?.icon||k} ${v} ${RM[k]?.label||k}`).join(' + ');
     const ri=CM[r.result.key];
     const div=document.createElement('div');
     div.className='rr'+(can?'':' dis');
     div.innerHTML=`<span class="rc">${cs}</span><span class="ra">→</span><span class="rres"><span class="rq">×${r.result.qty}</span>${ri?.icon||'?'} ${ri?.label||r.result.key}</span>`;
-    if(can) div.addEventListener('click', ()=>doCraft(r.id));
+    if(can) div.addEventListener('click',()=>doCraft(r.id));
     grid.appendChild(div);
   }
 }
@@ -967,42 +1225,73 @@ function buildCol(){
   if(lk)h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu <strong>${G.ac==='tile'?'colocar tile':'trocas'}</strong> neste turno.</div>`;
   h+=`<div class="ibox"><h3>Requisitos para 1 Colmeia</h3><div class="chips">`;
   for(let[k,q] of Object.entries(COL_REQ)){
-    const hv=(p.crafted||{})[k]||0, ok=hv>=q;
+    const hv=(p.crafted||{})[k]||0,ok=hv>=q;
     h+=`<span class="chip ${ok?'ok':'bad'}">${CM[k]?.icon||'?'} ${CM[k]?.label||k}: ${hv}/${q}</span>`;
   }
-  h+=`</div><div class="note" style="margin-top:6px;">⚠️ O tile de <strong>Apiário 🐝</strong> deve tocar uma <strong>Fonte de Água 💧</strong> (aresta adjacente).</div>`;
+  h+=`</div><div class="note" style="margin-top:6px;">⚠️ O tile de <strong>Apiário 🐝</strong> deve tocar uma <strong>Fonte de Água 💧</strong>. Ao instalar, você ganha mel imediatamente!</div>`;
   const ok=!lk&&Object.entries(COL_REQ).every(([k,q])=>((p.crafted||{})[k]||0)>=q);
   const slots=colSlots(G.board||[]);
   if(!slots.length){
-    h+=`<p style="font-size:11px;color:var(--text3);margin-top:8px;">Nenhum Apiário adjacente a Fonte de Água disponível agora.</p>`;
+    h+=`<p style="font-size:11px;color:var(--text3);margin-top:8px;">Nenhum Apiário adjacente a Fonte de Água disponível.</p>`;
   } else {
     h+=`<div class="msec" style="margin-top:10px;"><h3>Locais disponíveis</h3><div class="rgrid" id="col-slots-grid"></div></div>`;
   }
   h+=`</div>`;
   if((p.colmeias||[]).length){
     h+=`<div style="margin-top:8px;"><div class="msec"><h3>Suas colmeias ativas</h3><div class="rgrid">`;
-    for(let[i,c] of (p.colmeias||[]).entries())
-      h+=`<div class="rr dis" style="cursor:default;"><span class="rc">🐝 Colmeia ${i+1}</span><span class="ra">→</span><span class="rres">🍯 +1${c.fb?' (🍎×'+c.fb+')':''} kg/turno</span></div>`;
+    for(let[i,c] of (p.colmeias||[]).entries()){
+      const tot=1+(c.mel||1)-1+c.fb; // base + extras + fruit
+      h+=`<div class="rr dis" style="cursor:default;"><span class="rc">🐝 Colmeia ${i+1} · ${c.mel||1} melgueira${(c.mel||1)>1?'s':''}</span><span class="ra">→</span><span class="rres">🍯 ${p.honey||0} kg total${c.fb?' 🍎×'+c.fb:''}</span></div>`;
+    }
     h+=`</div></div></div>`;
   }
   document.getElementById('tab-col').innerHTML=h;
-  // Build slot rows via DOM to avoid quote-escaping issues
   if(slots.length){
     const grid=document.getElementById('col-slots-grid');
     for(let cell of slots){
       const fb=nbrs(cell.col,cell.row,G.board||[]).filter(n=>n.placed&&n.placed.type==='fruit').length;
       const div=document.createElement('div');
       div.className='rr'+(ok?'':' dis');
-      div.innerHTML=`<span class="rc">📍 (${cell.col},${cell.row}) ${fb?'· 🍎×'+fb:''}</span><span class="ra">→</span><span class="rres">🍯 +1${fb?' (+'+fb+')':''} kg/turno</span>`;
-      if(ok) div.addEventListener('click', ()=>installCol(cell.id));
+      div.innerHTML=`<span class="rc">📍 (${cell.col},${cell.row}) ${fb?'· 🍎×'+fb:''}</span><span class="ra">→</span><span class="rres">🍯 +${1+fb} kg imediatamente</span>`;
+      if(ok) div.addEventListener('click',()=>installCol(cell.id));
       grid.appendChild(div);
     }
   }
 }
 
-// ════════════════════════════════════════════════════════
+function buildUpgrade(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='col';
+  let h='';
+  if(lk)h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu outra ação neste turno.</div>`;
+  h+=`<div class="upgrade-box"><h3>Aumentar Apiário — Adicionar Melgueira</h3>`;
+  h+=`<div class="minfo" style="margin-bottom:8px;">Cada melgueira adicional custa <strong>1 madeira a mais</strong> que a anterior (2ª custa 3🪵, 3ª custa 4🪵, etc.). Você tem: <strong>${(p.raw||{}).madeira||0} 🪵</strong></div>`;
+  const cols=p.colmeias||[];
+  if(!cols.length){
+    h+=`<p style="font-size:11px;color:var(--text3);">Você ainda não tem colmeias instaladas.</p>`;
+  } else {
+    h+=`<div class="rgrid" id="upgrade-grid"></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('tab-upg').innerHTML=h;
+  if(cols.length){
+    const grid=document.getElementById('upgrade-grid');
+    for(let[i,col] of cols.entries()){
+      const cost=nextMelgueiraCost(col);
+      const can=!lk&&((p.raw||{}).madeira||0)>=cost;
+      const div=document.createElement('div');
+      div.className='rr'+(can?'':' dis');
+      div.innerHTML=`<span class="rc">🐝 Colmeia ${i+1} · Atual: ${col.mel||1} melgueira${(col.mel||1)>1?'s':''}</span><span class="ra">→</span><span class="rres">${cost}🪵 → +1 kg mel imediato</span>`;
+      if(can) div.addEventListener('click',()=>upgradeCol(i));
+      grid.appendChild(div);
+    }
+  }
+}
+
+// ════════════════════════════════════════════
 // WINNER
-// ════════════════════════════════════════════════════════
+// ════════════════════════════════════════════
 function showWinner(r){
   const sorted=[...(r.players||[])].sort((a,b)=>(b.honey||0)-(a.honey||0));
   const top=sorted[0];
