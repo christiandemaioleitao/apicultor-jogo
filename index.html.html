@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>🐝 Apicultor Online</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --honey:#E8951A;--honey-dark:#B36A00;--wax:#F5D87A;--wax-dark:#C4A030;
+  --bg:#1A1208;--card:#2A1E08;--card2:#352810;--border:#5C4020;
+  --text:#F5E6C8;--text2:#C4A87A;--text3:#8A7050;--red:#E53935;--green:#43A047;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+body::before{content:'';position:fixed;inset:0;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='100' viewBox='0 0 56 100'%3E%3Cpath d='M28 66L0 50V16L28 0l28 16v34L28 66zm0-6l22-13V19L28 6 6 19v28L28 60z' fill='%23ffffff' fill-opacity='0.025'/%3E%3C/svg%3E");pointer-events:none;z-index:0;}
+#app{position:relative;z-index:1;display:flex;flex-direction:column;height:100vh;}
+
+/* ══ SCREENS ══ */
+.screen{position:fixed;inset:0;background:var(--bg);z-index:300;display:flex;align-items:center;justify-content:center;}
+.screen.hidden{display:none;}
+
+/* ══ LOBBY ══ */
+.lobby-box{background:#2A1E08;border:1px solid var(--border);border-radius:18px;padding:36px 44px;text-align:center;max-width:460px;width:92%;}
+.logo-bee{font-size:60px;margin-bottom:6px;}
+.logo-title{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--honey);margin-bottom:3px;}
+.logo-sub{font-size:13px;color:var(--text2);margin-bottom:26px;}
+.divider{display:flex;align-items:center;gap:10px;margin:16px 0;color:var(--text3);font-size:11px;}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.field-label{font-size:11px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:7px;text-align:left;}
+.field-input{width:100%;background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 14px;color:var(--text);font-family:'DM Sans',sans-serif;font-size:14px;outline:none;transition:border-color .15s;margin-bottom:10px;}
+.field-input:focus{border-color:var(--honey);}
+.field-input::placeholder{color:var(--text3);}
+.btn-primary{width:100%;background:var(--honey);color:#1A1208;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;margin-bottom:8px;}
+.btn-primary:hover{background:var(--wax);}
+.btn-primary:disabled{opacity:.35;cursor:not-allowed;}
+.btn-secondary{width:100%;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
+.btn-secondary:hover{background:var(--card2);color:var(--text);}
+.pc-btns{display:flex;gap:10px;justify-content:center;margin:8px 0 18px;}
+.pc-btn{width:68px;height:68px;border-radius:12px;border:2px solid var(--border);background:var(--card2);color:var(--text);font-size:26px;font-weight:700;cursor:pointer;transition:all .15s;font-family:'Playfair Display',serif;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;}
+.pc-btn span{font-size:9px;font-weight:400;color:var(--text3);font-family:'DM Sans',sans-serif;}
+.pc-btn:hover,.pc-btn.sel{border-color:var(--honey);background:rgba(232,149,26,.15);color:var(--honey);}
+.err{font-size:12px;color:var(--red);text-align:center;min-height:18px;margin-top:4px;}
+
+/* ══ WAITING ROOM ══ */
+.wait-box{background:#2A1E08;border:1px solid var(--border);border-radius:18px;padding:32px 40px;text-align:center;max-width:420px;width:92%;}
+.wait-title{font-family:'Playfair Display',serif;font-size:22px;color:var(--honey);margin-bottom:6px;}
+.wait-sub{font-size:13px;color:var(--text2);margin-bottom:20px;}
+.code-box{background:var(--card2);border:2px solid var(--honey);border-radius:12px;padding:14px 22px;display:inline-block;cursor:pointer;margin-bottom:6px;}
+.code-label{font-size:10px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:3px;}
+.code-val{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:var(--honey);letter-spacing:8px;}
+.code-hint{font-size:11px;color:var(--text3);margin-bottom:18px;}
+.slot-list{display:flex;flex-direction:column;gap:6px;margin-bottom:18px;}
+.slot{display:flex;align-items:center;gap:10px;background:var(--card2);border:1px solid var(--border);border-radius:8px;padding:8px 12px;font-size:13px;}
+.slot-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+.slot-name{font-weight:500;}.slot-empty{color:var(--text3);font-style:italic;}.slot-you{font-size:10px;color:var(--honey);margin-left:auto;}
+#btn-start-room{width:100%;background:var(--honey);color:#1A1208;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;opacity:.35;pointer-events:none;margin-bottom:8px;}
+#btn-start-room.ready{opacity:1;pointer-events:all;}
+#btn-start-room.ready:hover{background:var(--wax);}
+
+/* ══ TURN WAIT BANNER ══ */
+#turn-banner{display:none;position:fixed;bottom:0;left:0;right:0;z-index:80;background:rgba(20,12,3,.97);border-top:2px solid var(--border);padding:12px 20px;text-align:center;font-size:13px;color:var(--text2);}
+#turn-banner.show{display:block;}
+#turn-banner strong{color:var(--honey);}
+
+/* ══ REVEAL ══ */
+#reveal-screen{position:fixed;inset:0;background:rgba(10,7,2,.94);z-index:250;display:flex;align-items:center;justify-content:center;}
+#reveal-screen.hidden{display:none;}
+.rv-box{background:#2A1E08;border:1px solid var(--border);border-radius:16px;padding:28px 36px;text-align:center;max-width:380px;width:90%;}
+.rv-whose{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
+.rv-title{font-family:'Playfair Display',serif;font-size:21px;color:var(--honey);margin-bottom:14px;}
+.rv-preview{display:inline-flex;flex-direction:column;align-items:center;gap:6px;background:var(--card2);border:2px solid var(--border);border-radius:12px;padding:14px 22px;margin-bottom:12px;}
+.rv-icon{font-size:42px;}.rv-name{font-size:14px;font-weight:500;color:var(--text);}.rv-yields{font-size:12px;color:var(--text2);}
+.rv-hint{font-size:11px;color:var(--text3);margin-bottom:14px;}
+#btn-rv-ok{background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:9px 26px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+#btn-rv-ok:hover{background:var(--wax);}
+
+/* ══ HEADER ══ */
+#header{display:flex;align-items:center;justify-content:space-between;padding:7px 14px;background:linear-gradient(90deg,#2A1E08,#3D2A0C);border-bottom:1px solid var(--border);flex-shrink:0;gap:8px;flex-wrap:wrap;}
+#game-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:700;color:var(--honey);letter-spacing:1px;}
+.turn-badge{background:var(--card2);border:1px solid var(--border);border-radius:20px;padding:3px 12px;font-size:12px;color:var(--text2);}
+.turn-badge strong{color:var(--text);font-weight:500;}
+.online-dot{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--green);}
+.online-dot span{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse 1.4s infinite;}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.8)}}
+#action-bar{display:flex;gap:5px;align-items:center;flex-wrap:wrap;}
+.act-btn{border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:all .15s;border:1.5px solid transparent;}
+.act-btn:disabled{opacity:.28;cursor:not-allowed;}
+#abtn-tile{background:rgba(67,160,71,.15);color:#66BB6A;border-color:rgba(67,160,71,.4);}
+#abtn-tile.am{background:#43A047;color:#fff;border-color:#2E7D32;}
+#abtn-tile:hover:not(:disabled):not(.am){background:rgba(67,160,71,.28);}
+#abtn-craft{background:rgba(232,149,26,.15);color:var(--honey);border-color:rgba(232,149,26,.4);}
+#abtn-craft.am{background:var(--honey);color:#1A1208;border-color:var(--honey-dark);}
+#abtn-craft:hover:not(:disabled):not(.am){background:rgba(232,149,26,.28);}
+#abtn-col{background:rgba(66,165,245,.15);color:#42A5F5;border-color:rgba(66,165,245,.4);}
+#abtn-col.am{background:#42A5F5;color:#1A1208;border-color:#1565C0;}
+#abtn-col:hover:not(:disabled):not(.am){background:rgba(66,165,245,.28);}
+#btn-end{background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:8px;padding:6px 12px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;transition:all .15s;}
+#btn-end:hover{background:var(--card2);color:var(--text);}
+#turn-status{font-size:11px;color:var(--text3);font-style:italic;}
+
+/* ══ MAIN ══ */
+#main{display:flex;flex:1;min-height:0;}
+.sidebar{width:182px;flex-shrink:0;overflow-y:auto;padding:6px 5px;background:var(--card);border-right:1px solid var(--border);display:flex;flex-direction:column;gap:5px;}
+.sidebar.right{border-right:none;border-left:1px solid var(--border);}
+.panel{background:var(--card2);border-radius:9px;border:1px solid var(--border);overflow:hidden;}
+.panel.ap{border-color:rgba(232,149,26,.5);}
+.panel.me{border-color:rgba(232,149,26,.25);}
+.ph{background:rgba(255,255,255,.04);padding:5px 8px;font-size:10px;font-weight:500;letter-spacing:.5px;color:var(--text2);text-transform:uppercase;border-bottom:1px solid var(--border);}
+.pb{padding:6px 8px;}
+.ptag{font-family:'Playfair Display',serif;font-size:13px;font-weight:600;margin-bottom:4px;}
+.ai{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:4px;animation:pulse 1.2s infinite;}
+.hs{display:flex;align-items:center;justify-content:space-between;background:linear-gradient(135deg,#3D2A00,#5A3D00);border-radius:7px;padding:6px 8px;margin-top:3px;border:1px solid var(--honey-dark);}
+.hs .hl{font-size:10px;color:var(--wax-dark);text-transform:uppercase;letter-spacing:.4px;}
+.hs .hv{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--honey);}
+.rlist{display:flex;flex-direction:column;gap:2px;}
+.rrow{display:flex;align-items:center;justify-content:space-between;font-size:11px;padding:1px 0;}
+.rrow .rn{color:var(--text2);display:flex;align-items:center;gap:3px;}
+.rrow .rv{font-weight:500;color:var(--text);min-width:18px;text-align:right;}
+.alist{display:flex;flex-direction:column;gap:3px;}
+.aitem{background:rgba(244,166,28,.08);border:1px solid rgba(244,166,28,.2);border-radius:5px;padding:3px 6px;color:var(--text2);font-size:10px;}
+.aitem strong{color:var(--text);}
+
+/* ══ BOARD ══ */
+#board-container{flex:1;overflow:auto;display:flex;align-items:flex-start;justify-content:center;padding:10px;background:#120D04;}
+#board-svg{display:block;}
+.hev{cursor:pointer;}.hev polygon{transition:fill .12s;}.hev:hover polygon{fill:#4A3A10!important;}
+.hcv{cursor:pointer;}.hcv polygon{transition:fill .12s;}.hcv:hover polygon{fill:#1A3A5A!important;}
+
+/* ══ BOTTOM ══ */
+#bottom-bar{flex-shrink:0;background:var(--card);border-top:1px solid var(--border);padding:6px 12px;display:flex;align-items:center;gap:9px;flex-wrap:wrap;}
+.blabel{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;}
+.t-hidden{background:var(--card2);border:1.5px dashed var(--border);border-radius:9px;padding:6px 12px;display:flex;align-items:center;gap:7px;font-size:12px;color:var(--text3);}
+.t-locked{background:rgba(67,160,71,.12);border:1.5px solid rgba(67,160,71,.4);border-radius:9px;padding:6px 12px;display:flex;align-items:center;gap:7px;font-size:12px;}
+.t-locked .tn{font-weight:500;color:var(--text);}
+.t-locked .ty{color:var(--text2);font-size:11px;}
+.t-pending{display:flex;align-items:center;gap:9px;background:rgba(232,149,26,.12);border:1.5px solid rgba(232,149,26,.4);border-radius:9px;padding:6px 12px;font-size:12px;}
+#btn-ok{background:var(--green);color:#fff;border:none;border-radius:6px;padding:4px 12px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+#btn-no{background:transparent;color:var(--red);border:1px solid rgba(229,57,53,.4);border-radius:6px;padding:4px 12px;font-family:'DM Sans',sans-serif;font-size:12px;cursor:pointer;}
+#deck-count{font-size:11px;color:var(--text3);}
+#msg-bar{margin-left:auto;font-size:12px;color:var(--honey);font-style:italic;max-width:280px;text-align:right;min-height:14px;}
+
+/* ══ MODAL ══ */
+#modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);z-index:100;align-items:center;justify-content:center;}
+#modal-overlay.open{display:flex;}
+#modal-box{background:#2A1E08;border:1px solid var(--border);border-radius:13px;width:min(620px,95vw);max-height:88vh;overflow-y:auto;padding:16px;}
+.mtitle{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:var(--honey);margin-bottom:3px;display:flex;justify-content:space-between;align-items:center;}
+.mclose{cursor:pointer;background:none;border:none;color:var(--text2);font-size:20px;line-height:1;}
+.modal-tabs{display:flex;gap:5px;margin-bottom:12px;border-bottom:1px solid var(--border);padding-bottom:9px;}
+.mtab{background:none;border:1px solid var(--border);border-radius:6px;padding:5px 12px;font-family:'DM Sans',sans-serif;font-size:12px;color:var(--text2);cursor:pointer;transition:all .12s;}
+.mtab.active{background:var(--honey);color:#1A1208;border-color:var(--honey-dark);font-weight:500;}
+.tab-pane{display:none;}.tab-pane.active{display:block;}
+.msec{margin-bottom:12px;}
+.msec h3{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:6px;}
+.rgrid{display:flex;flex-direction:column;gap:5px;}
+.rr{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:7px 10px;gap:6px;cursor:pointer;transition:border-color .12s,background .12s;}
+.rr:hover:not(.dis){border-color:var(--honey);background:rgba(232,149,26,.08);}
+.rr.dis{opacity:.38;cursor:not-allowed;}
+.rc{font-size:11px;color:var(--text2);flex:1;}
+.ra{color:var(--honey);font-size:13px;}
+.rres{font-size:11px;font-weight:500;color:var(--text);min-width:120px;text-align:right;}
+.rq{background:rgba(232,149,26,.15);border:1px solid var(--honey-dark);border-radius:4px;padding:1px 6px;font-size:10px;color:var(--honey);margin-right:3px;}
+.minfo{font-size:12px;color:var(--text2);margin-bottom:8px;}
+.ibox{background:rgba(66,165,245,.05);border:1px solid rgba(66,165,245,.25);border-radius:9px;padding:11px;margin-bottom:9px;}
+.ibox h3{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#5BA8D8;margin-bottom:7px;}
+.chips{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;}
+.chip{font-size:10px;padding:2px 7px;border-radius:20px;border:1px solid var(--border);color:var(--text2);}
+.chip.ok{border-color:var(--green);color:var(--green);background:rgba(67,160,71,.1);}
+.chip.bad{border-color:var(--red);color:var(--red);background:rgba(229,57,53,.1);}
+.note{font-size:11px;color:var(--text3);padding:7px;background:var(--card2);border-radius:6px;text-align:center;border:1px solid var(--border);margin-bottom:8px;}
+
+/* ══ WINNER ══ */
+#winner-screen{display:none;position:fixed;inset:0;background:rgba(0,0,0,.9);z-index:200;align-items:center;justify-content:center;}
+#winner-screen.open{display:flex;}
+.wbox{background:#2A1E08;border:1px solid var(--honey);border-radius:16px;padding:26px 34px;text-align:center;max-width:460px;width:90%;}
+.wbee{font-size:50px;margin-bottom:9px;}
+.wtitle{font-family:'Playfair Display',serif;font-size:23px;color:var(--honey);margin-bottom:4px;}
+.wsub{font-size:13px;color:var(--text2);margin-bottom:16px;}
+.wscores{display:flex;flex-wrap:wrap;gap:9px;justify-content:center;margin-bottom:18px;}
+.wscore{background:var(--card2);border-radius:9px;padding:9px 15px;border:1px solid var(--border);min-width:88px;}
+.wscore .wn{font-size:11px;color:var(--text3);margin-bottom:3px;}
+.wscore .wv{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;}
+.wscore.whi{border-color:var(--honey);}
+#btn-new{background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:9px 22px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;}
+#btn-new:hover{background:var(--wax);}
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+</style>
+</head>
+<body>
+<div id="app">
+
+<!-- ══ LOBBY ══ -->
+<div id="lobby-screen" class="screen">
+  <div class="lobby-box">
+    <div class="logo-bee">🐝</div>
+    <div class="logo-title">Apicultor Online</div>
+    <div class="logo-sub">Jogo de colmeia hexagonal multiplayer</div>
+    <div class="field-label">Seu nome</div>
+    <input class="field-input" id="inp-name" placeholder="Ex: João" maxlength="20">
+    <div class="divider">CRIAR SALA</div>
+    <div class="field-label">Número de jogadores</div>
+    <div class="pc-btns">
+      <button class="pc-btn" onclick="selN(2)">2<span>jogadores</span></button>
+      <button class="pc-btn" onclick="selN(3)">3<span>jogadores</span></button>
+      <button class="pc-btn" onclick="selN(4)">4<span>jogadores</span></button>
+    </div>
+    <button class="btn-primary" id="btn-create" onclick="createRoom()" disabled>Criar Sala 🍯</button>
+    <div class="divider">ENTRAR EM SALA</div>
+    <input class="field-input" id="inp-code" placeholder="Código da sala (ex: AB12)" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;font-size:18px;text-align:center;">
+    <button class="btn-secondary" onclick="joinRoom()">Entrar na Sala →</button>
+    <div class="err" id="lobby-err"></div>
+  </div>
+</div>
+
+<!-- ══ WAITING ROOM ══ -->
+<div id="waiting-screen" class="screen hidden">
+  <div class="wait-box">
+    <div class="wait-title" id="wait-title">Sala criada! 🐝</div>
+    <div class="wait-sub" id="wait-sub">Compartilhe o código abaixo com seus amigos</div>
+    <div class="code-box" onclick="copyCode()" title="Clique para copiar">
+      <div class="code-label">Código da sala</div>
+      <div class="code-val" id="disp-code">——</div>
+    </div>
+    <div class="code-hint">Clique no código para copiar 📋</div>
+    <div class="slot-list" id="slot-list"></div>
+    <button id="btn-start-room" onclick="startRoom()">Iniciar Partida →</button>
+    <button class="btn-secondary" style="margin-top:8px;" onclick="leaveRoom()">Sair da sala</button>
+  </div>
+</div>
+
+<!-- ══ TURN WAIT BANNER ══ -->
+<div id="turn-banner">Aguardando <strong id="wt-name">—</strong> jogar...</div>
+
+<!-- ══ REVEAL ══ -->
+<div id="reveal-screen" class="hidden">
+  <div class="rv-box">
+    <div class="rv-whose" id="rv-whose"></div>
+    <div class="rv-title">Seu tile desta rodada:</div>
+    <div id="rv-preview" class="rv-preview"></div>
+    <div class="rv-hint">Somente você pode ver. Quando estiver pronto, clique em continuar.</div>
+    <button id="btn-rv-ok" onclick="confirmReveal()">Continuar →</button>
+  </div>
+</div>
+
+<!-- ══ HEADER ══ -->
+<div id="header">
+  <div style="display:flex;align-items:center;gap:10px;">
+    <div id="game-title"><span>🐝</span> Apicultor</div>
+    <div class="online-dot"><span></span>online</div>
+  </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <div class="turn-badge">Rodada <strong id="h-turn">1</strong> · <strong id="h-player">—</strong></div>
+    <span id="turn-status"></span>
+  </div>
+  <div id="action-bar">
+    <button class="act-btn" id="abtn-tile"  onclick="setMode('tile')">🌿 Colocar Tile</button>
+    <button class="act-btn" id="abtn-craft" onclick="openModal('craft')">⚒ Trocas</button>
+    <button class="act-btn" id="abtn-col"   onclick="openModal('col')">🐝 Colmeia</button>
+    <button id="btn-end" onclick="endTurn()">Encerrar Turno →</button>
+  </div>
+</div>
+
+<!-- ══ MAIN ══ -->
+<div id="main">
+  <div id="sb-left"></div>
+  <div id="board-container"><svg id="board-svg"></svg></div>
+  <div id="sb-right"></div>
+</div>
+
+<!-- ══ BOTTOM ══ -->
+<div id="bottom-bar">
+  <span class="blabel">Tile:</span>
+  <div id="deck-preview"></div>
+  <span id="deck-count"></span>
+  <div id="msg-bar"></div>
+</div>
+
+<!-- ══ MODAL ══ -->
+<div id="modal-overlay">
+  <div id="modal-box">
+    <div class="mtitle">
+      <span>⚒ Trocas & Colmeia</span>
+      <button class="mclose" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-tabs">
+      <button class="mtab" id="tab-craft-btn" onclick="switchTab('craft')">⚒ Trocas</button>
+      <button class="mtab" id="tab-col-btn"   onclick="switchTab('col')">🐝 Montar Colmeia</button>
+    </div>
+    <div id="tab-craft" class="tab-pane"></div>
+    <div id="tab-col"   class="tab-pane"></div>
+  </div>
+</div>
+
+<!-- ══ WINNER ══ -->
+<div id="winner-screen">
+  <div class="wbox">
+    <div class="wbee">🐝</div>
+    <div class="wtitle" id="w-title">Jogo Encerrado!</div>
+    <div class="wsub"   id="w-sub"></div>
+    <div class="wscores" id="w-scores"></div>
+    <button id="btn-new" onclick="goLobby()">Novo Jogo</button>
+  </div>
+</div>
+
+</div>
+
+<!-- Firebase SDKs -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+
+<script>
+// ╔══════════════════════════════════════════════════════╗
+// ║  FIREBASE — substitua com seu próprio firebaseConfig ║
+// ╚══════════════════════════════════════════════════════╝
+firebase.initializeApp({
+    apiKey: "AIzaSyBm-yB8-k5yGUsjFQmEuiMbbikOXpBRtjs",
+  authDomain: "apicultor-board-game.firebaseapp.com",
+  databaseURL: "https://apicultor-board-game-default-rtdb.firebaseio.com",
+  projectId: "apicultor-board-game",
+  storageBucket: "apicultor-board-game.firebasestorage.app",
+  messagingSenderId: "211567947450",
+  appId: "1:211567947450:web:b220a02ee3129fd4231c83",
+  measurementId: "G-MMV1CBY77T"
+});
+const db = firebase.database();
+
+// ════════════════════════════════════════════════════════
+// CONSTANTES DO JOGO
+// ════════════════════════════════════════════════════════
+const SQRT3 = Math.sqrt(3), HEX_R = 44;
+const P_COLORS = ['#F4A61C','#42A5F5','#66BB6A','#EF9A9A'];
+
+const TILE_VARIANTS = [
+  {type:'forest',label:'Floresta',          icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:1}},
+  {type:'forest',label:'Floresta',          icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:2}},
+  {type:'field', label:'Campo',             icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:1}},
+  {type:'field', label:'Campo',             icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:2}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:1,propolis:1}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:1,propolis:2}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:2,propolis:1}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{geleia_real:2}},
+  {type:'fruit', label:'Árvores Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:1,propolis:1}},
+  {type:'fruit', label:'Árvores Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:2}},
+  {type:'water', label:'Fonte de Água',     icon:'💧',color:'#0D47A1',stroke:'#1565C0',yields:{}},
+];
+const TYPE_COUNTS = {forest:10,field:10,apiary:10,fruit:10,water:10};
+
+const RM = { // Resource Meta
+  madeira:      {icon:'🪵',label:'Madeira'},
+  erva_cidreira:{icon:'🌿',label:'Erva Cidreira'},
+  cera:         {icon:'🕯️',label:'Cera'},
+  propolis:     {icon:'🟤',label:'Própolis'},
+  geleia_real:  {icon:'👑',label:'Geleia Real'},
+};
+const CM = { // Crafted Meta
+  ninho:        {icon:'🏠',label:'Ninho'},
+  melgueira:    {icon:'📦',label:'Melgueira'},
+  chama_enxame: {icon:'🔥',label:'Chama Enxame'},
+  abelha_rainha:{icon:'👑',label:'Abelha Rainha'},
+};
+const RECIPES = [
+  {id:'r1',cost:{madeira:2},                 result:{key:'ninho',        qty:1}},
+  {id:'r2',cost:{madeira:2},                 result:{key:'melgueira',    qty:1}},
+  {id:'r3',cost:{propolis:1,erva_cidreira:1},result:{key:'chama_enxame',qty:1}},
+  {id:'r4',cost:{geleia_real:2},             result:{key:'abelha_rainha',qty:1}},
+];
+const COL_REQ = {ninho:1,melgueira:1,chama_enxame:1,abelha_rainha:1};
+
+// ════════════════════════════════════════════════════════
+// SESSION (local — não vai ao Firebase)
+// ════════════════════════════════════════════════════════
+let me = {name:'',idx:-1};
+let room = {code:'',ref:null,listener:null,n:0};
+let G = null; // espelho do estado Firebase
+let UI = {mode:null,committed:false,pending:null}; // estado local de UI
+
+// ════════════════════════════════════════════════════════
+// LOBBY
+// ════════════════════════════════════════════════════════
+let _n = 0;
+function selN(n){
+  _n=n;
+  document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2));
+  upCreate();
+}
+document.getElementById('inp-name').addEventListener('input',upCreate);
+function upCreate(){
+  document.getElementById('btn-create').disabled = !document.getElementById('inp-name').value.trim()||!_n;
+}
+function setErr(m){document.getElementById('lobby-err').textContent=m;}
+
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
+
+async function createRoom(){
+  const name=document.getElementById('inp-name').value.trim();
+  if(!name||!_n){setErr('Preencha nome e número de jogadores.');return;}
+  setErr('');
+  me.name=name; me.idx=0;
+  room.code=genCode(); room.n=_n;
+  room.ref=db.ref('rooms/'+room.code);
+  const deck=mkDeck(); shuffle(deck);
+  await room.ref.set({
+    code:room.code, status:'waiting', n:_n,
+    players:[{name,color:P_COLORS[0]}],
+    deck, board:mkBoard(),
+    cp:0, turn:1, di:1, ct:deck[0],
+    ac:null, tr:false, over:false,
+    ts:Date.now()
+  });
+  subscribe(); showWait(room.code);
+}
+
+async function joinRoom(){
+  const name=document.getElementById('inp-name').value.trim();
+  const code=document.getElementById('inp-code').value.trim().toUpperCase();
+  if(!name){setErr('Preencha seu nome.');return;}
+  if(code.length!==4){setErr('Código deve ter 4 caracteres.');return;}
+  setErr('Conectando...');
+  const snap=await db.ref('rooms/'+code).get();
+  if(!snap.exists()){setErr('Sala não encontrada.');return;}
+  const r=snap.val();
+  if(r.status==='playing'){setErr('Partida já começou.');return;}
+  if(r.status==='finished'){setErr('Partida já encerrada.');return;}
+  const cur=(r.players||[]).length;
+  if(cur>=r.n){setErr('Sala cheia!');return;}
+  me.name=name; me.idx=cur;
+  room.code=code; room.n=r.n;
+  room.ref=db.ref('rooms/'+code);
+  await room.ref.child('players').child(me.idx).set({name,color:P_COLORS[me.idx]});
+  setErr(''); subscribe(); showWait(code);
+}
+
+function showWait(code){
+  document.getElementById('lobby-screen').classList.add('hidden');
+  document.getElementById('waiting-screen').classList.remove('hidden');
+  document.getElementById('disp-code').textContent=code;
+}
+
+function copyCode(){
+  navigator.clipboard.writeText(room.code).then(()=>{
+    const el=document.getElementById('disp-code'),t=el.textContent;
+    el.textContent='COPIADO!';setTimeout(()=>el.textContent=t,1500);
+  });
+}
+
+async function startRoom(){
+  if(me.idx!==0)return;
+  const s=await room.ref.get(), r=s.val();
+  if((r.players||[]).length<2){alert('Aguarde pelo menos 2 jogadores.');return;}
+  await room.ref.update({status:'playing'});
+}
+
+async function leaveRoom(){
+  if(room.listener)room.ref.off('value',room.listener);
+  if(room.ref)await room.ref.child('players').child(me.idx).remove();
+  location.reload();
+}
+
+// ════════════════════════════════════════════════════════
+// FIREBASE SUBSCRIPTION
+// ════════════════════════════════════════════════════════
+function subscribe(){
+  if(room.listener)room.ref.off('value',room.listener);
+  room.listener=room.ref.on('value',snap=>{
+    if(!snap.exists())return;
+    const r=snap.val();
+    if(r.status==='waiting'){renderWait(r);return;}
+    if(r.status==='playing'||r.status==='finished'){
+      if(!G||G.status!=='playing'){
+        document.getElementById('waiting-screen').classList.add('hidden');
+        document.getElementById('lobby-screen').classList.add('hidden');
+        buildSidebars(r);
+      }
+      G=r; onUpdate(r);
+    }
+  });
+}
+
+function renderWait(r){
+  const players=r.players||[];
+  document.getElementById('slot-list').innerHTML=
+    Array.from({length:r.n},(_,i)=>{
+      const p=players[i];
+      return `<div class="slot">
+        <span class="slot-dot" style="background:${p?P_COLORS[i]:'var(--border)'}"></span>
+        ${p
+          ?`<span class="slot-name">${p.name}</span>${i===me.idx?'<span class="slot-you">Você</span>':''}`
+          :`<span class="slot-empty">Aguardando...</span>`}
+      </div>`;
+    }).join('');
+  const sb=document.getElementById('btn-start-room');
+  if(me.idx===0){
+    sb.style.display='block';
+    sb.classList.toggle('ready',players.length>=2);
+  } else {
+    sb.style.display='none';
+    document.getElementById('wait-title').textContent='Aguardando o host iniciar...';
+    document.getElementById('wait-sub').textContent='A partida começa quando todos entrarem.';
+  }
+}
+
+// ════════════════════════════════════════════════════════
+// GAME STATE UPDATE
+// ════════════════════════════════════════════════════════
+function onUpdate(r){
+  if(r.over){renderAll(r);showWinner(r);return;}
+  const my=r.cp===me.idx;
+  // Banner
+  if(my){
+    document.getElementById('turn-banner').classList.remove('show');
+  } else {
+    document.getElementById('turn-banner').classList.add('show');
+    const cp=(r.players||[])[r.cp];
+    document.getElementById('wt-name').textContent=cp?cp.name:'...';
+  }
+  // Reveal
+  if(my&&!r.tr&&r.status==='playing'&&r.ct){
+    const td=tdef(r.ct.type);
+    const ys=Object.entries(r.ct.yields||{}).length
+      ?Object.entries(r.ct.yields).map(([k,v])=>`+${v} ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(' · ')
+      :'Sem recursos';
+    document.getElementById('rv-whose').textContent=`Sua vez, ${me.name}!`;
+    document.getElementById('rv-preview').innerHTML=`
+      <div class="rv-icon">${td.icon}</div>
+      <div class="rv-name">${td.label}</div>
+      <div class="rv-yields">${ys}</div>`;
+    document.getElementById('reveal-screen').classList.remove('hidden');
+  } else {
+    document.getElementById('reveal-screen').classList.add('hidden');
+  }
+  // Reset UI at start of my turn
+  if(my&&!r.tr) UI={mode:null,committed:false,pending:null};
+  renderAll(r);
+}
+
+// ════════════════════════════════════════════════════════
+// PLAYER WRITES
+// ════════════════════════════════════════════════════════
+function myTurn(){
+  if(!G||G.cp!==me.idx){msg('Não é a sua vez!');return false;}
+  return true;
+}
+
+async function confirmReveal(){
+  if(!myTurn())return;
+  document.getElementById('reveal-screen').classList.add('hidden');
+  UI={mode:null,committed:false,pending:null};
+  await room.ref.update({tr:true});
+  msg(`${me.name}: escolha uma ação — tile, trocas ou colmeia.`);
+}
+
+async function endTurn(){
+  if(!myTurn())return;
+  if(!G.ac){msg('Faça pelo menos uma ação antes de encerrar!');return;}
+  const np=(G.cp+1)%(G.players||[]).length;
+  const nt=np===0?G.turn+1:G.turn;
+  const nc=(G.deck||[])[G.di]||null;
+  UI={mode:null,committed:false,pending:null};
+  await room.ref.update({cp:np,turn:nt,ct:nc,di:G.di+1,ac:null,tr:false,over:!nc,status:!nc?'finished':'playing'});
+}
+
+function setMode(m){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':'colmeia'} neste turno.`);return;}
+  if(m==='tile'){
+    UI.mode='tile'; UI.committed=true;
+    // Reveal tile in bottom bar
+    G.tr=true; // local optimistic
+    renderAll(G);
+    msg('Tile revelado! Clique em um espaço verde para posicionar.');
+  } else {
+    UI.mode=m; renderAll(G);
+    openModal(m==='craft'?'craft':'col');
+  }
+}
+
+// Tile placement
+function placeTile(id){
+  if(!myTurn())return;
+  if(UI.mode!=='tile'){msg('Ative "Colocar Tile" primeiro.');return;}
+  if(G.ac&&G.ac!=='tile'){msg('Você já escolheu outra ação.');return;}
+  const cell=(G.board||[]).find(c=>c.id===id);
+  if(!cell||cell.placed)return;
+  if(!validSlots(G.board).find(c=>c.id===id)){msg('Posição inválida — deve ser adjacente a outro tile.');return;}
+  UI.pending=id; renderAll(G);
+  msg('Confirme a posição ou cancele para escolher outro lugar.');
+}
+
+async function confirmPlace(){
+  if(!myTurn())return;
+  const id=UI.pending; if(!id)return;
+  const board=clone(G.board||[]);
+  const cell=board.find(c=>c.id===id); if(!cell)return;
+  cell.placed={...G.ct};
+  const players=clone(G.players||[]);
+  const p=players[me.idx]; p.raw=p.raw||{};
+  for(let[k,v] of Object.entries(G.ct.yields||{})) p.raw[k]=(p.raw[k]||0)+v;
+  harvest(board,players);
+  UI.pending=null; UI.mode=null;
+  const ys=Object.entries(G.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k}`).join(' ')||'(sem recursos)';
+  await room.ref.update({board,players,ac:'tile'});
+  msg(`✅ Tile colocado! ${ys} — encerre o turno.`);
+}
+
+function cancelPlace(){
+  UI.pending=null; renderAll(G);
+  msg('Cancelado. Clique em outro espaço verde.');
+}
+
+function harvest(board,players){
+  for(let pi=0;pi<players.length;pi++){
+    const p=players[pi];
+    for(let col of (p.colmeias||[])){
+      const c=board.find(x=>x.id===col.cellId); if(!c)continue;
+      col.fb=nbrs(c.col,c.row,board).filter(n=>n.placed&&n.placed.type==='fruit').length;
+      p.honey=(p.honey||0)+1+col.fb;
+    }
+  }
+}
+
+// Craft
+async function doCraft(rid){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='craft'){msg('Ação bloqueada neste turno.');return;}
+  const r=RECIPES.find(x=>x.id===rid); if(!r)return;
+  const players=clone(G.players||[]);
+  const p=players[me.idx]; p.raw=p.raw||{}; p.crafted=p.crafted||{};
+  if(!afford(p.raw,r.cost)){msg('Recursos insuficientes.');return;}
+  for(let[k,v] of Object.entries(r.cost))p.raw[k]-=v;
+  p.crafted[r.result.key]=(p.crafted[r.result.key]||0)+r.result.qty;
+  await room.ref.update({players,ac:'craft'});
+  msg(`✅ Fabricou ×${r.result.qty} ${CM[r.result.key]?.label}! Pode continuar trocando.`);
+}
+
+// Install colmeia
+async function installCol(id){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='col'){msg('Ação bloqueada neste turno.');return;}
+  const board=G.board||[];
+  const cell=board.find(c=>c.id===id); if(!cell)return;
+  if(!nbrs(cell.col,cell.row,board).some(n=>n.placed&&n.placed.type==='water')){
+    msg('Este Apiário não toca uma Fonte de Água!');return;
+  }
+  const players=clone(G.players||[]);
+  const p=players[me.idx]; p.crafted=p.crafted||{};
+  if(!Object.entries(COL_REQ).every(([k,q])=>(p.crafted[k]||0)>=q)){
+    msg('Itens insuficientes para montar a colmeia.');return;
+  }
+  for(let[k,q] of Object.entries(COL_REQ))p.crafted[k]-=q;
+  const brd=clone(board);
+  brd.find(c=>c.id===id).placed.hasCol=me.idx;
+  const fb=nbrs(cell.col,cell.row,board).filter(n=>n.placed&&n.placed.type==='fruit').length;
+  p.colmeias=p.colmeias||[];
+  p.colmeias.push({cellId:id,fb});
+  await room.ref.update({board:brd,players,ac:'col'});
+  msg(`🐝 Colmeia instalada! +1 kg/turno${fb?' (🍎×'+fb+' bônus)':''}.`);
+  closeModal();
+}
+
+// ════════════════════════════════════════════════════════
+// BOARD UTILS
+// ════════════════════════════════════════════════════════
+function mkBoard(){
+  const b=[];
+  for(let r=0;r<7;r++)for(let c=0;c<9;c++)b.push({col:c,row:r,id:`${c}_${r}`,placed:null});
+  return b;
+}
+function mkDeck(){
+  const d=[];
+  for(let[t,cnt] of Object.entries(TYPE_COUNTS)){
+    const vs=TILE_VARIANTS.filter(v=>v.type===t);
+    for(let i=0;i<cnt;i++){
+      const v=vs[Math.floor(Math.random()*vs.length)];
+      d.push({type:v.type,label:v.label,icon:v.icon,yields:{...v.yields}});
+    }
+  }
+  return d;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function afford(raw,cost){return Object.entries(cost).every(([k,v])=>(raw[k]||0)>=v);}
+function tdef(t){return TILE_VARIANTS.find(v=>v.type===t)||TILE_VARIANTS[0];}
+
+function hctr(col,row){
+  return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10, y:HEX_R*1.5*row+HEX_R+10};
+}
+function hpts(cx,cy,r){
+  return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(cx+r*Math.cos(a)).toFixed(2)},${(cy+r*Math.sin(a)).toFixed(2)}`;}).join(' ');
+}
+function nbrs(col,row,board){
+  const dirs=row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]];
+  const map=new Map((board||[]).map(c=>[c.id,c]));
+  return dirs.map(([dc,dr])=>map.get(`${col+dc}_${row+dr}`)).filter(Boolean);
+}
+function validSlots(board){
+  const pl=(board||[]).filter(c=>c.placed);
+  if(!pl.length)return[(board||[]).find(c=>c.col===4&&c.row===3)||(board||[])[0]];
+  const occ=new Set(pl.map(c=>c.id)),v=new Set();
+  for(let c of pl)for(let n of nbrs(c.col,c.row,board))if(!occ.has(n.id))v.add(n.id);
+  return(board||[]).filter(c=>v.has(c.id));
+}
+function colSlots(board){
+  return(board||[]).filter(c=>{
+    if(!c.placed||c.placed.type!=='apiary'||c.placed.hasCol!==undefined)return false;
+    return nbrs(c.col,c.row,board).some(n=>n.placed&&n.placed.type==='water');
+  });
+}
+
+// ════════════════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════════════════
+function renderAll(r){
+  if(!r)return;
+  renderHeader(r); renderBoard(r); renderSidebars2(r); renderBottom(r);
+}
+
+function renderHeader(r){
+  document.getElementById('h-turn').textContent=r.turn||1;
+  const cp=(r.players||[])[r.cp];
+  document.getElementById('h-player').textContent=cp?cp.name:'—';
+  const my=r.cp===me.idx, ac=r.ac;
+  const tb=document.getElementById('abtn-tile');
+  tb.disabled=!my||(ac&&ac!=='tile')||UI.committed;
+  tb.classList.toggle('am',UI.mode==='tile');
+  const cb=document.getElementById('abtn-craft');
+  cb.disabled=!my||(!!ac&&ac!=='craft');
+  cb.classList.toggle('am',ac==='craft');
+  const ab=document.getElementById('abtn-col');
+  ab.disabled=!my||(!!ac&&ac!=='col');
+  ab.classList.toggle('am',ac==='col');
+  document.getElementById('btn-end').disabled=!my;
+  const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia'};
+  document.getElementById('turn-status').textContent=(my&&ac)?`(${lb[ac]})` :'';
+}
+
+function buildSidebars(r){
+  const n=(r.players||[]).length;
+  const lp=[0,2].filter(i=>i<n), rp=[1,3].filter(i=>i<n);
+  function mkSb(pis,side){
+    const sb=document.createElement('div');
+    sb.className=`sidebar${side==='right'?' right':''}`;
+    for(let pi of pis){
+      const p=(r.players||[])[pi]||{};
+      sb.innerHTML+=`
+      <div class="panel" id="pnl-${pi}">
+        <div class="ph" style="color:${P_COLORS[pi]}">${p.name||'?'}${pi===me.idx?' (você)':''}</div>
+        <div class="pb">
+          <div class="ptag" id="ptag-${pi}" style="color:${P_COLORS[pi]}">${p.name||'?'}</div>
+          <div class="hs"><div><div class="hl">Mel</div><div class="hv" id="ph-${pi}">0 kg</div></div><span style="font-size:22px">🍯</span></div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">Recursos</div><div class="pb"><div class="rlist" id="pr-${pi}"></div></div></div>
+      <div class="panel"><div class="ph">Fabricados</div><div class="pb"><div class="rlist" id="pc-${pi}"></div></div></div>
+      <div class="panel"><div class="ph">Colmeias</div><div class="pb"><div class="alist" id="pa-${pi}"></div></div></div>`;
+    }
+    return sb;
+  }
+  document.getElementById('sb-left').innerHTML='';
+  document.getElementById('sb-right').innerHTML='';
+  document.getElementById('sb-left').appendChild(mkSb(lp,'left'));
+  document.getElementById('sb-right').appendChild(mkSb(rp,'right'));
+}
+
+function renderSidebars2(r){
+  for(let pi=0;pi<(r.players||[]).length;pi++){
+    const p=(r.players||[])[pi], act=r.cp===pi;
+    const pnl=document.getElementById(`pnl-${pi}`);
+    if(pnl)pnl.className=`panel${act?' ap':''}${pi===me.idx?' me':''}`;
+    const pt=document.getElementById(`ptag-${pi}`);
+    if(pt)pt.innerHTML=act?`<span class="ai"></span><span style="color:${P_COLORS[pi]}">${p.name}</span>`:`<span style="color:${P_COLORS[pi]}">${p.name}</span>`;
+    const ph=document.getElementById(`ph-${pi}`);
+    if(ph)ph.textContent=(p.honey||0)+' kg';
+    const pr=document.getElementById(`pr-${pi}`);
+    if(pr)pr.innerHTML=Object.entries(RM).map(([k,m])=>`<div class="rrow"><span class="rn">${m.icon} ${m.label}</span><span class="rv">${(p.raw||{})[k]||0}</span></div>`).join('');
+    const pc=document.getElementById(`pc-${pi}`);
+    if(pc)pc.innerHTML=Object.entries(CM).map(([k,m])=>`<div class="rrow"><span class="rn">${m.icon} ${m.label}</span><span class="rv">${(p.crafted||{})[k]||0}</span></div>`).join('');
+    const pa=document.getElementById(`pa-${pi}`);
+    if(pa){
+      const cols=p.colmeias||[];
+      pa.innerHTML=cols.length?cols.map((c,i)=>`<div class="aitem">Colmeia ${i+1}: <strong>+1 kg/t</strong>${c.fb?' 🍎×'+c.fb:''}</div>`).join('')
+        :'<span style="font-size:10px;color:var(--text3)">Nenhuma ainda</span>';
+    }
+  }
+}
+
+function renderBoard(r){
+  const svg=document.getElementById('board-svg');
+  svg.innerHTML='';
+  const W=HEX_R*SQRT3*(9.5)+30,H=HEX_R*1.5*7+HEX_R+20;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width',W);svg.setAttribute('height',H);
+  const board=r.board||[], my=r.cp===me.idx, ac=r.ac;
+  const vt=(my&&UI.mode==='tile'&&!ac&&!UI.pending)?new Set(validSlots(board).map(c=>c.id)):new Set();
+  const vc=(!ac||ac==='col')?new Set(colSlots(board).map(c=>c.id)):new Set();
+
+  for(let cell of board){
+    const{x,y}=hctr(cell.col,cell.row);
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+    if(cell.placed){
+      const td=tdef(cell.placed.type);
+      g.setAttribute('class','hex-placed');
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));
+      poly.setAttribute('fill',td.color);poly.setAttribute('stroke',td.stroke);poly.setAttribute('stroke-width','1.5');
+      g.appendChild(poly);
+      if(vc.has(cell.id)&&my){
+        const hl=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        hl.setAttribute('points',hpts(x,y,HEX_R-1.5));
+        hl.setAttribute('fill','none');hl.setAttribute('stroke','#42A5F5');
+        hl.setAttribute('stroke-width','2.5');hl.setAttribute('stroke-dasharray','4 2');
+        g.appendChild(hl);
+        g.setAttribute('class','hex-placed hcv');
+        g.style.cursor='pointer';
+        g.addEventListener('click',()=>openModal('col'));
+      }
+      if(cell.placed.hasCol!==undefined){
+        const pc=P_COLORS[cell.placed.hasCol]||'#fff';
+        const mk=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        mk.setAttribute('cx',x);mk.setAttribute('cy',y-HEX_R+14);
+        mk.setAttribute('r','9');mk.setAttribute('fill',pc);mk.setAttribute('opacity','0.9');
+        g.appendChild(mk);
+        const mt=document.createElementNS('http://www.w3.org/2000/svg','text');
+        mt.setAttribute('x',x);mt.setAttribute('y',y-HEX_R+14);
+        mt.setAttribute('text-anchor','middle');mt.setAttribute('dominant-baseline','central');
+        mt.setAttribute('fill','#1A1208');mt.setAttribute('font-size','9');mt.setAttribute('font-weight','700');
+        mt.textContent=cell.placed.hasCol+1;
+        g.appendChild(mt);
+      }
+      const ico=document.createElementNS('http://www.w3.org/2000/svg','text');
+      ico.setAttribute('x',x);ico.setAttribute('y',y-6);
+      ico.setAttribute('text-anchor','middle');ico.setAttribute('dominant-baseline','central');
+      ico.setAttribute('font-size','20');ico.textContent=tdef(cell.placed.type).icon;
+      g.appendChild(ico);
+      const ye=Object.entries(cell.placed.yields||{});
+      if(!ye.length){
+        const t=makeTxt(x,y+13,'rgba(255,255,255,0.4)','9','sem recurso');g.appendChild(t);
+      } else {
+        ye.forEach(([k,v],i)=>g.appendChild(makeTxt(x,y+10+i*13,'rgba(255,255,255,0.85)','10',`+${v}${RM[k]?.icon||k}`)));
+      }
+    } else if(UI.pending===cell.id){
+      const td=tdef(r.ct?.type||'forest');
+      g.setAttribute('class','hex-placed');
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill',td.color);poly.setAttribute('stroke','#FFD54F');poly.setAttribute('stroke-width','3');
+      g.appendChild(poly);
+      const p2=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      p2.setAttribute('points',hpts(x,y,HEX_R+2));p2.setAttribute('fill','none');p2.setAttribute('stroke','#FFD54F');
+      p2.setAttribute('stroke-width','2');p2.setAttribute('stroke-dasharray','4 3');p2.setAttribute('opacity','0.7');
+      g.appendChild(p2);
+      const ico=makeTxt(x,y-4,null,'20',td.icon);g.appendChild(ico);
+    } else if(vt.has(cell.id)){
+      g.setAttribute('class','hev');
+      g.addEventListener('click',()=>placeTile(cell.id));
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#2A1E08');
+      poly.setAttribute('stroke','#6B5030');poly.setAttribute('stroke-width','1');poly.setAttribute('stroke-dasharray','5 3');
+      g.appendChild(poly);
+      g.appendChild(makeTxt(x,y,'#6B5030','22','+'));
+    } else {
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#1A1208');poly.setAttribute('stroke','#231808');poly.setAttribute('stroke-width','1');
+      g.appendChild(poly);
+    }
+    svg.appendChild(g);
+  }
+}
+
+function makeTxt(x,y,fill,fs,content){
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',x);t.setAttribute('y',y);
+  t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');
+  if(fill)t.setAttribute('fill',fill);
+  t.setAttribute('font-size',fs);
+  t.textContent=content;
+  return t;
+}
+
+function renderBottom(r){
+  const pre=document.getElementById('deck-preview');
+  const cnt=document.getElementById('deck-count');
+  const rem=(r.deck||[]).length-(r.di||1);
+  const my=r.cp===me.idx;
+  if(!r.ct){pre.innerHTML=`<span style="font-size:12px;color:var(--text3)">Nenhum tile restante</span>`;cnt.textContent='';return;}
+  if(UI.pending){
+    const td=tdef(r.ct.type);
+    const y=Object.entries(r.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k}`).join(' ')||'sem recurso';
+    pre.innerHTML=`<div class="t-pending">
+      <span style="color:var(--text2)">Posicionar aqui?</span>
+      <span style="font-size:18px">${td.icon}</span>
+      <strong style="color:var(--text)">${td.label} — ${y}</strong>
+      <button id="btn-ok" onclick="confirmPlace()">✓ Confirmar</button>
+      <button id="btn-no" onclick="cancelPlace()">✕ Cancelar</button>
+    </div>`;
+  } else if(!my||!r.tr){
+    pre.innerHTML=`<div class="t-hidden"><span style="font-size:20px">🎴</span><span>${my?'Selecione "Colocar Tile" para ver o tile':'Tile oculto'}</span></div>`;
+  } else {
+    const td=tdef(r.ct.type);
+    const y=Object.entries(r.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')||'sem recursos';
+    pre.innerHTML=`<div class="t-locked">
+      <span style="font-size:20px">${td.icon}</span>
+      <div><div class="tn">${td.label}</div><div class="ty">${y}</div></div>
+      ${UI.mode==='tile'?'<span style="font-size:11px;color:#66BB6A;margin-left:4px;">▶ Clique em espaço verde</span>':''}
+    </div>`;
+  }
+  cnt.textContent=`${rem} tile${rem!==1?'s':''} restante${rem!==1?'s':''}`;
+}
+
+// ════════════════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════════════════
+let curTab='craft';
+function openModal(tab){
+  if(!myTurn())return;
+  const t=tab==='col'?'col':'craft';
+  if(G&&G.ac&&G.ac!==t){msg('Ação bloqueada neste turno.');return;}
+  curTab=tab||'craft'; buildTabs(); 
+  document.getElementById('modal-overlay').classList.add('open');
+  switchTab(curTab);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function switchTab(tab){
+  curTab=tab;
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`tab-${tab}-btn`).classList.add('active');
+}
+function buildTabs(){buildCraft();buildCol();}
+
+function buildCraft(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='craft';
+  let h=lk
+    ?`<div class="note" style="color:var(--red);">🚫 Você já escolheu <strong>${G.ac==='tile'?'colocar tile':'colmeia'}</strong> neste turno.</div>`
+    :`<div class="note">⚒ Trocas são <strong>ilimitadas</strong> neste turno!</div>`;
+  h+=`<div class="minfo" style="margin-top:8px;">Seus recursos: <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">`;
+  for(let[k,v] of Object.entries(p.raw||{}))if(v>0)
+    h+=`<span style="background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;">${RM[k]?.icon||'?'} <strong>${v}</strong> ${RM[k]?.label||k}</span>`;
+  h+=`</div></div><div class="msec" style="margin-top:10px;"><h3>Receitas</h3><div class="rgrid">`;
+  for(let r of RECIPES){
+    const can=!lk&&afford(p.raw||{},r.cost);
+    const cs=Object.entries(r.cost).map(([k,v])=>`${RM[k]?.icon||k} ${v} ${RM[k]?.label||k}`).join(' + ');
+    const ri=CM[r.result.key];
+    h+=`<div class="rr${can?'':' dis'}" onclick="${can?`doCraft('${r.id}')`:``}">
+      <span class="rc">${cs}</span><span class="ra">→</span>
+      <span class="rres"><span class="rq">×${r.result.qty}</span>${ri?.icon||'?'} ${ri?.label||r.result.key}</span>
+    </div>`;
+  }
+  h+=`</div></div>`;
+  document.getElementById('tab-craft').innerHTML=h;
+}
+
+function buildCol(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='col';
+  let h='';
+  if(lk)h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu <strong>${G.ac==='tile'?'colocar tile':'trocas'}</strong> neste turno.</div>`;
+  h+=`<div class="ibox"><h3>Requisitos para 1 Colmeia</h3><div class="chips">`;
+  for(let[k,q] of Object.entries(COL_REQ)){
+    const hv=(p.crafted||{})[k]||0, ok=hv>=q;
+    h+=`<span class="chip ${ok?'ok':'bad'}">${CM[k]?.icon||'?'} ${CM[k]?.label||k}: ${hv}/${q}</span>`;
+  }
+  h+=`</div><div class="note" style="margin-top:6px;">⚠️ O tile de <strong>Apiário 🐝</strong> deve tocar uma <strong>Fonte de Água 💧</strong> (aresta adjacente).</div>`;
+  const ok=!lk&&Object.entries(COL_REQ).every(([k,q])=>((p.crafted||{})[k]||0)>=q);
+  const slots=colSlots(G.board||[]);
+  if(!slots.length){
+    h+=`<p style="font-size:11px;color:var(--text3);margin-top:8px;">Nenhum Apiário adjacente a Fonte de Água disponível agora.</p>`;
+  } else {
+    h+=`<div class="msec" style="margin-top:10px;"><h3>Locais disponíveis</h3><div class="rgrid">`;
+    for(let cell of slots){
+      const fb=nbrs(cell.col,cell.row,G.board||[]).filter(n=>n.placed&&n.placed.type==='fruit').length;
+      h+=`<div class="rr${ok?'':' dis'}" onclick="${ok?`installCol('${cell.id}')`:``}">
+        <span class="rc">📍 (${cell.col},${cell.row}) ${fb?'· 🍎×'+fb:''}</span>
+        <span class="ra">→</span>
+        <span class="rres">🍯 +1${fb?' (+'+fb+')':''} kg/turno</span>
+      </div>`;
+    }
+    h+=`</div></div>`;
+  }
+  h+=`</div>`;
+  if((p.colmeias||[]).length){
+    h+=`<div style="margin-top:8px;"><div class="msec"><h3>Suas colmeias ativas</h3><div class="rgrid">`;
+    for(let[i,c] of (p.colmeias||[]).entries())
+      h+=`<div class="rr dis" style="cursor:default;"><span class="rc">🐝 Colmeia ${i+1}</span><span class="ra">→</span><span class="rres">🍯 +1${c.fb?' (🍎×'+c.fb+')':''} kg/turno</span></div>`;
+    h+=`</div></div></div>`;
+  }
+  document.getElementById('tab-col').innerHTML=h;
+}
+
+// ════════════════════════════════════════════════════════
+// WINNER
+// ════════════════════════════════════════════════════════
+function showWinner(r){
+  const sorted=[...(r.players||[])].sort((a,b)=>(b.honey||0)-(a.honey||0));
+  const top=sorted[0];
+  const tied=sorted.filter(p=>(p.honey||0)===(top.honey||0));
+  document.getElementById('w-title').textContent=tied.length>1?'🤝 Empate!':`🏆 ${top.name} Venceu!`;
+  document.getElementById('w-sub').textContent=tied.length>1
+    ?`${tied.map(p=>p.name).join(' e ')} empataram com ${top.honey||0} kg!`:'Maior produtor de mel da região!';
+  document.getElementById('w-scores').innerHTML=sorted.map((p,i)=>`
+    <div class="wscore${i===0&&tied.length===1?' whi':''}">
+      <div class="wn">${p.name}</div>
+      <div class="wv" style="color:${P_COLORS[(r.players||[]).findIndex(x=>x.name===p.name)]||'#fff'}">${p.honey||0} kg</div>
+    </div>`).join('');
+  document.getElementById('winner-screen').classList.add('open');
+}
+
+function goLobby(){if(room.listener&&room.ref)room.ref.off('value',room.listener);location.reload();}
+function msg(t){document.getElementById('msg-bar').textContent=t;}
+document.getElementById('inp-code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+</script>
+</body>
+</html>
