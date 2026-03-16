@@ -112,6 +112,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #abtn-trade.am{background:#AB47BC;color:#fff;border-color:#7B1FA2;}
 #abtn-trade:hover:not(:disabled):not(.am){background:rgba(171,71,188,.28);}
 #abtn-trade:disabled{opacity:.28;cursor:not-allowed;}
+#abtn-polli{background:rgba(255,235,59,.12);color:#FFF176;border-color:rgba(255,235,59,.4);}
+#abtn-polli.am{background:#F9A825;color:#1A1208;border-color:#E65100;}
+#abtn-polli:hover:not(:disabled):not(.am){background:rgba(255,235,59,.22);}
+#abtn-polli:disabled{opacity:.28;cursor:not-allowed;}
+.hpv polygon{transition:fill .12s;}
+.hpv:hover polygon{fill:#2E2A00!important;}
 /* trade resource spinner rows */
 .trade-res-row{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;gap:8px;}
 .trade-res-row .tr-label{font-size:12px;color:var(--text2);flex:1;}
@@ -296,6 +302,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <button class="act-btn" id="abtn-tile"  onclick="setMode('tile')">🌿 Colocar Tile</button>
     <button class="act-btn" id="abtn-craft" onclick="openModal('craft')">⚒ Trocas</button>
     <button class="act-btn" id="abtn-col"   onclick="openModal('col')">🐝 Colmeia</button>
+    <button class="act-btn" id="abtn-polli" onclick="setMode('polli')">🌸 Polinizar</button>
     <button class="act-btn" id="abtn-trade" onclick="openTradeModal()">🤝 Negociar</button>
     <span id="turn-status"></span>
   </div>
@@ -327,10 +334,12 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="mtab" id="tab-craft-btn" onclick="switchTab('craft')">⚒ Trocas</button>
       <button class="mtab" id="tab-col-btn"   onclick="switchTab('col')">🐝 Montar Colmeia</button>
       <button class="mtab" id="tab-upg-btn"   onclick="switchTab('upg')">📦 Aumentar Apiário</button>
+      <button class="mtab" id="tab-polli-btn" onclick="switchTab('polli')">🌸 Polinizar</button>
     </div>
     <div id="tab-craft" class="tab-pane"></div>
     <div id="tab-col"   class="tab-pane"></div>
     <div id="tab-upg"   class="tab-pane"></div>
+    <div id="tab-polli" class="tab-pane"></div>
   </div>
 </div>
 
@@ -759,12 +768,15 @@ async function autoEndTurn(){
 
 function setMode(m){
   if(!myTurn())return;
-  if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':G.ac==='trade'?'negociação':'colmeia'} neste turno.`);return;}
+  if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':G.ac==='trade'?'negociação':G.ac==='polli'?'polinização':'colmeia'} neste turno.`);return;}
   if(m==='tile'){
     UI.mode='tile'; UI.committed=true;
     G.tr=true; // local optimistic
     renderAll(G);
     msg('Tile revelado! Clique em um espaço para posicionar.');
+  } else if(m==='polli'){
+    UI.mode='polli';
+    openModal('polli');
   } else {
     UI.mode=m; renderAll(G);
     openModal(m==='craft'?'craft':'col');
@@ -969,7 +981,8 @@ function nbrs(col,row,board){
   return allNbrs(col,row).map(n=>map.get(n.id)).filter(Boolean);
 }
 
-// ── Valid slots: ALL empty neighbours of any placed tile (infinite board) ──
+// ── Valid slots: ALL 6 neighbours of EVERY placed tile that are empty ──
+// This guarantees every tile always shows up to 6 free sides as placement options.
 function validSlots(board){
   const placed=(board||[]).filter(c=>c.placed);
   if(!placed.length){
@@ -977,20 +990,18 @@ function validSlots(board){
     return center?[center]:[];
   }
   const occ=new Set(placed.map(c=>c.id));
-  const valid=new Set();
+  // Collect every empty neighbour of every placed tile
+  const validMap=new Map(); // id -> {col,row,id}
   for(let cell of placed){
     for(let nb of allNbrs(cell.col,cell.row)){
-      if(!occ.has(nb.id)) valid.add(nb.id);
+      if(!occ.has(nb.id)) validMap.set(nb.id, nb);
     }
   }
-  // Return existing board cells + any virtual cells that are valid
-  const existing=(board||[]).filter(c=>valid.has(c.id));
-  const existingIds=new Set(existing.map(c=>c.id));
-  const virtual=[...valid].filter(id=>!existingIds.has(id)).map(id=>{
-    const [col,row]=id.split('_').map(Number);
-    return{col,row,id,placed:null,_virtual:true};
+  // For each valid id, return the board cell if it exists, otherwise a virtual cell
+  const boardMap=new Map((board||[]).map(c=>[c.id,c]));
+  return [...validMap.values()].map(nb=>{
+    return boardMap.get(nb.id) || {col:nb.col, row:nb.row, id:nb.id, placed:null, _virtual:true};
   });
-  return [...existing,...virtual];
 }
 
 function colSlots(board){
@@ -1020,11 +1031,10 @@ function renderHeader(r){
   ab.disabled=!my||(!!ac&&ac!=='col');
   ab.classList.toggle('am',ac==='col');
   const ttb=document.getElementById('abtn-trade');
-  if(ttb){
-    ttb.disabled=!my||(!!ac&&ac!=='trade');
-    ttb.classList.toggle('am',ac==='trade');
-  }
-  const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia',trade:'🤝 Negociando'};
+  if(ttb){ttb.disabled=!my||(!!ac&&ac!=='trade');ttb.classList.toggle('am',ac==='trade');}
+  const pb=document.getElementById('abtn-polli');
+  if(pb){pb.disabled=!my||(!!ac&&ac!=='polli');pb.classList.toggle('am',ac==='polli'||UI.mode==='polli');}
+  const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia',trade:'🤝 Negociando',polli:'🌸 Polinizando'};
   const statusEl=document.getElementById('turn-status');
   if(statusEl) statusEl.textContent=(my&&ac)?`(${lb[ac]})` :'';
   if(costMultiplier>1){
@@ -1080,6 +1090,11 @@ function renderSidebars2(r){
       pa.innerHTML=cols.length
         ?cols.map((c,i)=>`<div class="aitem">Colmeia ${i+1}: <strong>${c.mel||1} melgueira${(c.mel||1)>1?'s':''}</strong> · ${(c.honey_total||0)} kg total${c.fb?' 🍎×'+c.fb:''}</div>`).join('')
         :'<span style="font-size:10px;color:var(--text3)">Nenhuma ainda</span>';
+      // Pollination preview
+      const polliPrev=totalPolliBonus(r.board||[],pi);
+      if(polliPrev>0){
+        pa.innerHTML+=`<div style="font-size:10px;color:#FFF176;margin-top:4px;padding:2px 5px;background:rgba(255,235,59,.08);border-radius:4px;border:1px solid rgba(255,235,59,.2);">🌸 +${polliPrev} kg bônus final (polinização)</div>`;
+      }
     }
   }
 }
@@ -1090,26 +1105,31 @@ function renderBoard(r){
   const board=r.board||[];
   const my=r.cp===me.idx, ac=r.ac;
 
-  // Compute valid slots FIRST — only direct neighbours of placed tiles
-  const vSlots=(my&&UI.mode==='tile'&&!ac&&!UI.pending)?validSlots(board):[];
-  const vSet=new Set(vSlots.map(c=>c.id));
+  // Always compute all valid slots (6 sides of every placed tile) for rendering
+  // In tile mode → show as clickable green "+"; otherwise → show as dim empty hex outline
+  const allValidSlots=validSlots(board); // every empty neighbour of every placed tile
+  const vSet=(my&&UI.mode==='tile'&&!ac&&!UI.pending)
+    ? new Set(allValidSlots.map(c=>c.id))
+    : new Set(); // clickable only in tile mode
   const vcSet=((!ac||ac==='col')&&my)?new Set(colSlots(board).map(c=>c.id)):new Set();
 
   // Build the set of cells to render:
   //   1. All placed cells
-  //   2. ONLY empty cells that are valid slots (direct neighbours)
-  // Do NOT render non-adjacent empty cells — that was causing the ghost hexagons
+  //   2. ALL empty neighbours (the 6-side slots) — always visible as outlines or clickable "+"
   const placedCells=board.filter(c=>c.placed);
-  const validSlotCells=vSlots; // already contains existing board cells + virtual ones
 
-  // Merge: placed + valid slots (deduped)
+  // Merge: placed + all valid slots (deduped by id)
   const renderSet=new Map();
   for(let c of placedCells) renderSet.set(c.id,c);
-  for(let c of validSlotCells) if(!renderSet.has(c.id)) renderSet.set(c.id,c);
+  for(let c of allValidSlots) if(!renderSet.has(c.id)) renderSet.set(c.id,c);
   // Also add pending cell
   if(UI.pending){
     const pc=board.find(c=>c.id===UI.pending);
     if(pc&&!renderSet.has(pc.id)) renderSet.set(pc.id,pc);
+    else if(!pc) {
+      const [col,row]=UI.pending.split('_').map(Number);
+      renderSet.set(UI.pending,{col,row,id:UI.pending,placed:null});
+    }
   }
 
   const allCells=[...renderSet.values()];
@@ -1165,6 +1185,40 @@ function renderBoard(r){
       if(!ye.length){g.appendChild(makeTxt(x,y+13,'rgba(255,255,255,0.4)','9','sem recurso'));}
       else ye.forEach(([k,v],i)=>g.appendChild(makeTxt(x,y+10+i*13,'rgba(255,255,255,0.85)','10',`+${v}${RM[k]?.icon||k}`)));
 
+      // Flower & bee markers (only on field/fruit tiles)
+      if(cell.placed.type==='field'||cell.placed.type==='fruit'){
+        const extraFlowers=cell.placed.flowers||0;
+        const allBees=cell.placed.bees||{};
+        const totalBees=Object.values(allBees).reduce((s,n)=>s+n,0);
+        // Show flower icon bottom-left if any extra flowers bought
+        if(extraFlowers>0){
+          const fbg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+          fbg.setAttribute('cx',x-HEX_R*.52);fbg.setAttribute('cy',y+HEX_R*.52);
+          fbg.setAttribute('r','11');fbg.setAttribute('fill','rgba(244,143,177,.25)');fbg.setAttribute('stroke','rgba(244,143,177,.6)');fbg.setAttribute('stroke-width','1');
+          g.appendChild(fbg);
+          g.appendChild(makeTxt(x-HEX_R*.52,y+HEX_R*.52,null,'11','🌸'));
+          // extra flower count badge
+          if(extraFlowers>0){
+            g.appendChild(makeTxt(x-HEX_R*.52+8,y+HEX_R*.52-8,'#F48FB1','7','+'+extraFlowers));
+          }
+        }
+        // Show bee markers bottom-right, one colored dot per player who has bees here
+        let dotOffset=0;
+        for(let[piStr,cnt] of Object.entries(allBees)){
+          if(!cnt)continue;
+          const pi=parseInt(piStr);
+          const bx=x+HEX_R*.48, by=y+HEX_R*.52;
+          const bg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+          bg.setAttribute('cx',bx+dotOffset);bg.setAttribute('cy',by);
+          bg.setAttribute('r','9');bg.setAttribute('fill',P_COLORS[pi]||'#FFD54F');bg.setAttribute('opacity','0.88');
+          g.appendChild(bg);
+          g.appendChild(makeTxt(bx+dotOffset,by,'#1A1208','8','🐝'));
+          // count badge
+          if(cnt>1) g.appendChild(makeTxt(bx+dotOffset+6,by-7,'#fff','7','×'+cnt));
+          dotOffset-=12;
+        }
+      }
+
     } else if(UI.pending===cell.id){
       const td=tdef(r.ct?.type||'forest');
       const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
@@ -1177,14 +1231,20 @@ function renderBoard(r){
       g.appendChild(makeTxt(x,y-4,null,'20',tdef(r.ct?.type||'forest').icon));
 
     } else if(vSet.has(cell.id)){
-      // Valid placement slot — direct neighbour of a placed tile
+      // Tile mode: clickable bright "+" slot
       g.setAttribute('class','hev');
       g.addEventListener('click',()=>placeTile(cell.id));
       const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
       poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#2A1E08');
-      poly.setAttribute('stroke','#6B5030');poly.setAttribute('stroke-width','1');poly.setAttribute('stroke-dasharray','5 3');
+      poly.setAttribute('stroke','#6B5030');poly.setAttribute('stroke-width','1.5');poly.setAttribute('stroke-dasharray','5 3');
       g.appendChild(poly);
-      g.appendChild(makeTxt(x,y,'#6B5030','22','+'));
+      g.appendChild(makeTxt(x,y,'#7A6040','22','+'));
+    } else if(!cell.placed){
+      // Not in tile mode but still an adjacent empty slot: show as dim outline (always visible)
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#1E1408');
+      poly.setAttribute('stroke','#3A2810');poly.setAttribute('stroke-width','1');poly.setAttribute('stroke-dasharray','4 3');
+      g.appendChild(poly);
     }
     // Do NOT render a fallback empty hex for any other cell — only placed + valid slots are shown
     svg.appendChild(g);
@@ -1236,7 +1296,7 @@ function renderBottom(r){
 let curTab='craft';
 function openModal(tab){
   if(!myTurn())return;
-  const t=tab==='col'||tab==='upg'?'col':'craft';
+  const t=tab==='col'||tab==='upg'?'col':tab==='polli'?'polli':'craft';
   if(G&&G.ac&&G.ac!==t){msg('Ação bloqueada neste turno.');return;}
   curTab=tab||'craft';buildTabs();
   document.getElementById('modal-overlay').classList.add('open');
@@ -1250,7 +1310,7 @@ function switchTab(tab){
   document.getElementById(`tab-${tab}`).classList.add('active');
   document.getElementById(`tab-${tab}-btn`).classList.add('active');
 }
-function buildTabs(){buildCraft();buildCol();buildUpgrade();}
+function buildTabs(){buildCraft();buildCol();buildUpgrade();buildPolli();}
 
 function buildCraft(){
   if(!G)return;
@@ -1352,20 +1412,186 @@ function buildUpgrade(){
 }
 
 // ════════════════════════════════════════════
+// POLINIZAÇÃO — Flores 🌸 e Abelhas 🐝
+// ════════════════════════════════════════════
+// Rules:
+//  - Every field/fruit tile already has 1 implicit flower (no cost)
+//  - Player can buy EXTRA flowers at 1 kg mel each (on any field/fruit tile)
+//  - Player can buy bees at 1 kg mel each (on any field/fruit tile)
+//  - Pairs = min(flowers on tile, bees on tile by this player)
+//    - Base 1 flower always present, so 1st bee = 1 pair
+//    - Extra flowers allow more pairs on same tile
+//  - Bonus at end: pairs × 3 kg, but each extra pair above 1 gives only +1 (not +3)
+//    → 1 pair = +3 kg, 2 pairs = +4 kg, 3 pairs = +5 kg … N pairs = N+2 kg
+//  - tile.flowers = extra flowers bought (base 1 always implicit)
+//  - tile.bees = { playerIdx: count } — each player's bees independently
+
+function polliBonus(pairs){ return pairs>0 ? pairs+2 : 0; }
+
+// All field/fruit tiles on the board (valid for flower/bee placement)
+function polliTiles(board){
+  return (board||[]).filter(c=>c.placed&&(c.placed.type==='field'||c.placed.type==='fruit'));
+}
+
+// Total pairs for a player on a given tile
+function pairsOnTile(cell, playerIdx){
+  const bees=(cell.placed?.bees||{})[playerIdx]||0;
+  const extraFlowers=cell.placed?.flowers||0;
+  const totalFlowers=1+extraFlowers; // 1 implicit always
+  return Math.min(totalFlowers, bees);
+}
+
+// Total pollination bonus for a player across all tiles
+function totalPolliBonus(board, playerIdx){
+  let total=0;
+  for(let cell of polliTiles(board)){
+    total+=polliBonus(pairsOnTile(cell,playerIdx));
+  }
+  return total;
+}
+
+function buildPolli(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='polli';
+  const honey=p.honey||0;
+  const board=G.board||[];
+  const tiles=polliTiles(board);
+
+  let h='';
+  if(lk){
+    h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu outra ação neste turno.</div>`;
+  }
+  h+=`<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6;">
+    <strong style="color:var(--wax);">Flores 🌸</strong> e <strong style="color:var(--wax);">Abelhas 🐝</strong> geram bônus de mel no <strong>final do jogo</strong>.<br>
+    Cada tile de Campo ou Frutífera já possui <strong>1 flor gratuita</strong>.<br>
+    Compre abelhas (1 kg mel cada) ou flores extras (1 kg mel cada) para aumentar os pares.<br>
+    <strong>Bônus: 1 par = +3 kg · 2 pares = +4 kg · N pares = N+2 kg</strong>
+  </div>`;
+  h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Seu mel disponível: <strong style="color:var(--honey);">${honey} kg</strong></div>`;
+
+  if(!tiles.length){
+    h+=`<div class="note">Nenhum tile de Campo ou Frutífera no tabuleiro ainda.</div>`;
+  } else {
+    h+=`<div class="rgrid" id="polli-grid"></div>`;
+  }
+  document.getElementById('tab-polli').innerHTML=h;
+
+  if(tiles.length){
+    const grid=document.getElementById('polli-grid');
+    for(let cell of tiles){
+      const extraFlowers=cell.placed.flowers||0;
+      const totalFlowers=1+extraFlowers;
+      const myBees=(cell.placed.bees||{})[me.idx]||0;
+      const pairs=pairsOnTile(cell,me.idx);
+      const bonus=polliBonus(pairs);
+      const canBuy=!lk&&honey>=1;
+      const typeLabel=cell.placed.type==='field'?'🌿 Campo':'🍎 Frutífera';
+
+      const wrapper=document.createElement('div');
+      wrapper.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;';
+
+      // Header row
+      const hdrEl=document.createElement('div');
+      hdrEl.style.cssText='display:flex;align-items:center;justify-content:space-between;';
+      hdrEl.innerHTML=`<span style="font-size:12px;font-weight:500;color:var(--text);">${typeLabel} (${cell.col},${cell.row})</span>
+        <span style="font-size:11px;color:var(--honey);">${pairs} par${pairs!==1?'es':''} → +${bonus} kg final</span>`;
+      wrapper.appendChild(hdrEl);
+
+      // Stats row
+      const statsEl=document.createElement('div');
+      statsEl.style.cssText='display:flex;gap:12px;font-size:11px;color:var(--text2);';
+      statsEl.innerHTML=`<span>🌸 Flores: ${totalFlowers} (${extraFlowers} compradas)</span><span>🐝 Suas abelhas: ${myBees}</span>`;
+      wrapper.appendChild(statsEl);
+
+      // Buttons row
+      if(!lk){
+        const btnsEl=document.createElement('div');
+        btnsEl.style.cssText='display:flex;gap:6px;flex-wrap:wrap;';
+
+        const beeBtn=document.createElement('button');
+        beeBtn.disabled=!canBuy;
+        beeBtn.style.cssText=`background:${canBuy?'rgba(255,193,7,.2)':'var(--card)'};border:1px solid ${canBuy?'rgba(255,193,7,.5)':'var(--border)'};border-radius:6px;padding:4px 10px;font-family:'DM Sans',sans-serif;font-size:11px;color:${canBuy?'#FFD54F':'var(--text3)'};cursor:${canBuy?'pointer':'not-allowed'};`;
+        beeBtn.textContent='+ Abelha 🐝 (1 kg mel)';
+        if(canBuy) beeBtn.addEventListener('click',()=>addBee(cell.id));
+
+        const flwBtn=document.createElement('button');
+        flwBtn.disabled=!canBuy;
+        flwBtn.style.cssText=`background:${canBuy?'rgba(244,143,177,.15)':'var(--card)'};border:1px solid ${canBuy?'rgba(244,143,177,.4)':'var(--border)'};border-radius:6px;padding:4px 10px;font-family:'DM Sans',sans-serif;font-size:11px;color:${canBuy?'#F48FB1':'var(--text3)'};cursor:${canBuy?'pointer':'not-allowed'};`;
+        flwBtn.textContent='+ Flor 🌸 (1 kg mel)';
+        if(canBuy) flwBtn.addEventListener('click',()=>addFlower(cell.id));
+
+        btnsEl.appendChild(beeBtn);
+        btnsEl.appendChild(flwBtn);
+        wrapper.appendChild(btnsEl);
+      }
+      grid.appendChild(wrapper);
+    }
+  }
+}
+
+async function addBee(cellId){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='polli'){msg('Ação bloqueada neste turno.');return;}
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  if((p.honey||0)<1){msg('Você precisa de pelo menos 1 kg de mel.');return;}
+  const board=clone(G.board||[]);
+  const cell=board.find(c=>c.id===cellId);
+  if(!cell||!cell.placed){msg('Tile não encontrado.');return;}
+  if(cell.placed.type!=='field'&&cell.placed.type!=='fruit'){msg('Só é possível colocar abelhas em Campo ou Frutífera.');return;}
+  p.honey-=1;
+  cell.placed.bees=cell.placed.bees||{};
+  cell.placed.bees[me.idx]=(cell.placed.bees[me.idx]||0)+1;
+  const myBees=cell.placed.bees[me.idx];
+  const extraFlowers=cell.placed.flowers||0;
+  const pairs=pairsOnTile(cell,me.idx);
+  await room.ref.update({board,players,ac:'polli'});
+  msg(`🐝 Abelha adicionada! ${pairs} par${pairs!==1?'es':''} neste tile → +${polliBonus(pairs)} kg no final.`);
+  buildPolli();
+}
+
+async function addFlower(cellId){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='polli'){msg('Ação bloqueada neste turno.');return;}
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  if((p.honey||0)<1){msg('Você precisa de pelo menos 1 kg de mel.');return;}
+  const board=clone(G.board||[]);
+  const cell=board.find(c=>c.id===cellId);
+  if(!cell||!cell.placed){msg('Tile não encontrado.');return;}
+  if(cell.placed.type!=='field'&&cell.placed.type!=='fruit'){msg('Só é possível colocar flores em Campo ou Frutífera.');return;}
+  p.honey-=1;
+  cell.placed.flowers=(cell.placed.flowers||0)+1;
+  await room.ref.update({board,players,ac:'polli'});
+  msg(`🌸 Flor adicionada! Agora com ${1+cell.placed.flowers} flores neste tile.`);
+  buildPolli();
+}
+
+// ════════════════════════════════════════════
 // WINNER
 // ════════════════════════════════════════════
 function showWinner(r){
-  const sorted=[...(r.players||[])].sort((a,b)=>(b.honey||0)-(a.honey||0));
+  const board=r.board||[];
+  // Add pollination bonus to each player's final score
+  const finalScores=(r.players||[]).map((p,pi)=>{
+    const bonus=totalPolliBonus(board,pi);
+    return{...p, finalHoney:(p.honey||0)+bonus, polliBonus:bonus};
+  });
+  const sorted=[...finalScores].sort((a,b)=>b.finalHoney-a.finalHoney);
   const top=sorted[0];
-  const tied=sorted.filter(p=>(p.honey||0)===(top.honey||0));
+  const tied=sorted.filter(p=>p.finalHoney===top.finalHoney);
   document.getElementById('w-title').textContent=tied.length>1?'🤝 Empate!':`🏆 ${top.name} Venceu!`;
   document.getElementById('w-sub').textContent=tied.length>1
-    ?`${tied.map(p=>p.name).join(' e ')} empataram com ${top.honey||0} kg!`:'Maior produtor de mel da região!';
-  document.getElementById('w-scores').innerHTML=sorted.map((p,i)=>`
-    <div class="wscore${i===0&&tied.length===1?' whi':''}">
+    ?`${tied.map(p=>p.name).join(' e ')} empataram com ${top.finalHoney} kg!`:'Maior produtor de mel da região!';
+  document.getElementById('w-scores').innerHTML=sorted.map((p,i)=>{
+    const origIdx=(r.players||[]).findIndex(x=>x.name===p.name);
+    return`<div class="wscore${i===0&&tied.length===1?' whi':''}">
       <div class="wn">${p.name}</div>
-      <div class="wv" style="color:${P_COLORS[(r.players||[]).findIndex(x=>x.name===p.name)]||'#fff'}">${p.honey||0} kg</div>
-    </div>`).join('');
+      <div class="wv" style="color:${P_COLORS[origIdx]||'#fff'}">${p.finalHoney} kg</div>
+      ${p.polliBonus>0?`<div style="font-size:9px;color:#FFF176;margin-top:2px;">+${p.polliBonus} kg polinização 🌸</div>`:''}
+    </div>`;
+  }).join('');
   document.getElementById('winner-screen').classList.add('open');
 }
 
