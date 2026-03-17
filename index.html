@@ -111,15 +111,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #abtn-trade{background:rgba(171,71,188,.15);color:#CE93D8;border-color:rgba(171,71,188,.4);}
 #abtn-trade.am{background:#AB47BC;color:#fff;border-color:#7B1FA2;}
 #abtn-trade:hover:not(:disabled):not(.am){background:rgba(171,71,188,.28);}
+#abtn-trade:disabled{opacity:.28;cursor:not-allowed;}
 #abtn-polli{background:rgba(255,235,59,.12);color:#FFF176;border-color:rgba(255,235,59,.4);}
 #abtn-polli.am{background:#F9A825;color:#1A1208;border-color:#E65100;}
 #abtn-polli:hover:not(:disabled):not(.am){background:rgba(255,235,59,.22);}
-#abtn-end{background:rgba(255,255,255,0.05);color:var(--text);border-color:var(--border); font-weight: 700;}
-#abtn-end:hover:not(:disabled){background:var(--red); border-color: var(--red); color: white;}
+#abtn-polli:disabled{opacity:.28;cursor:not-allowed;}
+#abtn-end{background:rgba(255,255,255,0.05);color:var(--text2);border-color:var(--border);}
+#abtn-end:hover:not(:disabled){background:var(--red);color:white;border-color:var(--red);}
 
 /* trade resource spinner rows */
 .trade-res-row{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;gap:8px;}
-.trade-res-row .tr-label{font-size:11px;color:var(--text2);flex:1;}
+.trade-res-row .tr-label{font-size:12px;color:var(--text2);flex:1;}
 .trade-qty-ctrl{display:flex;align-items:center;gap:6px;}
 .tq-btn{width:26px;height:26px;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;font-family:'DM Sans',sans-serif;}
 .tq-btn:hover{background:var(--card2);}
@@ -287,17 +289,17 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div id="game-title"><span>🐝</span> Apicultor</div>
     <div class="online-dot"><span></span>online</div>
   </div>
+  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+    <div class="turn-badge">Rodada <strong id="h-turn">1</strong> · <strong id="h-player">—</strong></div>
+    <span id="turn-status"></span>
+  </div>
   <div id="action-bar">
     <button class="act-btn" id="abtn-tile"  onclick="setMode('tile')">🌿 Colocar Tile</button>
     <button class="act-btn" id="abtn-craft" onclick="openModal('craft')">⚒ Trocas</button>
     <button class="act-btn" id="abtn-col"   onclick="openModal('col')">🐝 Colmeia</button>
     <button class="act-btn" id="abtn-polli" onclick="setMode('polli')">🌸 Polinizar</button>
     <button class="act-btn" id="abtn-trade" onclick="openTradeModal()">🤝 Negociar</button>
-    <button class="act-btn" id="abtn-end" onclick="manualEndTurn()">⏹ Encerrar Turno</button>
-  </div>
-  <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
-    <div class="turn-badge">Rodada <strong id="h-turn">1</strong> · <strong id="h-player">—</strong></div>
-    <span id="turn-status"></span>
+    <button class="act-btn" id="abtn-end"   onclick="manualEndTurn()">⏹ Finalizar Turno</button>
   </div>
 </div>
 
@@ -308,7 +310,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </div>
 
 <div id="bottom-bar">
-  <span class="blabel">Seu Tile:</span>
+  <span class="blabel">Tile:</span>
   <div id="deck-preview"></div>
   <span id="deck-count"></span>
   <div id="msg-bar"></div>
@@ -317,7 +319,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="mtitle">
-      <span>⚒ Ações de Jogo</span>
+      <span>⚒ Trocas & Colmeia</span>
       <button class="mclose" onclick="closeModal()">✕</button>
     </div>
     <div class="modal-tabs">
@@ -350,9 +352,9 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div id="ti-from" style="font-size:12px;color:var(--text2);margin-bottom:14px;"></div>
     <div id="ti-offer-display" style="background:var(--card2);border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:14px;font-size:13px;"></div>
     <div style="font-size:12px;color:var(--text2);margin-bottom:10px;background:rgba(232,149,26,.08);border:1px solid rgba(232,149,26,.3);border-radius:8px;padding:10px;line-height:1.6;">
-      ⚠️ <strong style="color:var(--honey);">Negociação às escuras:</strong> O outro jogador não verá o que você realmente entregar até que ambos confirmem.
+      ⚠️ <strong style="color:var(--honey);">Troca às escuras:</strong> você pode entregar o que quiser. O outro jogador não saberá até a troca ser finalizada.
     </div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:8px;text-align:left;">O que você vai entregar de verdade?</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px;text-align:left;">O que você vai entregar?</div>
     <div id="ti-my-resources" style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;"></div>
     <div id="ti-btns" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
   </div>
@@ -398,20 +400,20 @@ const SQRT3=Math.sqrt(3), HEX_R=44;
 const P_COLORS=['#F4A61C','#42A5F5','#66BB6A','#EF9A9A'];
 
 const TILE_VARIANTS=[
-  {type:'forest',label:'Floresta',icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:1}},
-  {type:'forest',label:'Floresta',icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:2}},
-  {type:'field', label:'Campo',icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:1}},
-  {type:'field', label:'Campo',icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:2}},
-  {type:'apiary',label:'Apiário',icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:1,propolis:1}},
-  {type:'apiary',label:'Apiário',icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:1,propolis:2}},
-  {type:'apiary',label:'Apiário',icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:2,propolis:1}},
-  {type:'apiary',label:'Apiário',icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{geleia_real:2}},
-  {type:'fruit', label:'Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:1,propolis:1}},
-  {type:'fruit', label:'Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:2}},
-  {type:'water', label:'Fonte de Água',icon:'💧',color:'#0D47A1',stroke:'#1565C0',yields:{}},
+  {type:'forest',label:'Floresta',          icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:1}},
+  {type:'forest',label:'Floresta',          icon:'🌲',color:'#1B5E20',stroke:'#2E7D32',yields:{madeira:2}},
+  {type:'field', label:'Campo',             icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:1}},
+  {type:'field', label:'Campo',             icon:'🌿',color:'#558B2F',stroke:'#7CB342',yields:{erva_cidreira:2}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:1,propolis:1}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:1,propolis:2}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{cera:2,propolis:1}},
+  {type:'apiary',label:'Apiário',           icon:'🐝',color:'#F57F17',stroke:'#F9A825',yields:{geleia_real:2}},
+  {type:'fruit', label:'Árvores Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:1,propolis:1}},
+  {type:'fruit', label:'Árvores Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:2}},
+  {type:'water', label:'Fonte de Água',     icon:'💧',color:'#0D47A1',stroke:'#1565C0',yields:{}},
 ];
 
-// AJUSTE DE QUANTIDADES DE TILES
+// AJUSTE QUANTIDADES - PONTO 4
 const TYPE_COUNTS={forest:15,field:15,apiary:10,fruit:10,water:7};
 
 const RM={
@@ -436,9 +438,9 @@ const RECIPES=[
 const COL_REQ={ninho:1,melgueira:1,chama_enxame:1,abelha_rainha:1};
 
 const EVENT_CARDS=[
-  {id:'saque',icon:'🦹',name:'Saqueamento',effect:'Ceda 1 kg de mel ao jogador com menos mel.',mitigation:'Use 1 Própolis.',mitigItem:'propolis',mitigQty:1},
-  {id:'tamandua',icon:'🐜',name:'Tamanduá!',effect:'Perde 2 kg de mel.',mitigation:'Use 3 Madeiras.',mitigItem:'madeira',mitigQty:3},
-  {id:'custos',icon:'📈',name:'Inflação',effect:'Custos dobrados neste turno.',mitigation:null}
+  {id:'saque',icon:'🦹',name:'Saqueamento de Mel',effect:'Você foi saqueado! Deve ceder 1 kg de mel ao jogador com menor quantidade.',mitigation:'Use 1 Própolis.',mitigItem:'propolis', mitigQty:1},
+  {id:'tamandua',icon:'🐜',name:'Tamanduá-Bandeira!',effect:'O Tamanduá atacou seu apiário! Você perde 2 kg de mel.',mitigation:'Use 3 Madeiras.',mitigItem:'madeira', mitigQty:3},
+  {id:'custos',icon:'📈',name:'Aumento dos Custos',effect:'Custos dobrados neste turno.',mitigation:null},
 ];
 
 let me={name:'',idx:-1};
@@ -448,21 +450,11 @@ let UI={mode:null,committed:false,pending:null};
 let pendingEvent=null;
 let costMultiplier=1;
 
-// LOCAL TRADE SELECTION
+// TRADE LOCAL STATE
 let tradeTargetIdx=-1;
-let tradeRequestedLocal={}; // O que eu QUERO
-let tradeClaimedLocal={};   // O que eu DIGO que vou dar
-let tradeActualLocal={};    // O que eu VOU DAR de verdade
-
-function selN(n){
-  _n=n;
-  document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2));
-  upCreate();
-}
-document.getElementById('inp-name').addEventListener('input',upCreate);
-function upCreate(){ document.getElementById('btn-create').disabled=!document.getElementById('inp-name').value.trim()||!_n; }
-function setErr(m){document.getElementById('lobby-err').textContent=m;}
-function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
+let tradeRequestedLocal={}; 
+let tradeClaimedLocal={};   
+let tradeActualLocal={};    
 
 async function createRoom(){
   const name=document.getElementById('inp-name').value.trim();
@@ -493,12 +485,6 @@ async function joinRoom(){
   subscribe(); showWait(code);
 }
 
-function showWait(code){
-  document.getElementById('lobby-screen').classList.add('hidden');
-  document.getElementById('waiting-screen').classList.remove('hidden');
-  document.getElementById('disp-code').textContent=code;
-}
-
 function subscribe(){
   room.listener=room.ref.on('value',snap=>{
     const r=snap.val(); if(!r)return;
@@ -512,27 +498,16 @@ function subscribe(){
   });
 }
 
-function renderWait(r){
-  const players=r.players||[];
-  document.getElementById('slot-list').innerHTML=Array.from({length:r.n},(_,i)=>{
-    const p=players[i];
-    return `<div class="slot"><span class="slot-dot" style="background:${p?P_COLORS[i]:'var(--border)'}"></span><span>${p?p.name:'...'}</span></div>`;
-  }).join('');
-  if(me.idx===0) document.getElementById('btn-start-room').classList.toggle('ready',players.length>=2);
-}
-
-async function startRoom(){ if(me.idx===0) await room.ref.update({status:'playing'}); }
-
 function onUpdate(r){
-  if(r.over){showWinner(r);return;}
+  if(r.over){renderAll(r);showWinner(r);return;}
   const my=r.cp===me.idx;
   document.getElementById('turn-banner').classList.toggle('show', !my);
   if(!my) document.getElementById('wt-name').textContent=r.players[r.cp].name;
   
-  // REVEAL LOGIC: Somente mostra se o jogador escolheu 'tile'
+  // REVEAL LOGIC - PONTO 2 & 5
   if(my && r.ac === 'tile' && !r.tr && r.ct){
     const td=tdef(r.ct.type);
-    document.getElementById('rv-preview').innerHTML=`<div class="rv-icon">${td.icon}</div><div>${td.label}</div>`;
+    document.getElementById('rv-preview').innerHTML=`<div class="rv-icon">${td.icon}</div><div class="rv-name">${td.label}</div>`;
     document.getElementById('reveal-screen').classList.remove('hidden');
   } else {
     document.getElementById('reveal-screen').classList.add('hidden');
@@ -542,66 +517,25 @@ function onUpdate(r){
   renderAll(r);
 }
 
-function myTurn(){ return G && G.cp === me.idx; }
-
 function setMode(m){
   if(!myTurn())return;
-  // Se escolher tile, primeiro registra a ação para disparar o Reveal
+  if(G.ac && G.ac!=='tile' && m==='tile'){msg('Já escolheu outra ação.'); return;}
+  
   if(m==='tile'){
+    // Registra ação primeiro para disparar Reveal - PONTO 2
     room.ref.update({ac: 'tile'});
     UI.mode='tile';
   } else {
-    openModal(m);
+    openModal(m==='craft'?'craft':'col');
   }
-}
-
-async function confirmReveal(){
-  await room.ref.update({tr:true});
-  msg("Escolha onde colocar seu tile.");
 }
 
 async function manualEndTurn(){
   if(!myTurn())return;
-  const nextP=(G.cp+1)%G.players.length;
-  const nextT=nextP===0?G.turn+1:G.turn;
-  const nextTile=G.deck[G.di]||null;
-  await room.ref.update({
-    cp:nextP, turn:nextT, ct:nextTile, di:G.di+1,
-    ac:null, tr:false, costMult:1, trade:null,
-    status: nextTile ? 'playing' : 'finished'
-  });
-}
-
-// BOARD FUNCTIONS
-function mkBoard(){ return [{col:4,row:3,id:'4_3',placed:null}]; }
-function mkDeck(){
-  const d=[];
-  for(let[t,cnt] of Object.entries(TYPE_COUNTS)){
-    const vs=TILE_VARIANTS.filter(v=>v.type===t);
-    for(let i=0;i<cnt;i++) d.push({...vs[Math.floor(Math.random()*vs.length)]});
-  }
-  return d;
-}
-function mkEventDeck(){ return shuffle([...EVENT_CARDS,...EVENT_CARDS]).map(e=>e.id); }
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
-function clone(x){return JSON.parse(JSON.stringify(x));}
-function tdef(t){return TILE_VARIANTS.find(v=>v.type===t)||TILE_VARIANTS[0];}
-function hctr(col,row){return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10,y:HEX_R*1.5*row+HEX_R+10};}
-function hpts(cx,cy,r){ return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(cx+r*Math.cos(a)).toFixed(2)},${(cy+r*Math.sin(a)).toFixed(2)}`;}).join(' '); }
-
-function validSlots(board){
-  const placed=board.filter(c=>c.placed);
-  if(!placed.length) return [board[0]];
-  const occ=new Set(board.map(c=>c.id));
-  const slots=new Map();
-  placed.forEach(c=>{
-    const dirs=c.row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]];
-    dirs.forEach(([dc,dr])=>{
-      const nid=`${c.col+dc}_${c.row+dr}`;
-      if(!occ.has(nid)) slots.set(nid,{col:c.col+dc,row:c.row+dr,id:nid,placed:null});
-    });
-  });
-  return [...slots.values()];
+  const np=(G.cp+1)%G.players.length;
+  const nt=np===0?G.turn+1:G.turn;
+  const nc=G.deck[G.di]||null;
+  await room.ref.update({cp:np,turn:nt,ct:nc,di:G.di+1,ac:null,tr:false,over:!nc,status:!nc?'finished':'playing',costMult:1,trade:null});
 }
 
 async function confirmPlace(){
@@ -612,15 +546,14 @@ async function confirmPlace(){
   Object.entries(G.ct.yields).forEach(([k,v])=>players[me.idx].raw[k]=(players[me.idx].raw[k]||0)+v);
   UI.pending=null;
   await room.ref.update({board, players});
-  manualEndTurn(); // Auto end turn apenas no tile
+  manualEndTurn(); // Auto end no tile - PONTO 1
 }
 
-// TRADE BLIND SYSTEM
+// TRADE SYSTEM - PONTO 3
 function openTradeModal(){
   if(!myTurn())return;
-  tradeTargetIdx=-1;
-  tradeRequestedLocal={}; tradeClaimedLocal={}; tradeActualLocal={};
-  let h=`<div class="msec"><h3>1. Escolha o Jogador</h3><div style="display:flex;gap:5px;">`;
+  tradeTargetIdx=-1; tradeRequestedLocal={}; tradeClaimedLocal={}; tradeActualLocal={};
+  let h=`<div class="msec"><h3>1. Negociar com:</h3><div style="display:flex;gap:5px;flex-wrap:wrap;">`;
   G.players.forEach((p,i)=>{
     if(i!==me.idx) h+=`<button class="mtab" onclick="selectTradePartner(${i})">${p.name}</button>`;
   });
@@ -632,19 +565,19 @@ function openTradeModal(){
 function selectTradePartner(idx){
   tradeTargetIdx=idx;
   const p=G.players[me.idx];
-  let h=`<div class="msec"><h3>2. O que você deseja DELE? (Pedido)</h3><div class="rgrid">`;
+  let h=`<div class="msec"><h3>2. O que você DESEJA dele?</h3><div class="rgrid">`;
   Object.entries(RM).forEach(([k,m])=> h+=makeTradeRow(k,m,'req'));
-  h+=`</div></div><div class="msec"><h3>3. O que você DIZ que vai dar? (Promessa)</h3><div class="rgrid">`;
+  h+=`</div></div><div class="msec"><h3>3. O que você PROMETE dar?</h3><div class="rgrid">`;
   Object.entries(RM).forEach(([k,m])=> h+=makeTradeRow(k,m,'claim'));
-  h+=`</div></div><div class="msec"><h3>4. O que você vai dar DE VERDADE? (Secreto)</h3><div class="rgrid">`;
+  h+=`</div></div><div class="msec"><h3>4. O que você REALMENTE vai dar? (Secreto)</h3><div class="rgrid">`;
   Object.entries(RM).forEach(([k,m])=> h+=makeTradeRow(k,m,'act', p.raw[k]||0));
-  h+=`</div></div><button class="btn-primary" onclick="submitTrade()">Enviar Proposta Secreta</button>`;
+  h+=`</div></div><button class="btn-primary" onclick="submitTrade()">Enviar Proposta</button>`;
   document.getElementById('trade-form').innerHTML=h;
   document.getElementById('trade-form').style.display='block';
 }
 
 function makeTradeRow(k,m,type,max=99){
-  return `<div class="trade-res-row"><span class="tr-label">${m.icon} ${m.label} ${max<99?`(${max})`:''}</span>
+  return `<div class="trade-res-row"><span class="tr-label">${m.icon} ${m.label}</span>
     <div class="trade-qty-ctrl">
       <button class="tq-btn" onclick="adjT('${k}','${type}',-1,${max})">-</button>
       <span class="tq-val" id="val-${type}-${k}">0</span>
@@ -659,207 +592,91 @@ function adjT(k,type,d,max){
 }
 
 async function submitTrade(){
-  const trade = {
-    from: me.idx, to: tradeTargetIdx,
-    req: tradeRequestedLocal, claim: tradeClaimedLocal, actFrom: tradeActualLocal,
-    status: 'pending'
-  };
+  const trade = { from: me.idx, to: tradeTargetIdx, req: tradeRequestedLocal, claim: tradeClaimedLocal, actFrom: tradeActualLocal, status: 'pending' };
   await room.ref.update({trade, ac:'trade'});
   closeTrade();
 }
 
-function handleTradeUpdates(r){
-  const t = r.trade; if(!t)return;
-  if(t.status==='pending' && t.to===me.idx){
-    showIncomingTrade(t);
-  }
-  if(t.status==='accepted' && t.from===me.idx){
-    finalizeTrade(t);
-  }
-  if(t.status==='done' && !document.getElementById('trade-reveal').style.display.includes('flex')){
-    showTradeReveal(t);
-  }
-}
-
 function showIncomingTrade(t){
   const fromName = G.players[t.from].name;
-  let h = `<strong>${fromName}</strong> propõe uma troca:<br><br>`;
-  h += `Ele te pede: ${fmtRes(t.req)}<br>`;
-  h += `Ele promete te dar: ${fmtRes(t.claim)}<br><br>`;
+  let h = `<strong>${fromName}</strong> quer negociar:<br><br>`;
+  h += `<strong>Ele te pede:</strong> ${fmtRes(t.req)}<br>`;
+  h += `<strong>Ele promete enviar:</strong> ${fmtRes(t.claim)}<br><br>`;
   document.getElementById('ti-offer-display').innerHTML = h;
   
   const p = G.players[me.idx];
   let rh = `<div class="rgrid">`;
   Object.entries(RM).forEach(([k,m])=> rh += makeTradeRow(k,m,'act', p.raw[k]||0));
-  rh += `</div>`;
-  document.getElementById('ti-my-resources').innerHTML = rh;
+  document.getElementById('ti-my-resources').innerHTML = rh + `</div>`;
   
   document.getElementById('ti-btns').innerHTML = `
-    <button class="btn-primary" onclick="replyTrade(true)">Aceitar e Enviar</button>
-    <button class="btn-secondary" onclick="replyTrade(false)">Recusar</button>
-  `;
+    <button class="btn-primary" onclick="replyTrade(true)">Aceitar Troca</button>
+    <button class="btn-secondary" onclick="replyTrade(false)">Recusar</button>`;
   document.getElementById('trade-incoming').style.display='flex';
 }
 
-function fmtRes(obj){
-  const s = Object.entries(obj).filter(e=>e[1]>0).map(e=>`${e[1]} ${RM[e[0]].icon}`).join(', ');
-  return s || "Nada";
-}
-
-async function replyTrade(acc){
-  document.getElementById('trade-incoming').style.display='none';
-  if(!acc){ await room.ref.update({trade:null}); return; }
-  await room.ref.update({ "trade/actTo": tradeActualLocal, "trade/status": "accepted" });
-}
-
-async function finalizeTrade(t){
-  const players = clone(G.players);
-  const p1 = players[t.from], p2 = players[t.to];
-  Object.entries(t.actFrom).forEach(([k,v])=>{ p1.raw[k]-=v; p2.raw[k]=(p2.raw[k]||0)+v; });
-  Object.entries(t.actTo).forEach(([k,v])=>{ p2.raw[k]-=v; p1.raw[k]=(p1.raw[k]||0)+v; });
-  await room.ref.update({ players, "trade/status": "done" });
-}
-
 function showTradeReveal(t){
-  let h = `<h3>O que realmente aconteceu:</h3><br>`;
-  h += `<strong>${G.players[t.from].name}</strong> enviou: ${fmtRes(t.actFrom)}<br>`;
-  h += `(Ele tinha prometido: ${fmtRes(t.claim)})<br><br>`;
-  h += `<strong>${G.players[t.to].name}</strong> enviou: ${fmtRes(t.actTo)}<br>`;
+  let h = `<div style="text-align:left;font-size:13px;">`;
+  h += `<strong>${G.players[t.from].name}</strong> prometeu: ${fmtRes(t.claim)}<br>`;
+  h += `<strong>${G.players[t.from].name}</strong> enviou DE FATO: ${fmtRes(t.actFrom)}<br><hr style="margin:8px 0;opacity:0.2">`;
+  h += `<strong>${G.players[t.to].name}</strong> enviou: ${fmtRes(t.actTo)}<br></div>`;
   document.getElementById('tr-content').innerHTML = h;
   document.getElementById('trade-reveal').style.display='flex';
-}
-
-function closeTadeReveal(){
-  document.getElementById('trade-reveal').style.display='none';
-  room.ref.update({trade:null});
-}
-
-function renderAll(r){
-  renderHeader(r); renderBoard(r); renderBottom(r);
-  for(let i=0; i<r.players.length; i++) updatePlayerUI(i, r);
 }
 
 function renderHeader(r){
   const my = r.cp===me.idx;
   document.getElementById('h-turn').textContent=r.turn;
   document.getElementById('h-player').textContent=r.players[r.cp].name;
-  document.getElementById('abtn-tile').disabled = !my || r.ac;
+  document.getElementById('abtn-tile').disabled = !my || (r.ac && r.ac!=='tile');
   document.getElementById('abtn-craft').disabled = !my || r.ac==='tile';
   document.getElementById('abtn-col').disabled = !my || r.ac==='tile';
   document.getElementById('abtn-trade').disabled = !my || r.ac==='tile' || r.trade;
-  document.getElementById('abtn-end').disabled = !my || r.ac==='tile';
+  document.getElementById('abtn-end').disabled = !my || r.ac==='tile'; // PONTO 1 & 4
 }
 
-function renderBoard(r){
-  const svg=document.getElementById('board-svg'); svg.innerHTML='';
-  const slots = validSlots(r.board);
-  const all = [...r.board, ...slots];
-  
-  let minC=9, maxC=0, minR=9, maxR=0;
-  all.forEach(c=>{ minC=Math.min(minC,c.col); maxC=Math.max(maxC,c.col); minR=Math.min(minR,c.row); maxR=Math.max(maxR,c.row); });
-  
-  const W=(maxC-minC+2)*HEX_R*SQRT3, H=(maxR-minR+2)*HEX_R*1.5;
-  svg.setAttribute('viewBox',`${(minC-0.5)*HEX_R*SQRT3} ${(minR-0.5)*HEX_R*1.5} ${W} ${H}`);
-
-  all.forEach(c=>{
-    const {x,y} = hctr(c.col, c.row);
-    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
-    const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
-    poly.setAttribute('points', hpts(x,y,HEX_R-2));
-    
-    if(c.placed){
-      const td = tdef(c.placed.type);
-      poly.setAttribute('fill', td.color);
-      g.appendChild(poly);
-      g.appendChild(makeTxt(x,y,null,'20',td.icon));
-    } else if(myTurn() && UI.mode==='tile' && G.tr){
-      poly.setAttribute('fill', '#2A1E08'); poly.setAttribute('stroke', '#66BB6A');
-      g.classList.add('hev');
-      g.onclick=()=>{ UI.pending=c; renderAll(G); };
-      g.appendChild(poly);
-      if(UI.pending?.id===c.id) g.appendChild(makeTxt(x,y,'#fff','20','?'));
-    } else {
-      poly.setAttribute('fill', '#1A1208'); poly.setAttribute('stroke', '#332211');
-      g.appendChild(poly);
-    }
-    svg.appendChild(g);
-  });
-}
-
-function renderBottom(r){
-  const my = r.cp===me.idx;
-  const pre = document.getElementById('deck-preview');
-  if(!my || !r.ac==='tile' || !r.tr){
-    pre.innerHTML = `<div class="t-hidden">Tile oculto. Escolha "Colocar Tile"</div>`;
-  } else if(UI.pending){
-    pre.innerHTML = `<button class="btn-primary" onclick="confirmPlace()">Confirmar em (${UI.pending.col},${UI.pending.row})</button>`;
-  } else {
-    pre.innerHTML = `<div class="t-locked">${r.ct.icon} ${r.ct.label} (Clique no mapa)</div>`;
-  }
-}
-
-function makeTxt(x,y,f,s,t){
-  const el=document.createElementNS('http://www.w3.org/2000/svg','text');
-  el.setAttribute('x',x); el.setAttribute('y',y); el.setAttribute('text-anchor','middle');
-  el.setAttribute('dominant-baseline','central'); el.setAttribute('font-size',s);
-  el.setAttribute('fill', f||'#fff'); el.textContent=t; return el;
-}
-
-function buildSidebars(r){
-  const l = document.getElementById('sb-left'), rr = document.getElementById('sb-right');
-  l.innerHTML=''; rr.innerHTML='';
-  r.players.forEach((p,i)=>{
-    const h = `<div class="panel" id="pnl-${i}"><div class="ph" style="color:${P_COLORS[i]}">${p.name}</div>
-      <div class="pb"><div class="hs"><div class="hv" id="ph-${i}">0kg</div><span>🍯</span></div>
-      <div class="rlist" id="pr-${i}"></div></div></div>`;
-    if(i%2===0) l.innerHTML+=h; else rr.innerHTML+=h;
-  });
-}
-
-function updatePlayerUI(i, r){
-  const p = r.players[i];
-  document.getElementById(`ph-${i}`).textContent = (p.honey||0)+'kg';
-  document.getElementById(`pr-${i}`).innerHTML = Object.entries(RM).map(([k,m])=>`
-    <div class="rrow"><span>${m.icon} ${m.label}</span><span>${p.raw[k]||0}</span></div>`).join('');
-}
-
-function openModal(t){
-  document.getElementById('modal-overlay').classList.add('open');
-  switchTab(t);
-}
+// RESTANTE DAS FUNÇÕES ORIGINAIS
+function selN(n){ _n=n; document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2)); upCreate(); }
+document.getElementById('inp-name').addEventListener('input',upCreate);
+function upCreate(){ document.getElementById('btn-create').disabled=!document.getElementById('inp-name').value.trim()||!_n; }
+function setErr(m){document.getElementById('lobby-err').textContent=m;}
+function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
+function showWait(code){ document.getElementById('lobby-screen').classList.add('hidden'); document.getElementById('waiting-screen').classList.remove('hidden'); document.getElementById('disp-code').textContent=code; }
+function copyCode(){ navigator.clipboard.writeText(room.code).then(()=>{ const el=document.getElementById('disp-code'),t=el.textContent; el.textContent='COPIADO!';setTimeout(()=>el.textContent=t,1500); }); }
+async function startRoom(){ if(me.idx!==0)return; const s=await room.ref.get(); if((s.val().players||[]).length<2)return; await room.ref.update({status:'playing'}); }
+function renderWait(r){ const players=r.players||[]; document.getElementById('slot-list').innerHTML=Array.from({length:r.n},(_,i)=>{ const p=players[i]; return `<div class="slot"><span class="slot-dot" style="background:${p?P_COLORS[i]:'var(--border)'}"></span><span>${p?p.name:'...'}</span></div>`; }).join(''); if(me.idx===0)document.getElementById('btn-start-room').classList.toggle('ready',players.length>=2); }
+function myTurn(){ return G && G.cp === me.idx; }
+async function confirmReveal(){ await room.ref.update({tr:true}); }
+function mkBoard(){ return [{col:4,row:3,id:'4_3',placed:null}]; }
+function mkDeck(){ const d=[]; for(let[t,cnt] of Object.entries(TYPE_COUNTS)){ const vs=TILE_VARIANTS.filter(v=>v.type===t); for(let i=0;i<cnt;i++) d.push({...vs[Math.floor(Math.random()*vs.length)]}); } return d; }
+function mkEventDeck(){ const d=[...EVENT_CARDS,...EVENT_CARDS,...EVENT_CARDS]; shuffle(d); return d.map(e=>e.id); }
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;}
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function tdef(t){return TILE_VARIANTS.find(v=>v.type===t)||TILE_VARIANTS[0];}
+function hctr(col,row){return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10,y:HEX_R*1.5*row+HEX_R+10};}
+function hpts(cx,cy,r){ return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(cx+r*Math.cos(a)).toFixed(2)},${(cy+r*Math.sin(a)).toFixed(2)}`;}).join(' '); }
+function getDirs(row){ return row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]]; }
+function allNbrs(col,row){ return getDirs(row).map(([dc,dr])=>({col:col+dc,row:row+dr,id:`${col+dc}_${row+dr}`})); }
+function validSlots(board){ const placed=board.filter(c=>c.placed); if(!placed.length) return [board[0]]; const occ=new Set(board.map(c=>c.id)); const slots=new Map(); placed.forEach(c=>{ allNbrs(c.col,c.row).forEach(nb=>{ if(!occ.has(nb.id)) slots.set(nb.id,{...nb,placed:null}); }); }); return [...slots.values()]; }
+function renderBoard(r){ const svg=document.getElementById('board-svg'); svg.innerHTML=''; const board=r.board||[]; const slots=validSlots(board); const all=[...board, ...slots]; let minC=9,maxC=0,minR=9,maxR=0; all.forEach(c=>{minC=Math.min(minC,c.col);maxC=Math.max(maxC,c.col);minR=Math.min(minR,c.row);maxR=Math.max(maxR,c.row);}); const W=(maxC-minC+3)*HEX_R*SQRT3, H=(maxR-minR+3)*HEX_R*1.5; svg.setAttribute('viewBox',`${(minC-1)*HEX_R*SQRT3} ${(minR-1)*HEX_R*1.5} ${W} ${H}`); all.forEach(c=>{ const {x,y}=hctr(c.col,c.row); const g=document.createElementNS('http://www.w3.org/2000/svg','g'); const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon'); poly.setAttribute('points',hpts(x,y,HEX_R-2)); if(c.placed){ poly.setAttribute('fill',tdef(c.placed.type).color); g.appendChild(poly); g.appendChild(makeTxt(x,y,null,'20',tdef(c.placed.type).icon)); } else if(myTurn()&&UI.mode==='tile'&&G.tr){ poly.setAttribute('fill','#2A1E08'); poly.setAttribute('stroke','#66BB6A'); g.classList.add('hev'); g.onclick=()=>{UI.pending=c;renderAll(G);}; g.appendChild(poly); } else { poly.setAttribute('fill','#1A1208'); poly.setAttribute('stroke','#332211'); g.appendChild(poly); } svg.appendChild(g); }); }
+function makeTxt(x,y,f,s,t){ const el=document.createElementNS('http://www.w3.org/2000/svg','text'); el.setAttribute('x',x);el.setAttribute('y',y);el.setAttribute('text-anchor','middle');el.setAttribute('dominant-baseline','central');el.setAttribute('font-size',s);el.setAttribute('fill',f||'#fff');el.textContent=t; return el; }
+function renderBottom(r){ const my=r.cp===me.idx; const pre=document.getElementById('deck-preview'); if(!my||!r.tr||r.ac!=='tile'){ pre.innerHTML=`<div class="t-hidden">Tile Oculto</div>`; } else if(UI.pending){ pre.innerHTML=`<button class="btn-primary" onclick="confirmPlace()">Confirmar em ${UI.pending.col},${UI.pending.row}</button>`; } else { pre.innerHTML=`<div class="t-locked">${r.ct.icon} ${r.ct.label}</div>`; } document.getElementById('deck-count').textContent=`${r.deck.length-r.di} tiles`; }
+function buildSidebars(r){ const l=document.getElementById('sb-left'), rr=document.getElementById('sb-right'); l.innerHTML=''; rr.innerHTML=''; r.players.forEach((p,i)=>{ const h=`<div class="panel" id="pnl-${i}"><div class="ph" style="color:${P_COLORS[i]}">${p.name}</div><div class="pb"><div class="hs"><div class="hv" id="ph-${i}">0kg</div><span>🍯</span></div><div class="rlist" id="pr-${i}"></div></div></div>`; if(i%2===0) l.innerHTML+=h; else rr.innerHTML+=h; }); }
+function updatePlayerUI(i,r){ const p=r.players[i]; document.getElementById(`ph-${i}`).textContent=(p.honey||0)+'kg'; document.getElementById(`pr-${i}`).innerHTML=Object.entries(RM).map(([k,m])=>`<div class="rrow"><span>${m.icon} ${m.label}</span><span>${p.raw[k]||0}</span></div>`).join(''); }
+function renderAll(r){ renderHeader(r); renderBoard(r); renderBottom(r); for(let i=0;i<r.players.length;i++) updatePlayerUI(i,r); }
+function openModal(t){ document.getElementById('modal-overlay').classList.add('open'); switchTab(t); }
 function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
-function switchTab(t){
-  document.querySelectorAll('.tab-pane, .mtab').forEach(e=>e.classList.remove('active'));
-  document.getElementById('tab-'+t).classList.add('active');
-  document.getElementById('tab-'+t+'-btn').classList.add('active');
-  if(t==='craft') buildCraft();
-}
-
-function buildCraft(){
-  const p = G.players[me.idx];
-  let h = `<div class="rgrid">`;
-  RECIPES.forEach(r=>{
-    const can = afford(p.raw, r.cost);
-    h += `<div class="rr ${can?'':'dis'}" onclick="doC('${r.id}')">
-      <span>${fmtRes(r.cost)}</span><span>➡️</span><span>${r.result.qty} ${CM[r.result.key].icon}</span></div>`;
-  });
-  document.getElementById('tab-craft').innerHTML = h + `</div>`;
-}
-
-function afford(raw, cost){ return Object.entries(cost).every(([k,v])=>(raw[k]||0)>=v); }
-async function doC(rid){
-  const r = RECIPES.find(x=>x.id===rid);
-  const players = clone(G.players);
-  const p = players[me.idx];
-  if(!afford(p.raw, r.cost)) return;
-  Object.entries(r.cost).forEach(([k,v])=>p.raw[k]-=v);
-  p.crafted[r.result.key] = (p.crafted[r.result.key]||0)+r.result.qty;
-  await room.ref.update({players, ac:'craft'});
-  buildCraft();
-}
-
+function switchTab(t){ document.querySelectorAll('.tab-pane, .mtab').forEach(e=>e.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); document.getElementById('tab-'+t+'-btn').classList.add('active'); if(t==='craft') buildCraft(); }
+function afford(raw,cost){return Object.entries(cost).every(([k,v])=>(raw[k]||0)>=v);}
+function buildCraft(){ const p=G.players[me.idx]; let h=`<div class="rgrid">`; RECIPES.forEach(r=>{ const can=afford(p.raw,r.cost); h+=`<div class="rr ${can?'':'dis'}" onclick="doC('${r.id}')"><span>${fmtRes(r.cost)}</span><span>➡️</span><span>${r.result.qty} ${CM[r.result.key].icon}</span></div>`; }); document.getElementById('tab-craft').innerHTML=h+`</div>`; }
+async function doC(rid){ const r=RECIPES.find(x=>x.id===rid); const players=clone(G.players); const p=players[me.idx]; if(!afford(p.raw,r.cost))return; Object.entries(r.cost).forEach(([k,v])=>p.raw[k]-=v); p.crafted[r.result.key]=(p.crafted[r.result.key]||0)+r.result.qty; await room.ref.update({players, ac:'craft'}); buildCraft(); }
+function fmtRes(obj){ return Object.entries(obj).filter(e=>e[1]>0).map(e=>`${e[1]}${RM[e[0]]?RM[e[0]].icon:e[0]}`).join(' ')||'nada'; }
+function handleTradeUpdates(r){ const t=r.trade; if(!t)return; if(t.status==='pending'&&t.to===me.idx) showIncomingTrade(t); if(t.status==='accepted'&&t.from===me.idx) finalizeTrade(t); if(t.status==='done') showTradeReveal(t); }
+async function replyTrade(acc){ document.getElementById('trade-incoming').style.display='none'; if(!acc){ await room.ref.update({trade:null}); return; } await room.ref.update({"trade/actTo": tradeActualLocal, "trade/status": "accepted"}); }
+async function finalizeTrade(t){ const players=clone(G.players); const p1=players[t.from], p2=players[t.to]; Object.entries(t.actFrom).forEach(([k,v])=>{ p1.raw[k]-=v; p2.raw[k]=(p2.raw[k]||0)+v; }); Object.entries(t.actTo).forEach(([k,v])=>{ p2.raw[k]-=v; p1.raw[k]=(p1.raw[k]||0)+v; }); await room.ref.update({players, "trade/status":"done"}); }
 function closeTrade(){ document.getElementById('trade-overlay').style.display='none'; }
-function msg(t){ document.getElementById('msg-bar').textContent=t; }
+function closeTadeReveal(){ document.getElementById('trade-reveal').style.display='none'; room.ref.update({trade:null}); }
+function msg(t){document.getElementById('msg-bar').textContent=t;}
 </script>
 </body>
 </html>
