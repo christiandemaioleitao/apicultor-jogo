@@ -116,9 +116,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 #abtn-polli.am{background:#F9A825;color:#1A1208;border-color:#E65100;}
 #abtn-polli:hover:not(:disabled):not(.am){background:rgba(255,235,59,.22);}
 #abtn-polli:disabled{opacity:.28;cursor:not-allowed;}
-#abtn-end{background:rgba(255,255,255,0.05);color:var(--text2);border-color:var(--border);}
-#abtn-end:hover:not(:disabled){background:var(--red);color:white;border-color:var(--red);}
-
+.hpv polygon{transition:fill .12s;}
+.hpv:hover polygon{fill:#2E2A00!important;}
 /* trade resource spinner rows */
 .trade-res-row{display:flex;align-items:center;justify-content:space-between;background:var(--card2);border:1px solid var(--border);border-radius:7px;padding:8px 12px;gap:8px;}
 .trade-res-row .tr-label{font-size:12px;color:var(--text2);flex:1;}
@@ -221,6 +220,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 <body>
 <div id="app">
 
+<!-- LOBBY -->
 <div id="lobby-screen" class="screen">
   <div class="lobby-box">
     <div class="logo-bee">🐝</div>
@@ -243,6 +243,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- WAITING ROOM -->
 <div id="waiting-screen" class="screen hidden">
   <div class="wait-box">
     <div class="wait-title" id="wait-title">Sala criada! 🐝</div>
@@ -258,8 +259,10 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- TURN BANNER -->
 <div id="turn-banner">Aguardando <strong id="wt-name">—</strong> jogar...</div>
 
+<!-- EVENT OVERLAY -->
 <div id="event-overlay">
   <div class="ev-box">
     <div class="ev-icon" id="ev-icon">🃏</div>
@@ -274,6 +277,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- REVEAL -->
 <div id="reveal-screen" class="hidden">
   <div class="rv-box">
     <div class="rv-whose" id="rv-whose"></div>
@@ -284,6 +288,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- HEADER -->
 <div id="header">
   <div style="display:flex;align-items:center;gap:10px;">
     <div id="game-title"><span>🐝</span> Apicultor</div>
@@ -299,16 +304,19 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <button class="act-btn" id="abtn-col"   onclick="openModal('col')">🐝 Colmeia</button>
     <button class="act-btn" id="abtn-polli" onclick="setMode('polli')">🌸 Polinizar</button>
     <button class="act-btn" id="abtn-trade" onclick="openTradeModal()">🤝 Negociar</button>
-    <button class="act-btn" id="abtn-end"   onclick="manualEndTurn()">⏹ Finalizar Turno</button>
+    <button id="btn-end-turn" onclick="manualEndTurn()" style="display:none;background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:6px 14px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;transition:background .15s;" onmouseover="this.style.background='var(--wax)'" onmouseout="this.style.background='var(--honey)'">Encerrar Turno →</button>
+    <span id="turn-status"></span>
   </div>
 </div>
 
+<!-- MAIN -->
 <div id="main">
   <div id="sb-left"></div>
   <div id="board-container"><svg id="board-svg"></svg></div>
   <div id="sb-right"></div>
 </div>
 
+<!-- BOTTOM -->
 <div id="bottom-bar">
   <span class="blabel">Tile:</span>
   <div id="deck-preview"></div>
@@ -316,6 +324,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   <div id="msg-bar"></div>
 </div>
 
+<!-- MODAL -->
 <div id="modal-overlay">
   <div id="modal-box">
     <div class="mtitle">
@@ -335,6 +344,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- TRADE MODAL (proposer) -->
 <div id="trade-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.82);z-index:110;align-items:center;justify-content:center;">
   <div id="trade-box" style="background:#2A1E08;border:1px solid var(--border);border-radius:14px;width:min(560px,95vw);max-height:90vh;overflow-y:auto;padding:20px;">
     <div style="font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--honey);margin-bottom:14px;display:flex;justify-content:space-between;align-items:center;">
@@ -345,6 +355,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- TRADE INCOMING OVERLAY (receiver sees proposal, picks what to send back) -->
 <div id="trade-incoming" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:115;align-items:center;justify-content:center;">
   <div style="background:#2A1E08;border:2px solid var(--honey);border-radius:14px;width:min(520px,95vw);max-height:90vh;overflow-y:auto;padding:20px;text-align:center;">
     <div style="font-size:32px;margin-bottom:6px;">🤝</div>
@@ -354,12 +365,13 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
     <div style="font-size:12px;color:var(--text2);margin-bottom:10px;background:rgba(232,149,26,.08);border:1px solid rgba(232,149,26,.3);border-radius:8px;padding:10px;line-height:1.6;">
       ⚠️ <strong style="color:var(--honey);">Troca às escuras:</strong> você pode entregar o que quiser. O outro jogador não saberá até a troca ser finalizada.
     </div>
-    <div style="font-size:12px;color:var(--text2);margin-bottom:8px;text-align:left;">O que você vai entregar?</div>
+    <div style="font-size:12px;color:var(--text2);margin-bottom:8px;text-align:left;">O que você vai entregar? (opcional — pode entregar nada)</div>
     <div id="ti-my-resources" style="display:flex;flex-direction:column;gap:5px;margin-bottom:14px;"></div>
     <div id="ti-btns" style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap;"></div>
   </div>
 </div>
 
+<!-- TRADE REVEAL OVERLAY (both players see what was actually exchanged) -->
 <div id="trade-reveal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:120;align-items:center;justify-content:center;">
   <div style="background:#2A1E08;border:2px solid var(--border);border-radius:14px;width:min(480px,95vw);padding:24px;text-align:center;">
     <div style="font-size:38px;margin-bottom:8px;">🤝</div>
@@ -369,6 +381,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
   </div>
 </div>
 
+<!-- WINNER -->
 <div id="winner-screen">
   <div class="wbox">
     <div class="wbee">🐝</div>
@@ -396,6 +409,9 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
+// ════════════════════════════════════════════
+// CONSTANTES
+// ════════════════════════════════════════════
 const SQRT3=Math.sqrt(3), HEX_R=44;
 const P_COLORS=['#F4A61C','#42A5F5','#66BB6A','#EF9A9A'];
 
@@ -412,8 +428,6 @@ const TILE_VARIANTS=[
   {type:'fruit', label:'Árvores Frutíferas',icon:'🍎',color:'#BF360C',stroke:'#E64A19',yields:{geleia_real:2}},
   {type:'water', label:'Fonte de Água',     icon:'💧',color:'#0D47A1',stroke:'#1565C0',yields:{}},
 ];
-
-// AJUSTE QUANTIDADES - PONTO 4
 const TYPE_COUNTS={forest:15,field:15,apiary:10,fruit:10,water:7};
 
 const RM={
@@ -437,24 +451,69 @@ const RECIPES=[
 ];
 const COL_REQ={ninho:1,melgueira:1,chama_enxame:1,abelha_rainha:1};
 
+// Custo da melgueira extra: base 2 madeiras + 1 por melgueira já existente além da primeira
+// col.mel = número de melgueiras instaladas (começa em 1 ao montar)
+// Custo pra próxima = 2 + col.mel  (2ª custa 3, 3ª custa 4, etc.)
+function nextMelgueiraCost(col){ return 2 + (col.mel||1); }
+
+// Honey concedido ao MONTAR a colmeia e ao ADICIONAR melgueiras:
+// - Montar: 1 kg fixo
+// - Cada melgueira extra: +1 kg fixo (bônus de frutíferas não se repete, é calculado no momento da montagem)
+// Produção total = 1 + extras (mel permanece acumulado, não produz por rodada)
+
+// CARTAS DE EVENTO
+// Disparadas quando mel >= 5 (por player, uma vez por limiar: 5, 10, 15...)
 const EVENT_CARDS=[
-  {id:'saque',icon:'🦹',name:'Saqueamento de Mel',effect:'Você foi saqueado! Deve ceder 1 kg de mel ao jogador com menor quantidade.',mitigation:'Use 1 Própolis.',mitigItem:'propolis', mitigQty:1},
-  {id:'tamandua',icon:'🐜',name:'Tamanduá-Bandeira!',effect:'O Tamanduá atacou seu apiário! Você perde 2 kg de mel.',mitigation:'Use 3 Madeiras.',mitigItem:'madeira', mitigQty:3},
-  {id:'custos',icon:'📈',name:'Aumento dos Custos',effect:'Custos dobrados neste turno.',mitigation:null},
+  {
+    id:'saque',
+    icon:'🦹',
+    name:'Saqueamento de Mel',
+    effect:'Você foi saqueado! Deve ceder 1 kg de mel ao jogador com menor quantidade.',
+    mitigation:'Se tiver Própolis em estoque, descarte 1 unidade para vedar a caixa e ignorar o evento.',
+    mitigItem:'propolis', mitigQty:1,
+  },
+  {
+    id:'tamandua',
+    icon:'🐜',
+    name:'Tamanduá-Bandeira!',
+    effect:'O Tamanduá atacou seu apiário! Você perde 2 kg de mel.',
+    mitigation:'Se tiver Madeira em estoque, descarte 3 unidades para construir uma cerca e se proteger.',
+    mitigItem:'madeira', mitigQty:3,
+  },
+  {
+    id:'custos',
+    icon:'📈',
+    name:'Aumento dos Custos de Produção',
+    effect:'Os custos de produção dobraram! Melgueiras e Ninhos ficam 2× mais caros neste turno.',
+    mitigation:null, // sem mitigação
+    mitigItem:null, mitigQty:0,
+  },
 ];
 
+// ════════════════════════════════════════════
+// SESSION
+// ════════════════════════════════════════════
 let me={name:'',idx:-1};
 let room={code:'',ref:null,listener:null,n:0};
 let G=null;
 let UI={mode:null,committed:false,pending:null};
-let pendingEvent=null;
-let costMultiplier=1;
+// local event state (only for current player's overlay)
+let pendingEvent=null; // {card, playerIdx}
+let costMultiplier=1;  // 1 or 2, set by "custos" event card, resets next turn
 
-// TRADE LOCAL STATE
-let tradeTargetIdx=-1;
-let tradeRequestedLocal={}; 
-let tradeClaimedLocal={};   
-let tradeActualLocal={};    
+// ════════════════════════════════════════════
+// LOBBY
+// ════════════════════════════════════════════
+let _n=0;
+function selN(n){
+  _n=n;
+  document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2));
+  upCreate();
+}
+document.getElementById('inp-name').addEventListener('input',upCreate);
+function upCreate(){ document.getElementById('btn-create').disabled=!document.getElementById('inp-name').value.trim()||!_n; }
+function setErr(m){document.getElementById('lobby-err').textContent=m;}
+function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
 
 async function createRoom(){
   const name=document.getElementById('inp-name').value.trim();
@@ -462,13 +521,15 @@ async function createRoom(){
   setErr(''); me.name=name; me.idx=0;
   room.code=genCode(); room.n=_n; room.ref=db.ref('rooms/'+room.code);
   const deck=mkDeck(); shuffle(deck);
+  const evDeck=mkEventDeck();
   await room.ref.set({
     code:room.code,status:'waiting',n:_n,
     players:[{name,color:P_COLORS[0]}],
-    deck,board:mkBoard(),evDeck:mkEventDeck(),
+    deck,board:mkBoard(),evDeck,
     cp:0,turn:1,di:1,ct:deck[0],
     ac:null,tr:false,over:false,
-    costMult:1,ts:Date.now()
+    costMult:1, // global cost multiplier (resets each turn)
+    ts:Date.now()
   });
   subscribe(); showWait(room.code);
 }
@@ -477,206 +538,1414 @@ async function joinRoom(){
   const name=document.getElementById('inp-name').value.trim();
   const code=document.getElementById('inp-code').value.trim().toUpperCase();
   if(!name){setErr('Preencha seu nome.');return;}
+  if(code.length!==4){setErr('Código deve ter 4 caracteres.');return;}
+  setErr('Conectando...');
   const snap=await db.ref('rooms/'+code).get();
   if(!snap.exists()){setErr('Sala não encontrada.');return;}
   const r=snap.val();
-  me.name=name; me.idx=(r.players||[]).length; room.code=code; room.ref=db.ref('rooms/'+code);
+  if(r.status==='playing'){setErr('Partida já começou.');return;}
+  if(r.status==='finished'){setErr('Partida já encerrada.');return;}
+  const cur=(r.players||[]).length;
+  if(cur>=r.n){setErr('Sala cheia!');return;}
+  me.name=name; me.idx=cur; room.code=code; room.n=r.n; room.ref=db.ref('rooms/'+code);
   await room.ref.child('players').child(me.idx).set({name,color:P_COLORS[me.idx]});
-  subscribe(); showWait(code);
+  setErr(''); subscribe(); showWait(code);
 }
 
+function showWait(code){
+  document.getElementById('lobby-screen').classList.add('hidden');
+  document.getElementById('waiting-screen').classList.remove('hidden');
+  document.getElementById('disp-code').textContent=code;
+}
+function copyCode(){
+  navigator.clipboard.writeText(room.code).then(()=>{
+    const el=document.getElementById('disp-code'),t=el.textContent;
+    el.textContent='COPIADO!';setTimeout(()=>el.textContent=t,1500);
+  });
+}
+async function startRoom(){
+  if(me.idx!==0)return;
+  const s=await room.ref.get(),r=s.val();
+  if((r.players||[]).length<2){alert('Aguarde pelo menos 2 jogadores.');return;}
+  await room.ref.update({status:'playing'});
+}
+async function leaveRoom(){
+  if(room.listener)room.ref.off('value',room.listener);
+  if(room.ref)await room.ref.child('players').child(me.idx).remove();
+  location.reload();
+}
+
+// ════════════════════════════════════════════
+// FIREBASE SUBSCRIPTION
+// ════════════════════════════════════════════
 function subscribe(){
+  if(room.listener)room.ref.off('value',room.listener);
   room.listener=room.ref.on('value',snap=>{
-    const r=snap.val(); if(!r)return;
+    if(!snap.exists())return;
+    const r=snap.val();
     if(r.status==='waiting'){renderWait(r);return;}
-    if(!G||G.status!=='playing'){
-      document.getElementById('waiting-screen').classList.add('hidden');
-      document.getElementById('lobby-screen').classList.add('hidden');
-      buildSidebars(r);
+    if(r.status==='playing'||r.status==='finished'){
+      if(!G||G.status!=='playing'){
+        document.getElementById('waiting-screen').classList.add('hidden');
+        document.getElementById('lobby-screen').classList.add('hidden');
+        buildSidebars(r);
+      }
+      G=r;
+      costMultiplier=r.costMult||1;
+      onUpdate(r);
     }
-    G=r; costMultiplier=r.costMult||1; onUpdate(r);
   });
 }
 
+function renderWait(r){
+  const players=r.players||[];
+  document.getElementById('slot-list').innerHTML=
+    Array.from({length:r.n},(_,i)=>{
+      const p=players[i];
+      return `<div class="slot">
+        <span class="slot-dot" style="background:${p?P_COLORS[i]:'var(--border)'}"></span>
+        ${p?`<span class="slot-name">${p.name}</span>${i===me.idx?'<span class="slot-you">Você</span>':''}`:`<span class="slot-empty">Aguardando...</span>`}
+      </div>`;
+    }).join('');
+  const sb=document.getElementById('btn-start-room');
+  if(me.idx===0){sb.style.display='block';sb.classList.toggle('ready',players.length>=2);}
+  else{sb.style.display='none';document.getElementById('wait-title').textContent='Aguardando o host iniciar...';}
+}
+
+// ════════════════════════════════════════════
+// GAME STATE UPDATE
+// ════════════════════════════════════════════
 function onUpdate(r){
   if(r.over){renderAll(r);showWinner(r);return;}
   const my=r.cp===me.idx;
-  document.getElementById('turn-banner').classList.toggle('show', !my);
-  if(!my) document.getElementById('wt-name').textContent=r.players[r.cp].name;
-  
-  // REVEAL LOGIC - PONTO 2 & 5
-  if(my && r.ac === 'tile' && !r.tr && r.ct){
-    const td=tdef(r.ct.type);
-    document.getElementById('rv-preview').innerHTML=`<div class="rv-icon">${td.icon}</div><div class="rv-name">${td.label}</div>`;
-    document.getElementById('reveal-screen').classList.remove('hidden');
-  } else {
-    document.getElementById('reveal-screen').classList.add('hidden');
+  // banner
+  if(my){document.getElementById('turn-banner').classList.remove('show');}
+  else{
+    document.getElementById('turn-banner').classList.add('show');
+    const cp=(r.players||[])[r.cp];
+    document.getElementById('wt-name').textContent=cp?cp.name:'...';
+  }
+  // Tile reveal screen: only shown when player has CHOSEN to place a tile (tr=true)
+  // Never shown automatically at turn start — player must pick the action first
+  if(my && r.tr && r.status==='playing' && r.ct && UI.mode==='tile' && !UI.committed){
+    // This path is now unused — reveal happens inline in setMode('tile')
+  }
+  // Always hide the reveal screen — it's now triggered only from setMode('tile')
+  document.getElementById('reveal-screen').classList.add('hidden');
+
+  if(my&&!r.tr) UI={mode:null,committed:false,pending:null};
+
+  // Handle trade state changes for all players
+  handleTradeUpdates(r);
+
+  // Check if current player needs to draw an event card (only show for that player)
+  if(my && r.pendingEvent && !pendingEvent){
+    const evCard=EVENT_CARDS.find(e=>e.id===r.pendingEvent.id);
+    if(evCard) showEventOverlay(evCard, r.pendingEvent);
+  } else if(!r.pendingEvent){
+    document.getElementById('event-overlay').classList.remove('open');
+    pendingEvent=null;
   }
 
-  handleTradeUpdates(r);
   renderAll(r);
+}
+
+// ════════════════════════════════════════════
+// EVENT CARD LOGIC
+// ════════════════════════════════════════════
+function mkEventDeck(){
+  // 3 copies of each card, shuffled
+  const d=[...EVENT_CARDS,...EVENT_CARDS,...EVENT_CARDS];
+  shuffle(d); return d.map(e=>e.id);
+}
+
+// Called after honey changes: check if player crossed a 5kg milestone
+function checkEventTrigger(players, evDeck, playerIdx){
+  const p=players[playerIdx];
+  const honey=p.honey||0;
+  const milestones=p.milestones||[];
+  // find all multiples of 5 up to honey that haven't been triggered
+  const nextMilestone=milestones.length>0?(milestones[milestones.length-1]+5):5;
+  if(honey>=nextMilestone && (evDeck||[]).length>0){
+    const evId=(evDeck||[])[0];
+    const newDeck=(evDeck||[]).slice(1);
+    p.milestones=[...(p.milestones||[]),nextMilestone];
+    return{evId, newDeck};
+  }
+  return null;
+}
+
+function showEventOverlay(card, evData){
+  pendingEvent=evData;
+  document.getElementById('ev-icon').textContent=card.icon;
+  document.getElementById('ev-name').textContent=card.name;
+  document.getElementById('ev-effect').innerHTML='<strong>Efeito:</strong> '+card.effect;
+
+  const p=(G.players||[])[me.idx]||{};
+  const mitigBtn=document.getElementById('ev-btn-mitigate');
+  const acceptBtn=document.getElementById('ev-btn-accept');
+
+  if(card.mitigation){
+    document.getElementById('ev-mitigation').innerHTML='<strong>Mitigação:</strong> '+card.mitigation;
+    document.getElementById('ev-mitigation').style.display='block';
+    const hasMitig=card.mitigItem&&((p.raw||{})[card.mitigItem]||0)>=card.mitigQty;
+    mitigBtn.style.display='inline-block';
+    mitigBtn.disabled=!hasMitig;
+    mitigBtn.textContent=hasMitig?`Usar mitigação (descarta ${card.mitigQty} ${RM[card.mitigItem]?.icon||''})`:'Sem recursos para mitigar';
+  } else {
+    document.getElementById('ev-mitigation').style.display='none';
+    mitigBtn.style.display='none';
+  }
+
+  acceptBtn.onclick=()=>resolveEvent(card,false);
+  mitigBtn.onclick=()=>resolveEvent(card,true);
+  document.getElementById('event-overlay').classList.add('open');
+}
+
+async function resolveEvent(card, mitigated){
+  if(!myTurn())return;
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  let evDeck=clone(G.evDeck||[]);
+
+  if(mitigated && card.mitigItem){
+    // consume mitigation item
+    p.raw=p.raw||{};
+    p.raw[card.mitigItem]=(p.raw[card.mitigItem]||0)-card.mitigQty;
+    msg(`✅ Mitigação usada! Evento ignorado.`);
+  } else {
+    // apply effect
+    if(card.id==='saque'){
+      // transfer 1 kg to player with least honey
+      const honeys=players.map((pl,i)=>({i,h:pl.honey||0}));
+      const minIdx=honeys.filter(x=>x.i!==me.idx).sort((a,b)=>a.h-b.h)[0]?.i;
+      if(minIdx!==undefined && (p.honey||0)>0){
+        p.honey=Math.max(0,(p.honey||0)-1);
+        players[minIdx].honey=(players[minIdx].honey||0)+1;
+        msg(`🦹 Saqueado! 1 kg cedido para ${players[minIdx].name}.`);
+      }
+    } else if(card.id==='tamandua'){
+      p.honey=Math.max(0,(p.honey||0)-2);
+      msg(`🐜 Tamanduá atacou! Perdeu 2 kg de mel.`);
+    } else if(card.id==='custos'){
+      // double costs for this turn (stored globally, resets on next endTurn)
+      await room.ref.update({costMult:2});
+      costMultiplier=2;
+      msg(`📈 Custos dobrados neste turno!`);
+    }
+  }
+
+  document.getElementById('event-overlay').classList.remove('open');
+  pendingEvent=null;
+  await room.ref.update({players, evDeck, pendingEvent:null});
+}
+
+// ════════════════════════════════════════════
+// PLAYER WRITES
+// ════════════════════════════════════════════
+function myTurn(){if(!G||G.cp!==me.idx){msg('Não é a sua vez!');return false;}return true;}
+
+async function confirmReveal(){
+  // Player confirmed seeing the tile — now activate tile placement on board
+  if(!myTurn())return;
+  document.getElementById('reveal-screen').classList.add('hidden');
+  UI.committed=true;
+  await room.ref.update({tr:true});
+  renderAll(G);
+  msg('Tile revelado! Clique em um espaço verde para posicionar.');
+}
+
+// Auto endTurn — called internally after tile placement (only auto-case)
+async function autoEndTurn(){
+  const np=(G.cp+1)%(G.players||[]).length;
+  const nt=np===0?G.turn+1:G.turn;
+  const nc=(G.deck||[])[G.di]||null;
+  UI={mode:null,committed:false,pending:null};
+  // reset cost multiplier on turn end
+  await room.ref.update({cp:np,turn:nt,ct:nc,di:G.di+1,ac:null,tr:false,over:!nc,status:!nc?'finished':'playing',costMult:1});
+}
+
+// Manual endTurn — player clicks the button (craft, colmeia, polli, trade actions)
+async function manualEndTurn(){
+  if(!myTurn())return;
+  if(!G.ac){msg('Faça pelo menos uma ação antes de encerrar o turno.');return;}
+  if(G.ac==='tile'){msg('O turno de colocação de tile já encerrou automaticamente.');return;}
+  closeModal();
+  await autoEndTurn();
 }
 
 function setMode(m){
   if(!myTurn())return;
-  if(G.ac && G.ac!=='tile' && m==='tile'){msg('Já escolheu outra ação.'); return;}
-  
+  if(G.ac&&G.ac!==m){msg(`Você já escolheu ${G.ac==='tile'?'colocar tile':G.ac==='craft'?'trocas':G.ac==='trade'?'negociação':G.ac==='polli'?'polinização':'colmeia'} neste turno.`);return;}
   if(m==='tile'){
-    // Registra ação primeiro para disparar Reveal - PONTO 2
-    room.ref.update({ac: 'tile'});
-    UI.mode='tile';
+    // Show the tile reveal screen NOW — player chose to place a tile, so they earn the right to see it
+    if(!G.ct){msg('Não há mais tiles no baralho.');return;}
+    const td=tdef(G.ct.type);
+    const ys=Object.entries(G.ct.yields||{}).length
+      ?Object.entries(G.ct.yields).map(([k,v])=>`+${v} ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(' · ')
+      :'Sem recursos';
+    document.getElementById('rv-whose').textContent=`Você escolheu colocar um tile, ${me.name}!`;
+    document.getElementById('rv-preview').innerHTML=`<div class="rv-icon">${td.icon}</div><div class="rv-name">${td.label}</div><div class="rv-yields">${ys}</div>`;
+    document.getElementById('reveal-screen').classList.remove('hidden');
+    UI.mode='tile'; // mark mode but not yet committed — committed=true only after confirmReveal
+  } else if(m==='polli'){
+    UI.mode='polli';
+    openModal('polli');
   } else {
+    UI.mode=m; renderAll(G);
     openModal(m==='craft'?'craft':'col');
   }
 }
 
-async function manualEndTurn(){
+// ── Tile placement (infinite board: grows automatically) ──
+function placeTile(id){
   if(!myTurn())return;
-  const np=(G.cp+1)%G.players.length;
-  const nt=np===0?G.turn+1:G.turn;
-  const nc=G.deck[G.di]||null;
-  await room.ref.update({cp:np,turn:nt,ct:nc,di:G.di+1,ac:null,tr:false,over:!nc,status:!nc?'finished':'playing',costMult:1,trade:null});
+  if(UI.mode!=='tile'){msg('Ative "Colocar Tile" primeiro.');return;}
+  if(G.ac&&G.ac!=='tile'){msg('Você já escolheu outra ação.');return;}
+  const board=G.board||[];
+  // For infinite board: id is always a valid neighbour slot
+  UI.pending=id; renderAll(G);
+  msg('Confirme a posição ou cancele para escolher outro lugar.');
 }
 
 async function confirmPlace(){
-  const board=clone(G.board);
-  const cell={...UI.pending, placed:G.ct};
-  board.push(cell);
-  const players=clone(G.players);
-  Object.entries(G.ct.yields).forEach(([k,v])=>players[me.idx].raw[k]=(players[me.idx].raw[k]||0)+v);
-  UI.pending=null;
-  await room.ref.update({board, players});
-  manualEndTurn(); // Auto end no tile - PONTO 1
+  if(!myTurn())return;
+  const id=UI.pending; if(!id)return;
+  let board=clone(G.board||[]);
+  // Add cell if it doesn't exist yet (infinite board)
+  if(!board.find(c=>c.id===id)){
+    const [col,row]=id.split('_').map(Number);
+    board.push({col,row,id,placed:null});
+  }
+  const cell=board.find(c=>c.id===id); if(!cell)return;
+  cell.placed={...G.ct};
+
+  // Expand board: add empty neighbours around every placed cell
+  board=expandBoard(board);
+
+  const players=clone(G.players||[]);
+  const p=players[me.idx]; p.raw=p.raw||{};
+  for(let[k,v] of Object.entries(G.ct.yields||{})) p.raw[k]=(p.raw[k]||0)+v;
+
+  // No honey harvest on placement (honey only on colmeia install/upgrade)
+
+  let evDeck=clone(G.evDeck||[]);
+  let pendingEventData=null;
+
+  UI.pending=null; UI.mode=null;
+  const ys=Object.entries(G.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k}`).join(' ')||'(sem recursos)';
+  await room.ref.update({board,players,ac:'tile',evDeck,pendingEvent:pendingEventData});
+  msg(`✅ Tile colocado! ${ys}`);
+  // Auto end turn after tile placement
+  setTimeout(()=>autoEndTurn(),800);
 }
 
-// TRADE SYSTEM - PONTO 3
-function openTradeModal(){
+function expandBoard(board){
+  // Only add cells that were actually just placed — we no longer pre-populate
+  // all neighbours (that caused the ghost hexagons bug).
+  // validSlots() generates virtual neighbour cells on-the-fly for display.
+  return board;
+}
+
+function cancelPlace(){UI.pending=null;renderAll(G);msg('Cancelado.');}
+
+// ── Craft (trocas) ──
+async function doCraft(rid){
   if(!myTurn())return;
-  tradeTargetIdx=-1; tradeRequestedLocal={}; tradeClaimedLocal={}; tradeActualLocal={};
-  let h=`<div class="msec"><h3>1. Negociar com:</h3><div style="display:flex;gap:5px;flex-wrap:wrap;">`;
-  G.players.forEach((p,i)=>{
-    if(i!==me.idx) h+=`<button class="mtab" onclick="selectTradePartner(${i})">${p.name}</button>`;
+  if(G.ac&&G.ac!=='craft'){msg('Ação bloqueada neste turno.');return;}
+  const r=RECIPES.find(x=>x.id===rid); if(!r)return;
+  const players=clone(G.players||[]);
+  const p=players[me.idx]; p.raw=p.raw||{}; p.crafted=p.crafted||{};
+  // Apply cost multiplier (event card "custos")
+  const mult=costMultiplier||1;
+  const effectiveCost={};
+  for(let[k,v] of Object.entries(r.cost)) effectiveCost[k]=v*mult;
+  if(!afford(p.raw,effectiveCost)){msg(`Recursos insuficientes.${mult>1?' (custos dobrados!)':`</br>`}`);return;}
+  for(let[k,v] of Object.entries(effectiveCost))p.raw[k]-=v;
+  p.crafted[r.result.key]=(p.crafted[r.result.key]||0)+r.result.qty;
+  await room.ref.update({players,ac:'craft'});
+  msg(`✅ Fabricou ×${r.result.qty} ${CM[r.result.key]?.label}! Pode continuar trocando ou encerrar o turno.`);
+  buildTabs();
+}
+
+function checkAutoEndCraft(players,idx){
+  // No longer auto-ends — player uses the manual end turn button
+}
+
+// ── Install colmeia ──
+async function installCol(id){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='col'){msg('Ação bloqueada neste turno.');return;}
+  const board=G.board||[];
+  const cell=board.find(c=>c.id===id); if(!cell)return;
+  if(!nbrs(cell.col,cell.row,board).some(n=>n.placed&&n.placed.type==='water')){
+    msg('Este Apiário não toca uma Fonte de Água!');return;
+  }
+  const players=clone(G.players||[]);
+  const p=players[me.idx]; p.crafted=p.crafted||{};
+  if(!Object.entries(COL_REQ).every(([k,q])=>(p.crafted[k]||0)>=q)){msg('Itens insuficientes.');return;}
+  for(let[k,q] of Object.entries(COL_REQ))p.crafted[k]-=q;
+  const brd=clone(board);
+  brd.find(c=>c.id===id).placed.hasCol=me.idx;
+  const fb=nbrs(cell.col,cell.row,board).filter(n=>n.placed&&n.placed.type==='fruit').length;
+  p.colmeias=p.colmeias||[];
+  // mel = kg ganhos ao montar (1 base + frutas adj.)
+  const honeyGained=1+fb;
+  p.honey=(p.honey||0)+honeyGained;
+  p.colmeias.push({cellId:id,fb,mel:1}); // mel = number of melgueiras (starts at 1)
+
+  // Check event trigger
+  let evDeck=clone(G.evDeck||[]);
+  let pendingEventData=null;
+  const trig=checkEventTrigger(players,evDeck,me.idx);
+  if(trig){evDeck=trig.newDeck;pendingEventData={id:trig.evId,target:me.idx};}
+
+  await room.ref.update({board:brd,players,ac:'col',evDeck,pendingEvent:pendingEventData});
+  msg(`🐝 Colmeia instalada! +${honeyGained} kg de mel. Encerre o turno quando quiser.`);
+  closeModal();
+  // Check event for current player
+  if(pendingEventData){
+    const card=EVENT_CARDS.find(e=>e.id===pendingEventData.id);
+    if(card) showEventOverlay(card, pendingEventData);
+  }
+}
+}
+
+// ── Upgrade colmeia (add melgueira) ──
+async function upgradeCol(colIdx){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='col'){msg('Ação bloqueada neste turno.');return;}
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  p.raw=p.raw||{}; p.colmeias=p.colmeias||[];
+  const col=p.colmeias[colIdx]; if(!col)return;
+  const cost=nextMelgueiraCost(col);
+  if((p.raw.madeira||0)<cost){msg(`Madeira insuficiente. Custo: ${cost} 🪵`);return;}
+  p.raw.madeira-=cost;
+  col.mel=(col.mel||1)+1;
+  // +1 kg de mel pela nova melgueira
+  p.honey=(p.honey||0)+1;
+
+  // Check event trigger
+  let evDeck=clone(G.evDeck||[]);
+  let pendingEventData=null;
+  const trig=checkEventTrigger(players,evDeck,me.idx);
+  if(trig){evDeck=trig.newDeck;pendingEventData={id:trig.evId,target:me.idx};}
+
+  await room.ref.update({players,ac:'col',evDeck,pendingEvent:pendingEventData});
+  msg(`📦 Melgueira adicionada! +1 kg de mel. Total: ${p.honey} kg. Encerre o turno quando quiser.`);
+  buildTabs();
+  if(pendingEventData){
+    const card=EVENT_CARDS.find(e=>e.id===pendingEventData.id);
+    if(card) showEventOverlay(card,pendingEventData);
+  }
+}
+
+// ════════════════════════════════════════════
+// BOARD UTILS
+// ════════════════════════════════════════════
+function mkBoard(){
+  // Start with just the center cell — the board grows as tiles are placed
+  return [{col:4,row:3,id:'4_3',placed:null}];
+}
+function mkDeck(){
+  const d=[];
+  for(let[t,cnt] of Object.entries(TYPE_COUNTS)){
+    const vs=TILE_VARIANTS.filter(v=>v.type===t);
+    for(let i=0;i<cnt;i++){
+      const v=vs[Math.floor(Math.random()*vs.length)];
+      d.push({type:v.type,label:v.label,icon:v.icon,yields:{...v.yields}});
+    }
+  }
+  return d;
+}
+function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}}
+function clone(x){return JSON.parse(JSON.stringify(x));}
+function afford(raw,cost){return Object.entries(cost).every(([k,v])=>(raw[k]||0)>=v);}
+function tdef(t){return TILE_VARIANTS.find(v=>v.type===t)||TILE_VARIANTS[0];}
+
+function hctr(col,row){return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10,y:HEX_R*1.5*row+HEX_R+10};}
+function hpts(cx,cy,r){
+  return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(cx+r*Math.cos(a)).toFixed(2)},${(cy+r*Math.sin(a)).toFixed(2)}`;}).join(' ');
+}
+function getDirs(row){
+  return row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]];
+}
+function allNbrs(col,row){
+  return getDirs(row).map(([dc,dr])=>({col:col+dc,row:row+dr,id:`${col+dc}_${row+dr}`}));
+}
+function nbrs(col,row,board){
+  const map=new Map((board||[]).map(c=>[c.id,c]));
+  return allNbrs(col,row).map(n=>map.get(n.id)).filter(Boolean);
+}
+
+// ── Valid slots: ALL 6 neighbours of EVERY placed tile that are empty ──
+// This guarantees every tile always shows up to 6 free sides as placement options.
+function validSlots(board){
+  const placed=(board||[]).filter(c=>c.placed);
+  if(!placed.length){
+    const center=(board||[]).find(c=>c.col===4&&c.row===3)||(board||[])[0];
+    return center?[center]:[];
+  }
+  const occ=new Set(placed.map(c=>c.id));
+  // Collect every empty neighbour of every placed tile
+  const validMap=new Map(); // id -> {col,row,id}
+  for(let cell of placed){
+    for(let nb of allNbrs(cell.col,cell.row)){
+      if(!occ.has(nb.id)) validMap.set(nb.id, nb);
+    }
+  }
+  // For each valid id, return the board cell if it exists, otherwise a virtual cell
+  const boardMap=new Map((board||[]).map(c=>[c.id,c]));
+  return [...validMap.values()].map(nb=>{
+    return boardMap.get(nb.id) || {col:nb.col, row:nb.row, id:nb.id, placed:null, _virtual:true};
   });
-  h+=`</div></div><div id="trade-form" style="display:none"></div>`;
-  document.getElementById('trade-content').innerHTML=h;
+}
+
+function colSlots(board){
+  return(board||[]).filter(c=>{
+    if(!c.placed||c.placed.type!=='apiary'||c.placed.hasCol!==undefined)return false;
+    return nbrs(c.col,c.row,board).some(n=>n.placed&&n.placed.type==='water');
+  });
+}
+
+// ════════════════════════════════════════════
+// RENDER
+// ════════════════════════════════════════════
+function renderAll(r){if(!r)return;renderHeader(r);renderBoard(r);renderSidebars2(r);renderBottom(r);}
+
+function renderHeader(r){
+  document.getElementById('h-turn').textContent=r.turn||1;
+  const cp=(r.players||[])[r.cp];
+  document.getElementById('h-player').textContent=cp?cp.name:'—';
+  const my=r.cp===me.idx, ac=r.ac;
+  const tb=document.getElementById('abtn-tile');
+  tb.disabled=!my||(ac&&ac!=='tile')||UI.committed;
+  tb.classList.toggle('am',UI.mode==='tile');
+  const cb=document.getElementById('abtn-craft');
+  cb.disabled=!my||(!!ac&&ac!=='craft');
+  cb.classList.toggle('am',ac==='craft');
+  const ab=document.getElementById('abtn-col');
+  ab.disabled=!my||(!!ac&&ac!=='col');
+  ab.classList.toggle('am',ac==='col');
+  const ttb=document.getElementById('abtn-trade');
+  if(ttb){ttb.disabled=!my||(!!ac&&ac!=='trade');ttb.classList.toggle('am',ac==='trade');}
+  const pb=document.getElementById('abtn-polli');
+  if(pb){pb.disabled=!my||(!!ac&&ac!=='polli');pb.classList.toggle('am',ac==='polli'||UI.mode==='polli');}
+  const lb={tile:'🌿 Tile colocado',craft:'⚒ Trocas',col:'🐝 Colmeia',trade:'🤝 Negociando',polli:'🌸 Polinizando'};
+  const statusEl=document.getElementById('turn-status');
+  if(statusEl) statusEl.textContent=(my&&ac)?`(${lb[ac]})` :'';
+  if(costMultiplier>1){
+    const statusEl=document.getElementById('turn-status');
+    if(statusEl) statusEl.textContent+=' 📈 Custos×2!';
+  }
+  // Show "Encerrar Turno" button whenever an action has been taken (except tile, which auto-ends)
+  const endBtn=document.getElementById('btn-end-turn');
+  if(endBtn){
+    const showEnd=my && ac && ac!=='tile';
+    endBtn.style.display=showEnd?'inline-block':'none';
+  }
+}
+
+function buildSidebars(r){
+  const n=(r.players||[]).length;
+  const lp=[0,2].filter(i=>i<n),rp=[1,3].filter(i=>i<n);
+  function mkSb(pis,side){
+    const sb=document.createElement('div');
+    sb.className=`sidebar${side==='right'?' right':''}`;
+    for(let pi of pis){
+      const p=(r.players||[])[pi]||{};
+      sb.innerHTML+=`
+      <div class="panel" id="pnl-${pi}">
+        <div class="ph" style="color:${P_COLORS[pi]}">${p.name||'?'}${pi===me.idx?' (você)':''}</div>
+        <div class="pb">
+          <div class="ptag" id="ptag-${pi}" style="color:${P_COLORS[pi]}">${p.name||'?'}</div>
+          <div class="hs"><div><div class="hl">Mel</div><div class="hv" id="ph-${pi}">0 kg</div></div><span style="font-size:22px">🍯</span></div>
+        </div>
+      </div>
+      <div class="panel"><div class="ph">Recursos</div><div class="pb"><div class="rlist" id="pr-${pi}"></div></div></div>
+      <div class="panel"><div class="ph">Fabricados</div><div class="pb"><div class="rlist" id="pc-${pi}"></div></div></div>
+      <div class="panel"><div class="ph">Colmeias</div><div class="pb"><div class="alist" id="pa-${pi}"></div></div></div>`;
+    }
+    return sb;
+  }
+  document.getElementById('sb-left').innerHTML='';
+  document.getElementById('sb-right').innerHTML='';
+  document.getElementById('sb-left').appendChild(mkSb(lp,'left'));
+  document.getElementById('sb-right').appendChild(mkSb(rp,'right'));
+}
+
+function renderSidebars2(r){
+  for(let pi=0;pi<(r.players||[]).length;pi++){
+    const p=(r.players||[])[pi],act=r.cp===pi;
+    const pnl=document.getElementById(`pnl-${pi}`);
+    if(pnl)pnl.className=`panel${act?' ap':''}${pi===me.idx?' me':''}`;
+    const pt=document.getElementById(`ptag-${pi}`);
+    if(pt)pt.innerHTML=act?`<span class="ai"></span><span style="color:${P_COLORS[pi]}">${p.name}</span>`:`<span style="color:${P_COLORS[pi]}">${p.name}</span>`;
+    const ph=document.getElementById(`ph-${pi}`);
+    if(ph)ph.textContent=(p.honey||0)+' kg';
+    const pr=document.getElementById(`pr-${pi}`);
+    if(pr)pr.innerHTML=Object.entries(RM).map(([k,m])=>`<div class="rrow"><span class="rn">${m.icon} ${m.label}</span><span class="rv">${(p.raw||{})[k]||0}</span></div>`).join('');
+    const pc=document.getElementById(`pc-${pi}`);
+    if(pc)pc.innerHTML=Object.entries(CM).map(([k,m])=>`<div class="rrow"><span class="rn">${m.icon} ${m.label}</span><span class="rv">${(p.crafted||{})[k]||0}</span></div>`).join('');
+    const pa=document.getElementById(`pa-${pi}`);
+    if(pa){
+      const cols=p.colmeias||[];
+      pa.innerHTML=cols.length
+        ?cols.map((c,i)=>`<div class="aitem">Colmeia ${i+1}: <strong>${c.mel||1} melgueira${(c.mel||1)>1?'s':''}</strong> · ${(c.honey_total||0)} kg total${c.fb?' 🍎×'+c.fb:''}</div>`).join('')
+        :'<span style="font-size:10px;color:var(--text3)">Nenhuma ainda</span>';
+      // Pollination preview
+      const polliPrev=totalPolliBonus(r.board||[],pi);
+      if(polliPrev>0){
+        pa.innerHTML+=`<div style="font-size:10px;color:#FFF176;margin-top:4px;padding:2px 5px;background:rgba(255,235,59,.08);border-radius:4px;border:1px solid rgba(255,235,59,.2);">🌸 +${polliPrev} kg bônus final (polinização)</div>`;
+      }
+    }
+  }
+}
+
+function renderBoard(r){
+  const svg=document.getElementById('board-svg');
+  svg.innerHTML='';
+  const board=r.board||[];
+  const my=r.cp===me.idx, ac=r.ac;
+
+  // Always compute all valid slots (6 sides of every placed tile) for rendering
+  // In tile mode → show as clickable green "+"; otherwise → show as dim empty hex outline
+  const allValidSlots=validSlots(board); // every empty neighbour of every placed tile
+  const vSet=(my&&UI.mode==='tile'&&!ac&&!UI.pending)
+    ? new Set(allValidSlots.map(c=>c.id))
+    : new Set(); // clickable only in tile mode
+  const vcSet=((!ac||ac==='col')&&my)?new Set(colSlots(board).map(c=>c.id)):new Set();
+
+  // Build the set of cells to render:
+  //   1. All placed cells
+  //   2. ALL empty neighbours (the 6-side slots) — always visible as outlines or clickable "+"
+  const placedCells=board.filter(c=>c.placed);
+
+  // Merge: placed + all valid slots (deduped by id)
+  const renderSet=new Map();
+  for(let c of placedCells) renderSet.set(c.id,c);
+  for(let c of allValidSlots) if(!renderSet.has(c.id)) renderSet.set(c.id,c);
+  // Also add pending cell
+  if(UI.pending){
+    const pc=board.find(c=>c.id===UI.pending);
+    if(pc&&!renderSet.has(pc.id)) renderSet.set(pc.id,pc);
+    else if(!pc) {
+      const [col,row]=UI.pending.split('_').map(Number);
+      renderSet.set(UI.pending,{col,row,id:UI.pending,placed:null});
+    }
+  }
+
+  const allCells=[...renderSet.values()];
+
+  // Compute viewport bounds from all cells to render
+  let minC=Infinity,maxC=-Infinity,minR=Infinity,maxR=-Infinity;
+  for(let c of allCells){
+    if(c.col<minC)minC=c.col; if(c.col>maxC)maxC=c.col;
+    if(c.row<minR)minR=c.row; if(c.row>maxR)maxR=c.row;
+  }
+  // Fallback if no cells
+  if(!isFinite(minC)){minC=3;maxC=5;minR=2;maxR=4;}
+  // Add 1-cell padding around rendered area
+  minC-=1; minR-=1; maxC+=1; maxR+=1;
+
+  const offC=-minC, offR=-minR;
+  const cols=maxC-minC+1, rows=maxR-minR+1;
+  const W=HEX_R*SQRT3*(cols+0.5)+30;
+  const H=HEX_R*1.5*rows+HEX_R+20;
+  svg.setAttribute('viewBox',`0 0 ${W} ${H}`);
+  svg.setAttribute('width',W); svg.setAttribute('height',H);
+
+  for(let cell of allCells){
+    const sc=cell.col+offC, sr=cell.row+offR;
+    const{x,y}=hctr(sc,sr);
+    const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+
+    if(cell.placed){
+      const td=tdef(cell.placed.type);
+      g.setAttribute('class','hex-placed');
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));
+      poly.setAttribute('fill',td.color);poly.setAttribute('stroke',td.stroke);poly.setAttribute('stroke-width','1.5');
+      g.appendChild(poly);
+      if(vcSet.has(cell.id)&&my){
+        const hl=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+        hl.setAttribute('points',hpts(x,y,HEX_R-1.5));hl.setAttribute('fill','none');
+        hl.setAttribute('stroke','#42A5F5');hl.setAttribute('stroke-width','2.5');hl.setAttribute('stroke-dasharray','4 2');
+        g.appendChild(hl);
+        g.setAttribute('class','hex-placed hcv');g.style.cursor='pointer';
+        g.addEventListener('click',()=>openModal('col'));
+      }
+      if(cell.placed.hasCol!==undefined){
+        const pc=P_COLORS[cell.placed.hasCol]||'#fff';
+        const mk=document.createElementNS('http://www.w3.org/2000/svg','circle');
+        mk.setAttribute('cx',x);mk.setAttribute('cy',y-HEX_R+14);mk.setAttribute('r','9');mk.setAttribute('fill',pc);mk.setAttribute('opacity','0.9');
+        g.appendChild(mk);
+        const mt=makeTxt(x,y-HEX_R+14,'#1A1208','9',(cell.placed.hasCol+1).toString());mt.setAttribute('font-weight','700');
+        g.appendChild(mt);
+      }
+      g.appendChild(makeTxt(x,y-6,null,'20',tdef(cell.placed.type).icon));
+      const ye=Object.entries(cell.placed.yields||{});
+      if(!ye.length){g.appendChild(makeTxt(x,y+13,'rgba(255,255,255,0.4)','9','sem recurso'));}
+      else ye.forEach(([k,v],i)=>g.appendChild(makeTxt(x,y+10+i*13,'rgba(255,255,255,0.85)','10',`+${v}${RM[k]?.icon||k}`)));
+
+      // Flower & bee markers (only on field/fruit tiles)
+      if(cell.placed.type==='field'||cell.placed.type==='fruit'){
+        const extraFlowers=cell.placed.flowers||0;
+        const allBees=cell.placed.bees||{};
+        const totalBees=Object.values(allBees).reduce((s,n)=>s+n,0);
+        // Show flower icon bottom-left if any extra flowers bought
+        if(extraFlowers>0){
+          const fbg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+          fbg.setAttribute('cx',x-HEX_R*.52);fbg.setAttribute('cy',y+HEX_R*.52);
+          fbg.setAttribute('r','11');fbg.setAttribute('fill','rgba(244,143,177,.25)');fbg.setAttribute('stroke','rgba(244,143,177,.6)');fbg.setAttribute('stroke-width','1');
+          g.appendChild(fbg);
+          g.appendChild(makeTxt(x-HEX_R*.52,y+HEX_R*.52,null,'11','🌸'));
+          // extra flower count badge
+          if(extraFlowers>0){
+            g.appendChild(makeTxt(x-HEX_R*.52+8,y+HEX_R*.52-8,'#F48FB1','7','+'+extraFlowers));
+          }
+        }
+        // Show bee markers bottom-right, one colored dot per player who has bees here
+        let dotOffset=0;
+        for(let[piStr,cnt] of Object.entries(allBees)){
+          if(!cnt)continue;
+          const pi=parseInt(piStr);
+          const bx=x+HEX_R*.48, by=y+HEX_R*.52;
+          const bg=document.createElementNS('http://www.w3.org/2000/svg','circle');
+          bg.setAttribute('cx',bx+dotOffset);bg.setAttribute('cy',by);
+          bg.setAttribute('r','9');bg.setAttribute('fill',P_COLORS[pi]||'#FFD54F');bg.setAttribute('opacity','0.88');
+          g.appendChild(bg);
+          g.appendChild(makeTxt(bx+dotOffset,by,'#1A1208','8','🐝'));
+          // count badge
+          if(cnt>1) g.appendChild(makeTxt(bx+dotOffset+6,by-7,'#fff','7','×'+cnt));
+          dotOffset-=12;
+        }
+      }
+
+    } else if(UI.pending===cell.id){
+      const td=tdef(r.ct?.type||'forest');
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill',td.color);poly.setAttribute('stroke','#FFD54F');poly.setAttribute('stroke-width','3');
+      g.appendChild(poly);
+      const p2=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      p2.setAttribute('points',hpts(x,y,HEX_R+2));p2.setAttribute('fill','none');p2.setAttribute('stroke','#FFD54F');
+      p2.setAttribute('stroke-width','2');p2.setAttribute('stroke-dasharray','4 3');p2.setAttribute('opacity','0.7');
+      g.appendChild(p2);
+      g.appendChild(makeTxt(x,y-4,null,'20',tdef(r.ct?.type||'forest').icon));
+
+    } else if(vSet.has(cell.id)){
+      // Tile mode: clickable bright "+" slot
+      g.setAttribute('class','hev');
+      g.addEventListener('click',()=>placeTile(cell.id));
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#2A1E08');
+      poly.setAttribute('stroke','#6B5030');poly.setAttribute('stroke-width','1.5');poly.setAttribute('stroke-dasharray','5 3');
+      g.appendChild(poly);
+      g.appendChild(makeTxt(x,y,'#7A6040','22','+'));
+    } else if(!cell.placed){
+      // Not in tile mode but still an adjacent empty slot: show as dim outline (always visible)
+      const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon');
+      poly.setAttribute('points',hpts(x,y,HEX_R-1.5));poly.setAttribute('fill','#1E1408');
+      poly.setAttribute('stroke','#3A2810');poly.setAttribute('stroke-width','1');poly.setAttribute('stroke-dasharray','4 3');
+      g.appendChild(poly);
+    }
+    // Do NOT render a fallback empty hex for any other cell — only placed + valid slots are shown
+    svg.appendChild(g);
+  }
+}
+
+function makeTxt(x,y,fill,fs,content){
+  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
+  t.setAttribute('x',x);t.setAttribute('y',y);
+  t.setAttribute('text-anchor','middle');t.setAttribute('dominant-baseline','central');
+  if(fill)t.setAttribute('fill',fill);
+  t.setAttribute('font-size',fs);t.textContent=content;
+  return t;
+}
+
+function renderBottom(r){
+  const pre=document.getElementById('deck-preview');
+  const cnt=document.getElementById('deck-count');
+  const rem=(r.deck||[]).length-(r.di||1);
+  const my=r.cp===me.idx;
+  if(!r.ct){pre.innerHTML=`<span style="font-size:12px;color:var(--text3)">Nenhum tile restante</span>`;cnt.textContent='';return;}
+  if(UI.pending){
+    const td=tdef(r.ct.type);
+    const y=Object.entries(r.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k}`).join(' ')||'sem recurso';
+    pre.innerHTML=`<div class="t-pending">
+      <span style="color:var(--text2)">Posicionar aqui?</span>
+      <span style="font-size:18px">${td.icon}</span>
+      <strong style="color:var(--text)">${td.label} — ${y}</strong>
+      <button id="btn-ok" onclick="confirmPlace()">✓ Confirmar</button>
+      <button id="btn-no" onclick="cancelPlace()">✕ Cancelar</button>
+    </div>`;
+  } else if(!my||!r.tr){
+    pre.innerHTML=`<div class="t-hidden"><span style="font-size:20px">🎴</span><span>${my?'Selecione "Colocar Tile" para ver':'Tile oculto'}</span></div>`;
+  } else {
+    const td=tdef(r.ct.type);
+    const y=Object.entries(r.ct.yields||{}).map(([k,v])=>`+${v} ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')||'sem recursos';
+    pre.innerHTML=`<div class="t-locked">
+      <span style="font-size:20px">${td.icon}</span>
+      <div><div class="tn">${td.label}</div><div class="ty">${y}</div></div>
+      ${UI.mode==='tile'?'<span style="font-size:11px;color:#66BB6A;margin-left:4px;">▶ Clique em espaço verde</span>':''}
+    </div>`;
+  }
+  cnt.textContent=`${rem} tile${rem!==1?'s':''} restante${rem!==1?'s':''}`;
+}
+
+// ════════════════════════════════════════════
+// MODAL
+// ════════════════════════════════════════════
+let curTab='craft';
+function openModal(tab){
+  if(!myTurn())return;
+  const t=tab==='col'||tab==='upg'?'col':tab==='polli'?'polli':'craft';
+  if(G&&G.ac&&G.ac!==t){msg('Ação bloqueada neste turno.');return;}
+  curTab=tab||'craft';buildTabs();
+  document.getElementById('modal-overlay').classList.add('open');
+  switchTab(curTab);
+}
+function closeModal(){document.getElementById('modal-overlay').classList.remove('open');}
+function switchTab(tab){
+  curTab=tab;
+  document.querySelectorAll('.tab-pane').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.mtab').forEach(b=>b.classList.remove('active'));
+  document.getElementById(`tab-${tab}`).classList.add('active');
+  document.getElementById(`tab-${tab}-btn`).classList.add('active');
+}
+function buildTabs(){buildCraft();buildCol();buildUpgrade();buildPolli();}
+
+function buildCraft(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='craft';
+  const mult=costMultiplier||1;
+  let h=lk
+    ?`<div class="note" style="color:var(--red);">🚫 Você já escolheu <strong>${G.ac==='tile'?'colocar tile':'colmeia'}</strong> neste turno.</div>`
+    :`<div class="note">⚒ Trocas são <strong>ilimitadas</strong> neste turno!${mult>1?' <span style="color:var(--red);"> 📈 Custos ×2!</span>':''}</div>`;
+  h+=`<div class="minfo" style="margin-top:8px;">Seus recursos: <div style="display:flex;flex-wrap:wrap;gap:4px;margin-top:4px;">`;
+  for(let[k,v] of Object.entries(p.raw||{}))if(v>0)
+    h+=`<span style="background:var(--card2);border:1px solid var(--border);border-radius:4px;padding:2px 7px;font-size:11px;">${RM[k]?.icon||'?'} <strong>${v}</strong> ${RM[k]?.label||k}</span>`;
+  h+=`</div></div><div class="msec" style="margin-top:10px;"><h3>Receitas${mult>1?' (custos dobrados!)':''}</h3><div class="rgrid" id="recipes-grid"></div></div>`;
+  document.getElementById('tab-craft').innerHTML=h;
+  const grid=document.getElementById('recipes-grid');
+  for(let r of RECIPES){
+    const ec={};for(let[k,v] of Object.entries(r.cost))ec[k]=v*mult;
+    const can=!lk&&afford(p.raw||{},ec);
+    const cs=Object.entries(ec).map(([k,v])=>`${RM[k]?.icon||k} ${v} ${RM[k]?.label||k}`).join(' + ');
+    const ri=CM[r.result.key];
+    const div=document.createElement('div');
+    div.className='rr'+(can?'':' dis');
+    div.innerHTML=`<span class="rc">${cs}</span><span class="ra">→</span><span class="rres"><span class="rq">×${r.result.qty}</span>${ri?.icon||'?'} ${ri?.label||r.result.key}</span>`;
+    if(can) div.addEventListener('click',()=>doCraft(r.id));
+    grid.appendChild(div);
+  }
+}
+
+function buildCol(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='col';
+  let h='';
+  if(lk)h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu <strong>${G.ac==='tile'?'colocar tile':'trocas'}</strong> neste turno.</div>`;
+  h+=`<div class="ibox"><h3>Requisitos para 1 Colmeia</h3><div class="chips">`;
+  for(let[k,q] of Object.entries(COL_REQ)){
+    const hv=(p.crafted||{})[k]||0,ok=hv>=q;
+    h+=`<span class="chip ${ok?'ok':'bad'}">${CM[k]?.icon||'?'} ${CM[k]?.label||k}: ${hv}/${q}</span>`;
+  }
+  h+=`</div><div class="note" style="margin-top:6px;">⚠️ O tile de <strong>Apiário 🐝</strong> deve tocar uma <strong>Fonte de Água 💧</strong>. Ao instalar, você ganha mel imediatamente!</div>`;
+  const ok=!lk&&Object.entries(COL_REQ).every(([k,q])=>((p.crafted||{})[k]||0)>=q);
+  const slots=colSlots(G.board||[]);
+  if(!slots.length){
+    h+=`<p style="font-size:11px;color:var(--text3);margin-top:8px;">Nenhum Apiário adjacente a Fonte de Água disponível.</p>`;
+  } else {
+    h+=`<div class="msec" style="margin-top:10px;"><h3>Locais disponíveis</h3><div class="rgrid" id="col-slots-grid"></div></div>`;
+  }
+  h+=`</div>`;
+  if((p.colmeias||[]).length){
+    h+=`<div style="margin-top:8px;"><div class="msec"><h3>Suas colmeias ativas</h3><div class="rgrid">`;
+    for(let[i,c] of (p.colmeias||[]).entries()){
+      const tot=1+(c.mel||1)-1+c.fb; // base + extras + fruit
+      h+=`<div class="rr dis" style="cursor:default;"><span class="rc">🐝 Colmeia ${i+1} · ${c.mel||1} melgueira${(c.mel||1)>1?'s':''}</span><span class="ra">→</span><span class="rres">🍯 ${p.honey||0} kg total${c.fb?' 🍎×'+c.fb:''}</span></div>`;
+    }
+    h+=`</div></div></div>`;
+  }
+  document.getElementById('tab-col').innerHTML=h;
+  if(slots.length){
+    const grid=document.getElementById('col-slots-grid');
+    for(let cell of slots){
+      const fb=nbrs(cell.col,cell.row,G.board||[]).filter(n=>n.placed&&n.placed.type==='fruit').length;
+      const div=document.createElement('div');
+      div.className='rr'+(ok?'':' dis');
+      div.innerHTML=`<span class="rc">📍 (${cell.col},${cell.row}) ${fb?'· 🍎×'+fb:''}</span><span class="ra">→</span><span class="rres">🍯 +${1+fb} kg imediatamente</span>`;
+      if(ok) div.addEventListener('click',()=>installCol(cell.id));
+      grid.appendChild(div);
+    }
+  }
+}
+
+function buildUpgrade(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='col';
+  let h='';
+  if(lk)h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu outra ação neste turno.</div>`;
+  h+=`<div class="upgrade-box"><h3>Aumentar Apiário — Adicionar Melgueira</h3>`;
+  h+=`<div class="minfo" style="margin-bottom:8px;">Cada melgueira adicional custa <strong>1 madeira a mais</strong> que a anterior (2ª custa 3🪵, 3ª custa 4🪵, etc.). Você tem: <strong>${(p.raw||{}).madeira||0} 🪵</strong></div>`;
+  const cols=p.colmeias||[];
+  if(!cols.length){
+    h+=`<p style="font-size:11px;color:var(--text3);">Você ainda não tem colmeias instaladas.</p>`;
+  } else {
+    h+=`<div class="rgrid" id="upgrade-grid"></div>`;
+  }
+  h+=`</div>`;
+  document.getElementById('tab-upg').innerHTML=h;
+  if(cols.length){
+    const grid=document.getElementById('upgrade-grid');
+    for(let[i,col] of cols.entries()){
+      const cost=nextMelgueiraCost(col);
+      const can=!lk&&((p.raw||{}).madeira||0)>=cost;
+      const div=document.createElement('div');
+      div.className='rr'+(can?'':' dis');
+      div.innerHTML=`<span class="rc">🐝 Colmeia ${i+1} · Atual: ${col.mel||1} melgueira${(col.mel||1)>1?'s':''}</span><span class="ra">→</span><span class="rres">${cost}🪵 → +1 kg mel imediato</span>`;
+      if(can) div.addEventListener('click',()=>upgradeCol(i));
+      grid.appendChild(div);
+    }
+  }
+}
+
+// ════════════════════════════════════════════
+// POLINIZAÇÃO — Flores 🌸 e Abelhas 🐝
+// ════════════════════════════════════════════
+// Rules:
+//  - Every field/fruit tile already has 1 implicit flower (no cost)
+//  - Player can buy EXTRA flowers at 1 kg mel each (on any field/fruit tile)
+//  - Player can buy bees at 1 kg mel each (on any field/fruit tile)
+//  - Pairs = min(flowers on tile, bees on tile by this player)
+//    - Base 1 flower always present, so 1st bee = 1 pair
+//    - Extra flowers allow more pairs on same tile
+//  - Bonus at end: pairs × 3 kg, but each extra pair above 1 gives only +1 (not +3)
+//    → 1 pair = +3 kg, 2 pairs = +4 kg, 3 pairs = +5 kg … N pairs = N+2 kg
+//  - tile.flowers = extra flowers bought (base 1 always implicit)
+//  - tile.bees = { playerIdx: count } — each player's bees independently
+
+function polliBonus(pairs){ return pairs>0 ? pairs+2 : 0; }
+
+// All field/fruit tiles on the board (valid for flower/bee placement)
+function polliTiles(board){
+  return (board||[]).filter(c=>c.placed&&(c.placed.type==='field'||c.placed.type==='fruit'));
+}
+
+// Total pairs for a player on a given tile
+function pairsOnTile(cell, playerIdx){
+  const bees=(cell.placed?.bees||{})[playerIdx]||0;
+  const extraFlowers=cell.placed?.flowers||0;
+  const totalFlowers=1+extraFlowers; // 1 implicit always
+  return Math.min(totalFlowers, bees);
+}
+
+// Total pollination bonus for a player across all tiles
+function totalPolliBonus(board, playerIdx){
+  let total=0;
+  for(let cell of polliTiles(board)){
+    total+=polliBonus(pairsOnTile(cell,playerIdx));
+  }
+  return total;
+}
+
+function buildPolli(){
+  if(!G)return;
+  const p=(G.players||[])[me.idx]||{};
+  const lk=G.ac&&G.ac!=='polli';
+  const honey=p.honey||0;
+  const board=G.board||[];
+  const tiles=polliTiles(board);
+
+  let h='';
+  if(lk){
+    h+=`<div class="note" style="color:var(--red);">🚫 Você já escolheu outra ação neste turno.</div>`;
+  }
+  h+=`<div style="font-size:12px;color:var(--text2);margin-bottom:10px;line-height:1.6;">
+    <strong style="color:var(--wax);">Flores 🌸</strong> e <strong style="color:var(--wax);">Abelhas 🐝</strong> geram bônus de mel no <strong>final do jogo</strong>.<br>
+    Cada tile de Campo ou Frutífera já possui <strong>1 flor gratuita</strong>.<br>
+    Compre abelhas (1 kg mel cada) ou flores extras (1 kg mel cada) para aumentar os pares.<br>
+    <strong>Bônus: 1 par = +3 kg · 2 pares = +4 kg · N pares = N+2 kg</strong>
+  </div>`;
+  h+=`<div style="font-size:11px;color:var(--text3);margin-bottom:6px;">Seu mel disponível: <strong style="color:var(--honey);">${honey} kg</strong></div>`;
+
+  if(!tiles.length){
+    h+=`<div class="note">Nenhum tile de Campo ou Frutífera no tabuleiro ainda.</div>`;
+  } else {
+    h+=`<div class="rgrid" id="polli-grid"></div>`;
+  }
+  document.getElementById('tab-polli').innerHTML=h;
+
+  if(tiles.length){
+    const grid=document.getElementById('polli-grid');
+    for(let cell of tiles){
+      const extraFlowers=cell.placed.flowers||0;
+      const totalFlowers=1+extraFlowers;
+      const myBees=(cell.placed.bees||{})[me.idx]||0;
+      const pairs=pairsOnTile(cell,me.idx);
+      const bonus=polliBonus(pairs);
+      const canBuy=!lk&&honey>=1;
+      const typeLabel=cell.placed.type==='field'?'🌿 Campo':'🍎 Frutífera';
+
+      const wrapper=document.createElement('div');
+      wrapper.style.cssText='background:var(--card2);border:1px solid var(--border);border-radius:9px;padding:10px 12px;display:flex;flex-direction:column;gap:6px;';
+
+      // Header row
+      const hdrEl=document.createElement('div');
+      hdrEl.style.cssText='display:flex;align-items:center;justify-content:space-between;';
+      hdrEl.innerHTML=`<span style="font-size:12px;font-weight:500;color:var(--text);">${typeLabel} (${cell.col},${cell.row})</span>
+        <span style="font-size:11px;color:var(--honey);">${pairs} par${pairs!==1?'es':''} → +${bonus} kg final</span>`;
+      wrapper.appendChild(hdrEl);
+
+      // Stats row
+      const statsEl=document.createElement('div');
+      statsEl.style.cssText='display:flex;gap:12px;font-size:11px;color:var(--text2);';
+      statsEl.innerHTML=`<span>🌸 Flores: ${totalFlowers} (${extraFlowers} compradas)</span><span>🐝 Suas abelhas: ${myBees}</span>`;
+      wrapper.appendChild(statsEl);
+
+      // Buttons row
+      if(!lk){
+        const btnsEl=document.createElement('div');
+        btnsEl.style.cssText='display:flex;gap:6px;flex-wrap:wrap;';
+
+        const beeBtn=document.createElement('button');
+        beeBtn.disabled=!canBuy;
+        beeBtn.style.cssText=`background:${canBuy?'rgba(255,193,7,.2)':'var(--card)'};border:1px solid ${canBuy?'rgba(255,193,7,.5)':'var(--border)'};border-radius:6px;padding:4px 10px;font-family:'DM Sans',sans-serif;font-size:11px;color:${canBuy?'#FFD54F':'var(--text3)'};cursor:${canBuy?'pointer':'not-allowed'};`;
+        beeBtn.textContent='+ Abelha 🐝 (1 kg mel)';
+        if(canBuy) beeBtn.addEventListener('click',()=>addBee(cell.id));
+
+        const flwBtn=document.createElement('button');
+        flwBtn.disabled=!canBuy;
+        flwBtn.style.cssText=`background:${canBuy?'rgba(244,143,177,.15)':'var(--card)'};border:1px solid ${canBuy?'rgba(244,143,177,.4)':'var(--border)'};border-radius:6px;padding:4px 10px;font-family:'DM Sans',sans-serif;font-size:11px;color:${canBuy?'#F48FB1':'var(--text3)'};cursor:${canBuy?'pointer':'not-allowed'};`;
+        flwBtn.textContent='+ Flor 🌸 (1 kg mel)';
+        if(canBuy) flwBtn.addEventListener('click',()=>addFlower(cell.id));
+
+        btnsEl.appendChild(beeBtn);
+        btnsEl.appendChild(flwBtn);
+        wrapper.appendChild(btnsEl);
+      }
+      grid.appendChild(wrapper);
+    }
+  }
+}
+
+async function addBee(cellId){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='polli'){msg('Ação bloqueada neste turno.');return;}
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  if((p.honey||0)<1){msg('Você precisa de pelo menos 1 kg de mel.');return;}
+  const board=clone(G.board||[]);
+  const cell=board.find(c=>c.id===cellId);
+  if(!cell||!cell.placed){msg('Tile não encontrado.');return;}
+  if(cell.placed.type!=='field'&&cell.placed.type!=='fruit'){msg('Só é possível colocar abelhas em Campo ou Frutífera.');return;}
+  p.honey-=1;
+  cell.placed.bees=cell.placed.bees||{};
+  cell.placed.bees[me.idx]=(cell.placed.bees[me.idx]||0)+1;
+  const myBees=cell.placed.bees[me.idx];
+  const extraFlowers=cell.placed.flowers||0;
+  const pairs=pairsOnTile(cell,me.idx);
+  await room.ref.update({board,players,ac:'polli'});
+  msg(`🐝 Abelha adicionada! ${pairs} par${pairs!==1?'es':''} neste tile → +${polliBonus(pairs)} kg no final.`);
+  buildPolli();
+}
+
+async function addFlower(cellId){
+  if(!myTurn())return;
+  if(G.ac&&G.ac!=='polli'){msg('Ação bloqueada neste turno.');return;}
+  const players=clone(G.players||[]);
+  const p=players[me.idx];
+  if((p.honey||0)<1){msg('Você precisa de pelo menos 1 kg de mel.');return;}
+  const board=clone(G.board||[]);
+  const cell=board.find(c=>c.id===cellId);
+  if(!cell||!cell.placed){msg('Tile não encontrado.');return;}
+  if(cell.placed.type!=='field'&&cell.placed.type!=='fruit'){msg('Só é possível colocar flores em Campo ou Frutífera.');return;}
+  p.honey-=1;
+  cell.placed.flowers=(cell.placed.flowers||0)+1;
+  await room.ref.update({board,players,ac:'polli'});
+  msg(`🌸 Flor adicionada! Agora com ${1+cell.placed.flowers} flores neste tile.`);
+  buildPolli();
+}
+
+// ════════════════════════════════════════════
+// WINNER
+// ════════════════════════════════════════════
+function showWinner(r){
+  const board=r.board||[];
+  // Add pollination bonus to each player's final score
+  const finalScores=(r.players||[]).map((p,pi)=>{
+    const bonus=totalPolliBonus(board,pi);
+    return{...p, finalHoney:(p.honey||0)+bonus, polliBonus:bonus};
+  });
+  const sorted=[...finalScores].sort((a,b)=>b.finalHoney-a.finalHoney);
+  const top=sorted[0];
+  const tied=sorted.filter(p=>p.finalHoney===top.finalHoney);
+  document.getElementById('w-title').textContent=tied.length>1?'🤝 Empate!':`🏆 ${top.name} Venceu!`;
+  document.getElementById('w-sub').textContent=tied.length>1
+    ?`${tied.map(p=>p.name).join(' e ')} empataram com ${top.finalHoney} kg!`:'Maior produtor de mel da região!';
+  document.getElementById('w-scores').innerHTML=sorted.map((p,i)=>{
+    const origIdx=(r.players||[]).findIndex(x=>x.name===p.name);
+    return`<div class="wscore${i===0&&tied.length===1?' whi':''}">
+      <div class="wn">${p.name}</div>
+      <div class="wv" style="color:${P_COLORS[origIdx]||'#fff'}">${p.finalHoney} kg</div>
+      ${p.polliBonus>0?`<div style="font-size:9px;color:#FFF176;margin-top:2px;">+${p.polliBonus} kg polinização 🌸</div>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('winner-screen').classList.add('open');
+}
+
+// ════════════════════════════════════════════
+// TRADE (NEGOCIAÇÃO ÀS ESCURAS)
+// ════════════════════════════════════════════
+// Flow:
+//  1. Proposer opens trade modal, picks target player and what they CLAIM to offer
+//     (they can actually send anything — trades are blind)
+//  2. Firebase: G.trade = { from, to, claimedOffer:{}, status:'pending', proposerActual:null, receiverActual:null }
+//  3. Target sees incoming overlay, picks what they want to send back (also blind)
+//  4. Both submit their "actual" deliveries simultaneously via Firebase
+//  5. When both sides have submitted, resources are swapped and reveal overlay shows both sides
+
+// Local trade state
+let tradeOfferLocal = {}; // proposer's claimed offer (for display)
+let tradeMyActual   = {}; // what I'm actually sending
+
+function openTradeModal(){
+  if(!myTurn()){msg('Não é a sua vez!');return;}
+  if(G.ac&&G.ac!=='trade'){msg('Você já escolheu outra ação neste turno.');return;}
+  if(G.trade&&G.trade.status!=='done'){msg('Já há uma negociação em andamento.');return;}
+  const players=G.players||[];
+  if(players.length<2){msg('Precisa de pelo menos 2 jogadores para negociar.');return;}
+
+  const p=players[me.idx]||{};
+  const raw=p.raw||{};
+  tradeOfferLocal={};
+  tradeMyActual={};
+
+  // Build the trade modal content
+  let html=`<div style="font-size:12px;color:var(--text2);margin-bottom:12px;">
+    Negocie com outro jogador. Você pode combinar uma troca verbalmente — mas lembre-se:
+    <span style="color:var(--honey);font-weight:500;"> a troca é às escuras!</span> Cada lado entrega o que quiser sem que o outro veja.
+  </div>`;
+
+  // Step 1: choose target player
+  html+=`<div style="margin-bottom:14px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:7px;">Com quem negociar?</div>
+    <div style="display:flex;flex-wrap:wrap;gap:6px;" id="trade-target-btns">`;
+  players.forEach((pl,i)=>{
+    if(i===me.idx)return;
+    html+=`<button id="trade-target-${i}" style="background:var(--card2);border:2px solid ${P_COLORS[i]};border-radius:8px;padding:7px 14px;color:${P_COLORS[i]};font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;"
+      onclick="selectTradeTarget(${i})">${pl.name}</button>`;
+  });
+  html+=`</div></div>`;
+
+  // Step 2: what to offer (claimed)
+  html+=`<div id="trade-offer-section" style="display:none;margin-bottom:14px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px;">O que você <em>declara</em> oferecer?</div>
+    <div style="font-size:11px;color:var(--text3);margin-bottom:8px;">Isto é o que o outro jogador verá. O que você <em>realmente</em> entregará é definido na próxima etapa.</div>
+    <div id="trade-offer-rows" style="display:flex;flex-direction:column;gap:5px;"></div>
+  </div>`;
+
+  // Step 3: what to actually send (hidden from receiver until reveal)
+  html+=`<div id="trade-actual-section" style="display:none;margin-bottom:14px;">
+    <div style="font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--text3);margin-bottom:4px;">O que você <em>realmente</em> vai entregar?</div>
+    <div style="font-size:11px;color:#CE93D8;background:rgba(171,71,188,.1);border:1px solid rgba(171,71,188,.3);border-radius:6px;padding:8px;margin-bottom:8px;">🤫 Isso só será revelado após o outro jogador confirmar a troca. Você pode entregar diferente do que declarou.</div>
+    <div id="trade-actual-rows" style="display:flex;flex-direction:column;gap:5px;"></div>
+  </div>`;
+
+  html+=`<div id="trade-send-btn-wrap" style="display:none;">
+    <button id="trade-send-btn" onclick="sendTradeProposal()"
+      style="width:100%;background:var(--honey);color:#1A1208;border:none;border-radius:9px;padding:10px;font-family:'DM Sans',sans-serif;font-size:13px;font-weight:500;cursor:pointer;">
+      Enviar Proposta →
+    </button>
+  </div>`;
+
+  document.getElementById('trade-content').innerHTML=html;
   document.getElementById('trade-overlay').style.display='flex';
 }
 
-function selectTradePartner(idx){
+let tradeTargetIdx=-1;
+function selectTradeTarget(idx){
   tradeTargetIdx=idx;
-  const p=G.players[me.idx];
-  let h=`<div class="msec"><h3>2. O que você DESEJA dele?</h3><div class="rgrid">`;
-  Object.entries(RM).forEach(([k,m])=> h+=makeTradeRow(k,m,'req'));
-  h+=`</div></div><div class="msec"><h3>3. O que você PROMETE dar?</h3><div class="rgrid">`;
-  Object.entries(RM).forEach(([k,m])=> h+=makeTradeRow(k,m,'claim'));
-  h+=`</div></div><div class="msec"><h3>4. O que você REALMENTE vai dar? (Secreto)</h3><div class="rgrid">`;
-  Object.entries(RM).forEach(([k,m])=> h+=makeTradeRow(k,m,'act', p.raw[k]||0));
-  h+=`</div></div><button class="btn-primary" onclick="submitTrade()">Enviar Proposta</button>`;
-  document.getElementById('trade-form').innerHTML=h;
-  document.getElementById('trade-form').style.display='block';
+  // Highlight selected
+  document.querySelectorAll('[id^="trade-target-"]').forEach(b=>{
+    b.style.opacity=b.id===`trade-target-${idx}`?'1':'0.4';
+    b.style.transform=b.id===`trade-target-${idx}`?'scale(1.04)':'scale(1)';
+  });
+  buildTradeResourceRows();
+  document.getElementById('trade-offer-section').style.display='block';
+  document.getElementById('trade-actual-section').style.display='block';
+  document.getElementById('trade-send-btn-wrap').style.display='block';
 }
 
-function makeTradeRow(k,m,type,max=99){
-  return `<div class="trade-res-row"><span class="tr-label">${m.icon} ${m.label}</span>
+function buildTradeResourceRows(){
+  const p=(G.players||[])[me.idx]||{};
+  const raw=p.raw||{};
+  // Claimed offer
+  const offerGrid=document.getElementById('trade-offer-rows');
+  offerGrid.innerHTML='';
+  Object.entries(RM).forEach(([k,m])=>{
+    const max=raw[k]||0;
+    if(max===0)return;
+    tradeOfferLocal[k]=tradeOfferLocal[k]||0;
+    const row=makeTradeRow(m,k,max,'offer');
+    offerGrid.appendChild(row);
+  });
+  if(offerGrid.children.length===0){
+    offerGrid.innerHTML=`<p style="font-size:11px;color:var(--text3)">Você não tem recursos para oferecer.</p>`;
+  }
+  // Actual delivery
+  const actualGrid=document.getElementById('trade-actual-rows');
+  actualGrid.innerHTML='';
+  Object.entries(RM).forEach(([k,m])=>{
+    const max=raw[k]||0;
+    if(max===0)return;
+    tradeMyActual[k]=tradeMyActual[k]||0;
+    const row=makeTradeRow(m,k,max,'actual');
+    actualGrid.appendChild(row);
+  });
+  if(actualGrid.children.length===0){
+    actualGrid.innerHTML=`<p style="font-size:11px;color:var(--text3)">Você não tem recursos para entregar.</p>`;
+  }
+}
+
+function makeTradeRow(m,k,max,ns){
+  const row=document.createElement('div');
+  row.className='trade-res-row';
+  row.innerHTML=`<span class="tr-label">${m.icon} ${m.label} (você tem: ${max})</span>
     <div class="trade-qty-ctrl">
-      <button class="tq-btn" onclick="adjT('${k}','${type}',-1,${max})">-</button>
-      <span class="tq-val" id="val-${type}-${k}">0</span>
-      <button class="tq-btn" onclick="adjT('${k}','${type}',1,${max})">+</button>
-    </div></div>`;
+      <button class="tq-btn" onclick="adjTrade('${ns}','${k}',-1)">−</button>
+      <span class="tq-val" id="tq-${ns}-${k}">0</span>
+      <button class="tq-btn" onclick="adjTrade('${ns}','${k}',+1)">+</button>
+    </div>`;
+  return row;
 }
 
-function adjT(k,type,d,max){
-  const dict = type==='req'?tradeRequestedLocal : type==='claim'?tradeClaimedLocal : tradeActualLocal;
-  dict[k] = Math.max(0, Math.min(max, (dict[k]||0)+d));
-  document.getElementById(`val-${type}-${k}`).textContent = dict[k];
+function adjTrade(ns,k,delta){
+  const p=(G.players||[])[me.idx]||{};
+  const max=(p.raw||{})[k]||0;
+  const store=ns==='offer'?tradeOfferLocal:tradeMyActual;
+  store[k]=Math.max(0,Math.min(max,(store[k]||0)+delta));
+  const el=document.getElementById(`tq-${ns}-${k}`);
+  if(el) el.textContent=store[k];
 }
 
-async function submitTrade(){
-  const trade = { from: me.idx, to: tradeTargetIdx, req: tradeRequestedLocal, claim: tradeClaimedLocal, actFrom: tradeActualLocal, status: 'pending' };
-  await room.ref.update({trade, ac:'trade'});
+async function sendTradeProposal(){
+  if(!myTurn())return;
+  if(tradeTargetIdx<0){msg('Escolha um jogador para negociar.');return;}
+  // Build clean objects (only keys with qty > 0)
+  const claimed={};
+  const actual={};
+  Object.entries(tradeOfferLocal).forEach(([k,v])=>{if(v>0)claimed[k]=v;});
+  Object.entries(tradeMyActual).forEach(([k,v])=>{if(v>0)actual[k]=v;});
+
+  // Check proposer actually has what they claim to deliver (actual)
+  const pRaw=(G.players||[])[me.idx]?.raw||{};
+  for(let[k,v] of Object.entries(actual)){
+    if((pRaw[k]||0)<v){msg(`Você não tem ${RM[k]?.label} suficiente para entregar.`);return;}
+  }
+
+  const tradeData={
+    from: me.idx,
+    to: tradeTargetIdx,
+    fromName: me.name,
+    toName: (G.players||[])[tradeTargetIdx]?.name||'?',
+    claimedOffer: claimed,       // what proposer says they'll send (visible to receiver)
+    fromActual: actual,          // what proposer actually sends (hidden until reveal)
+    toActual: null,              // filled by receiver
+    status: 'pending',           // pending → responded → done
+    ts: Date.now()
+  };
+
+  await room.ref.update({trade: tradeData, ac:'trade'});
   closeTrade();
+  msg('Proposta enviada! Aguardando resposta...');
 }
 
-function showIncomingTrade(t){
-  const fromName = G.players[t.from].name;
-  let h = `<strong>${fromName}</strong> quer negociar:<br><br>`;
-  h += `<strong>Ele te pede:</strong> ${fmtRes(t.req)}<br>`;
-  h += `<strong>Ele promete enviar:</strong> ${fmtRes(t.claim)}<br><br>`;
-  document.getElementById('ti-offer-display').innerHTML = h;
-  
-  const p = G.players[me.idx];
-  let rh = `<div class="rgrid">`;
-  Object.entries(RM).forEach(([k,m])=> rh += makeTradeRow(k,m,'act', p.raw[k]||0));
-  document.getElementById('ti-my-resources').innerHTML = rh + `</div>`;
-  
-  document.getElementById('ti-btns').innerHTML = `
-    <button class="btn-primary" onclick="replyTrade(true)">Aceitar Troca</button>
-    <button class="btn-secondary" onclick="replyTrade(false)">Recusar</button>`;
+function closeTrade(){
+  document.getElementById('trade-overlay').style.display='none';
+  tradeTargetIdx=-1; tradeOfferLocal={}; tradeMyActual={};
+}
+
+// ── Receiver side ──
+function showIncomingTrade(trade){
+  // Show claimed offer
+  const claimedStr=Object.keys(trade.claimedOffer||{}).length
+    ?Object.entries(trade.claimedOffer).map(([k,v])=>`<strong>${v}</strong> ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')
+    :'<em>Nada (ele vai receber sem dar nada em troca)</em>';
+
+  document.getElementById('ti-from').textContent=`${trade.fromName} quer negociar com você`;
+  document.getElementById('ti-offer-display').innerHTML=
+    `<div style="font-size:11px;color:var(--text3);margin-bottom:4px;">Ele diz que vai te enviar:</div>
+     <div style="font-size:13px;color:var(--text);">${claimedStr}</div>`;
+
+  // Build my resource rows for response
+  const p=(G.players||[])[me.idx]||{};
+  const raw=p.raw||{};
+  const myResContainer=document.getElementById('ti-my-resources');
+  myResContainer.innerHTML='';
+  tradeMyActual={};
+
+  let hasResources=false;
+  Object.entries(RM).forEach(([k,m])=>{
+    const max=raw[k]||0;
+    if(max===0)return;
+    hasResources=true;
+    tradeMyActual[k]=0;
+    const row=document.createElement('div');
+    row.className='trade-res-row';
+    row.innerHTML=`<span class="tr-label">${m.icon} ${m.label} (você tem: ${max})</span>
+      <div class="trade-qty-ctrl">
+        <button class="tq-btn" onclick="adjTrade('actual','${k}',-1)">−</button>
+        <span class="tq-val" id="tq-actual-${k}">0</span>
+        <button class="tq-btn" onclick="adjTrade('actual','${k}',+1)">+</button>
+      </div>`;
+    myResContainer.appendChild(row);
+  });
+  if(!hasResources){
+    myResContainer.innerHTML=`<p style="font-size:11px;color:var(--text3)">Você não tem recursos para entregar (pode aceitar mesmo assim).</p>`;
+  }
+
+  // Buttons
+  const btns=document.getElementById('ti-btns');
+  btns.innerHTML='';
+  const acceptBtn=document.createElement('button');
+  acceptBtn.textContent='Confirmar Entrega →';
+  acceptBtn.style.cssText='background:var(--honey);color:#1A1208;border:none;border-radius:8px;padding:9px 20px;font-family:\'DM Sans\',sans-serif;font-size:13px;font-weight:500;cursor:pointer;';
+  acceptBtn.onclick=()=>respondTrade(trade,true);
+  const refuseBtn=document.createElement('button');
+  refuseBtn.textContent='Recusar';
+  refuseBtn.style.cssText='background:transparent;color:var(--red);border:1px solid rgba(229,57,53,.4);border-radius:8px;padding:9px 20px;font-family:\'DM Sans\',sans-serif;font-size:13px;cursor:pointer;';
+  refuseBtn.onclick=()=>respondTrade(trade,false);
+  btns.appendChild(acceptBtn);
+  btns.appendChild(refuseBtn);
+
   document.getElementById('trade-incoming').style.display='flex';
 }
 
-function showTradeReveal(t){
-  let h = `<div style="text-align:left;font-size:13px;">`;
-  h += `<strong>${G.players[t.from].name}</strong> prometeu: ${fmtRes(t.claim)}<br>`;
-  h += `<strong>${G.players[t.from].name}</strong> enviou DE FATO: ${fmtRes(t.actFrom)}<br><hr style="margin:8px 0;opacity:0.2">`;
-  h += `<strong>${G.players[t.to].name}</strong> enviou: ${fmtRes(t.actTo)}<br></div>`;
-  document.getElementById('tr-content').innerHTML = h;
+async function respondTrade(trade, accepted){
+  document.getElementById('trade-incoming').style.display='none';
+  if(!accepted){
+    // Cancel trade
+    await room.ref.update({trade:{...clone(trade),status:'refused'}});
+    msg(`Você recusou a proposta de ${trade.fromName}.`);
+    return;
+  }
+  // Check receiver has what they're delivering
+  const pRaw=(G.players||[])[me.idx]?.raw||{};
+  const actual={};
+  Object.entries(tradeMyActual).forEach(([k,v])=>{if(v>0)actual[k]=v;});
+  for(let[k,v] of Object.entries(actual)){
+    if((pRaw[k]||0)<v){
+      // Silently cap (trade is blind, they said they'd send more than they have — send 0 for that resource)
+      actual[k]=Math.min(v,pRaw[k]||0);
+    }
+  }
+  const updated={...clone(trade), toActual:actual, status:'responded'};
+  await room.ref.update({trade:updated});
+  msg('Resposta enviada! Aguardando o resultado...');
+}
+
+// ── Finalize trade (called when status becomes 'responded', run by proposer's client) ──
+async function finalizeTrade(trade){
+  if(trade.from!==me.idx)return; // only proposer finalizes
+  const players=clone(G.players||[]);
+  const proposer=players[trade.from];
+  const receiver=players[trade.to];
+  proposer.raw=proposer.raw||{};
+  receiver.raw=receiver.raw||{};
+
+  const fromSends=trade.fromActual||{};
+  const toSends=trade.toActual||{};
+
+  // Transfer: proposer sends to receiver
+  for(let[k,v] of Object.entries(fromSends)){
+    const actual=Math.min(v,(proposer.raw[k]||0));
+    proposer.raw[k]=(proposer.raw[k]||0)-actual;
+    receiver.raw[k]=(receiver.raw[k]||0)+actual;
+  }
+  // Transfer: receiver sends to proposer
+  for(let[k,v] of Object.entries(toSends)){
+    const actual=Math.min(v,(receiver.raw[k]||0));
+    receiver.raw[k]=(receiver.raw[k]||0)-actual;
+    proposer.raw[k]=(proposer.raw[k]||0)+actual;
+  }
+
+  const doneTrade={...clone(trade),status:'done'};
+  await room.ref.update({players, trade:doneTrade});
+}
+
+function showTradeReveal(trade){
+  const fromSends=trade.fromActual||{};
+  const toSends=trade.toActual||{};
+  const fStr=Object.keys(fromSends).length
+    ?Object.entries(fromSends).map(([k,v])=>`<strong>${v}</strong> ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')
+    :'<em>nada</em>';
+  const tStr=Object.keys(toSends).length
+    ?Object.entries(toSends).map(([k,v])=>`<strong>${v}</strong> ${RM[k]?.icon||k} ${RM[k]?.label||k}`).join(', ')
+    :'<em>nada</em>';
+  const clStr=Object.keys(trade.claimedOffer||{}).length
+    ?Object.entries(trade.claimedOffer).map(([k,v])=>`${v} ${RM[k]?.icon||k}`).join(', ')
+    :'nada';
+
+  const honestFrom=JSON.stringify(fromSends)===JSON.stringify(trade.claimedOffer||{});
+
+  document.getElementById('tr-content').innerHTML=`
+    <div style="display:flex;flex-direction:column;gap:10px;">
+      <div style="background:var(--card2);border-radius:9px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">📣 ${trade.fromName} declarou enviar:</div>
+        <div style="font-size:13px;color:var(--text2);">${clStr}</div>
+      </div>
+      <div style="background:var(--card2);border-radius:9px;padding:12px;border:1px solid ${honestFrom?'rgba(67,160,71,.5)':'rgba(229,57,53,.5)'};">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">📦 ${trade.fromName} <em>realmente</em> enviou:</div>
+        <div style="font-size:13px;color:${honestFrom?'var(--green)':'var(--red)'};">${fStr} ${honestFrom?'✅':'⚠️ (diferente do combinado!)'}</div>
+      </div>
+      <div style="background:var(--card2);border-radius:9px;padding:12px;border:1px solid var(--border);">
+        <div style="font-size:11px;color:var(--text3);margin-bottom:4px;">📦 ${trade.toName} enviou:</div>
+        <div style="font-size:13px;color:var(--text);">${tStr}</div>
+      </div>
+    </div>`;
   document.getElementById('trade-reveal').style.display='flex';
 }
 
-function renderHeader(r){
-  const my = r.cp===me.idx;
-  document.getElementById('h-turn').textContent=r.turn;
-  document.getElementById('h-player').textContent=r.players[r.cp].name;
-  document.getElementById('abtn-tile').disabled = !my || (r.ac && r.ac!=='tile');
-  document.getElementById('abtn-craft').disabled = !my || r.ac==='tile';
-  document.getElementById('abtn-col').disabled = !my || r.ac==='tile';
-  document.getElementById('abtn-trade').disabled = !my || r.ac==='tile' || r.trade;
-  document.getElementById('abtn-end').disabled = !my || r.ac==='tile'; // PONTO 1 & 4
+function closeTadeReveal(){
+  document.getElementById('trade-reveal').style.display='none';
+  // Player clicks "Encerrar Turno" button manually after seeing the result
 }
 
-// RESTANTE DAS FUNÇÕES ORIGINAIS
-function selN(n){ _n=n; document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2)); upCreate(); }
-document.getElementById('inp-name').addEventListener('input',upCreate);
-function upCreate(){ document.getElementById('btn-create').disabled=!document.getElementById('inp-name').value.trim()||!_n; }
-function setErr(m){document.getElementById('lobby-err').textContent=m;}
-function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
-function showWait(code){ document.getElementById('lobby-screen').classList.add('hidden'); document.getElementById('waiting-screen').classList.remove('hidden'); document.getElementById('disp-code').textContent=code; }
-function copyCode(){ navigator.clipboard.writeText(room.code).then(()=>{ const el=document.getElementById('disp-code'),t=el.textContent; el.textContent='COPIADO!';setTimeout(()=>el.textContent=t,1500); }); }
-async function startRoom(){ if(me.idx!==0)return; const s=await room.ref.get(); if((s.val().players||[]).length<2)return; await room.ref.update({status:'playing'}); }
-function renderWait(r){ const players=r.players||[]; document.getElementById('slot-list').innerHTML=Array.from({length:r.n},(_,i)=>{ const p=players[i]; return `<div class="slot"><span class="slot-dot" style="background:${p?P_COLORS[i]:'var(--border)'}"></span><span>${p?p.name:'...'}</span></div>`; }).join(''); if(me.idx===0)document.getElementById('btn-start-room').classList.toggle('ready',players.length>=2); }
-function myTurn(){ return G && G.cp === me.idx; }
-async function confirmReveal(){ await room.ref.update({tr:true}); }
-function mkBoard(){ return [{col:4,row:3,id:'4_3',placed:null}]; }
-function mkDeck(){ const d=[]; for(let[t,cnt] of Object.entries(TYPE_COUNTS)){ const vs=TILE_VARIANTS.filter(v=>v.type===t); for(let i=0;i<cnt;i++) d.push({...vs[Math.floor(Math.random()*vs.length)]}); } return d; }
-function mkEventDeck(){ const d=[...EVENT_CARDS,...EVENT_CARDS,...EVENT_CARDS]; shuffle(d); return d.map(e=>e.id); }
-function shuffle(a){for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a;}
-function clone(x){return JSON.parse(JSON.stringify(x));}
-function tdef(t){return TILE_VARIANTS.find(v=>v.type===t)||TILE_VARIANTS[0];}
-function hctr(col,row){return{x:HEX_R*SQRT3*(col+(row%2)*.5)+HEX_R+10,y:HEX_R*1.5*row+HEX_R+10};}
-function hpts(cx,cy,r){ return Array.from({length:6},(_,i)=>{const a=Math.PI/180*(60*i-30);return`${(cx+r*Math.cos(a)).toFixed(2)},${(cy+r*Math.sin(a)).toFixed(2)}`;}).join(' '); }
-function getDirs(row){ return row%2===0?[[-1,0],[1,0],[0,-1],[0,1],[-1,-1],[-1,1]]:[[-1,0],[1,0],[0,-1],[0,1],[1,-1],[1,1]]; }
-function allNbrs(col,row){ return getDirs(row).map(([dc,dr])=>({col:col+dc,row:row+dr,id:`${col+dc}_${row+dr}`})); }
-function validSlots(board){ const placed=board.filter(c=>c.placed); if(!placed.length) return [board[0]]; const occ=new Set(board.map(c=>c.id)); const slots=new Map(); placed.forEach(c=>{ allNbrs(c.col,c.row).forEach(nb=>{ if(!occ.has(nb.id)) slots.set(nb.id,{...nb,placed:null}); }); }); return [...slots.values()]; }
-function renderBoard(r){ const svg=document.getElementById('board-svg'); svg.innerHTML=''; const board=r.board||[]; const slots=validSlots(board); const all=[...board, ...slots]; let minC=9,maxC=0,minR=9,maxR=0; all.forEach(c=>{minC=Math.min(minC,c.col);maxC=Math.max(maxC,c.col);minR=Math.min(minR,c.row);maxR=Math.max(maxR,c.row);}); const W=(maxC-minC+3)*HEX_R*SQRT3, H=(maxR-minR+3)*HEX_R*1.5; svg.setAttribute('viewBox',`${(minC-1)*HEX_R*SQRT3} ${(minR-1)*HEX_R*1.5} ${W} ${H}`); all.forEach(c=>{ const {x,y}=hctr(c.col,c.row); const g=document.createElementNS('http://www.w3.org/2000/svg','g'); const poly=document.createElementNS('http://www.w3.org/2000/svg','polygon'); poly.setAttribute('points',hpts(x,y,HEX_R-2)); if(c.placed){ poly.setAttribute('fill',tdef(c.placed.type).color); g.appendChild(poly); g.appendChild(makeTxt(x,y,null,'20',tdef(c.placed.type).icon)); } else if(myTurn()&&UI.mode==='tile'&&G.tr){ poly.setAttribute('fill','#2A1E08'); poly.setAttribute('stroke','#66BB6A'); g.classList.add('hev'); g.onclick=()=>{UI.pending=c;renderAll(G);}; g.appendChild(poly); } else { poly.setAttribute('fill','#1A1208'); poly.setAttribute('stroke','#332211'); g.appendChild(poly); } svg.appendChild(g); }); }
-function makeTxt(x,y,f,s,t){ const el=document.createElementNS('http://www.w3.org/2000/svg','text'); el.setAttribute('x',x);el.setAttribute('y',y);el.setAttribute('text-anchor','middle');el.setAttribute('dominant-baseline','central');el.setAttribute('font-size',s);el.setAttribute('fill',f||'#fff');el.textContent=t; return el; }
-function renderBottom(r){ const my=r.cp===me.idx; const pre=document.getElementById('deck-preview'); if(!my||!r.tr||r.ac!=='tile'){ pre.innerHTML=`<div class="t-hidden">Tile Oculto</div>`; } else if(UI.pending){ pre.innerHTML=`<button class="btn-primary" onclick="confirmPlace()">Confirmar em ${UI.pending.col},${UI.pending.row}</button>`; } else { pre.innerHTML=`<div class="t-locked">${r.ct.icon} ${r.ct.label}</div>`; } document.getElementById('deck-count').textContent=`${r.deck.length-r.di} tiles`; }
-function buildSidebars(r){ const l=document.getElementById('sb-left'), rr=document.getElementById('sb-right'); l.innerHTML=''; rr.innerHTML=''; r.players.forEach((p,i)=>{ const h=`<div class="panel" id="pnl-${i}"><div class="ph" style="color:${P_COLORS[i]}">${p.name}</div><div class="pb"><div class="hs"><div class="hv" id="ph-${i}">0kg</div><span>🍯</span></div><div class="rlist" id="pr-${i}"></div></div></div>`; if(i%2===0) l.innerHTML+=h; else rr.innerHTML+=h; }); }
-function updatePlayerUI(i,r){ const p=r.players[i]; document.getElementById(`ph-${i}`).textContent=(p.honey||0)+'kg'; document.getElementById(`pr-${i}`).innerHTML=Object.entries(RM).map(([k,m])=>`<div class="rrow"><span>${m.icon} ${m.label}</span><span>${p.raw[k]||0}</span></div>`).join(''); }
-function renderAll(r){ renderHeader(r); renderBoard(r); renderBottom(r); for(let i=0;i<r.players.length;i++) updatePlayerUI(i,r); }
-function openModal(t){ document.getElementById('modal-overlay').classList.add('open'); switchTab(t); }
-function closeModal(){ document.getElementById('modal-overlay').classList.remove('open'); }
-function switchTab(t){ document.querySelectorAll('.tab-pane, .mtab').forEach(e=>e.classList.remove('active')); document.getElementById('tab-'+t).classList.add('active'); document.getElementById('tab-'+t+'-btn').classList.add('active'); if(t==='craft') buildCraft(); }
-function afford(raw,cost){return Object.entries(cost).every(([k,v])=>(raw[k]||0)>=v);}
-function buildCraft(){ const p=G.players[me.idx]; let h=`<div class="rgrid">`; RECIPES.forEach(r=>{ const can=afford(p.raw,r.cost); h+=`<div class="rr ${can?'':'dis'}" onclick="doC('${r.id}')"><span>${fmtRes(r.cost)}</span><span>➡️</span><span>${r.result.qty} ${CM[r.result.key].icon}</span></div>`; }); document.getElementById('tab-craft').innerHTML=h+`</div>`; }
-async function doC(rid){ const r=RECIPES.find(x=>x.id===rid); const players=clone(G.players); const p=players[me.idx]; if(!afford(p.raw,r.cost))return; Object.entries(r.cost).forEach(([k,v])=>p.raw[k]-=v); p.crafted[r.result.key]=(p.crafted[r.result.key]||0)+r.result.qty; await room.ref.update({players, ac:'craft'}); buildCraft(); }
-function fmtRes(obj){ return Object.entries(obj).filter(e=>e[1]>0).map(e=>`${e[1]}${RM[e[0]]?RM[e[0]].icon:e[0]}`).join(' ')||'nada'; }
-function handleTradeUpdates(r){ const t=r.trade; if(!t)return; if(t.status==='pending'&&t.to===me.idx) showIncomingTrade(t); if(t.status==='accepted'&&t.from===me.idx) finalizeTrade(t); if(t.status==='done') showTradeReveal(t); }
-async function replyTrade(acc){ document.getElementById('trade-incoming').style.display='none'; if(!acc){ await room.ref.update({trade:null}); return; } await room.ref.update({"trade/actTo": tradeActualLocal, "trade/status": "accepted"}); }
-async function finalizeTrade(t){ const players=clone(G.players); const p1=players[t.from], p2=players[t.to]; Object.entries(t.actFrom).forEach(([k,v])=>{ p1.raw[k]-=v; p2.raw[k]=(p2.raw[k]||0)+v; }); Object.entries(t.actTo).forEach(([k,v])=>{ p2.raw[k]-=v; p1.raw[k]=(p1.raw[k]||0)+v; }); await room.ref.update({players, "trade/status":"done"}); }
-function closeTrade(){ document.getElementById('trade-overlay').style.display='none'; }
-function closeTadeReveal(){ document.getElementById('trade-reveal').style.display='none'; room.ref.update({trade:null}); }
+// ── Hook into onUpdate to react to trade state changes ──
+function handleTradeUpdates(r){
+  const trade=r.trade;
+  if(!trade||trade.status==='done'||trade.status==='refused')return;
+
+  // Receiver: show incoming if addressed to me and still pending
+  if(trade.to===me.idx&&trade.status==='pending'){
+    if(document.getElementById('trade-incoming').style.display==='none'||
+       document.getElementById('trade-incoming').style.display===''){
+      showIncomingTrade(trade);
+    }
+  }
+  // Proposer: finalize when receiver has responded
+  if(trade.from===me.idx&&trade.status==='responded'){
+    finalizeTrade(trade);
+  }
+  // Both: show reveal when done
+  if(trade.status==='done'&&!document.getElementById('trade-reveal').style.display.includes('flex')){
+    showTradeReveal(trade);
+  }
+  // Receiver: show refused — proposer sees message and ends turn manually
+  if(trade.from===me.idx&&trade.status==='refused'){
+    msg(`${trade.toName} recusou sua proposta. Encerre o turno quando quiser.`);
+    document.getElementById('trade-incoming').style.display='none';
+  }
+}
+function goLobby(){if(room.listener&&room.ref)room.ref.off('value',room.listener);location.reload();}
 function msg(t){document.getElementById('msg-bar').textContent=t;}
+document.getElementById('inp-code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
 </script>
 </body>
 </html>
