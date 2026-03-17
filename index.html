@@ -510,8 +510,15 @@ function selN(n){
   document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2));
   upCreate();
 }
-document.getElementById('inp-name').addEventListener('input',upCreate);
-function upCreate(){ document.getElementById('btn-create').disabled=!document.getElementById('inp-name').value.trim()||!_n; }
+function upCreate(){
+  const nameVal=(document.getElementById('inp-name')?.value||'').trim();
+  const btn=document.getElementById('btn-create');
+  if(!btn)return;
+  const ok=nameVal.length>0 && _n>0;
+  btn.disabled=!ok;
+  btn.style.opacity=ok?'1':'0.35';
+  btn.style.cursor=ok?'pointer':'not-allowed';
+}
 function setErr(m){document.getElementById('lobby-err').textContent=m;}
 function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
 
@@ -1945,7 +1952,12 @@ function handleTradeUpdates(r){
 }
 function goLobby(){if(room.listener&&room.ref)room.ref.off('value',room.listener);location.reload();}
 function msg(t){document.getElementById('msg-bar').textContent=t;}
-document.getElementById('inp-code').addEventListener('input',function(){this.value=this.value.toUpperCase();});
+document.addEventListener('DOMContentLoaded',function(){
+  const nameEl=document.getElementById('inp-name');
+  if(nameEl) nameEl.addEventListener('input',upCreate);
+  const codeEl=document.getElementById('inp-code');
+  if(codeEl) codeEl.addEventListener('input',function(){this.value=this.value.toUpperCase();});
+});
 </script>
 </body>
 </html>
