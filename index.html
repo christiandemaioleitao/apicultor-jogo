@@ -411,6 +411,15 @@ firebase.initializeApp({
 });
 const db = firebase.database();
 
+// Test Firebase connectivity on load
+db.ref('.info/connected').on('value', snap => {
+  if(snap.val() === true) {
+    console.log('✅ Firebase conectado');
+  } else {
+    console.warn('⚠️ Firebase desconectado');
+  }
+});
+
 // ════════════════════════════════════════════
 // CONSTANTES
 // ════════════════════════════════════════════
@@ -524,21 +533,29 @@ function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.fro
 
 async function createRoom(){
   const name=document.getElementById('inp-name').value.trim();
-  if(!name||!_n){setErr('Preencha nome e número de jogadores.');return;}
-  setErr(''); me.name=name; me.idx=0;
-  room.code=genCode(); room.n=_n; room.ref=db.ref('rooms/'+room.code);
-  const deck=mkDeck(); shuffle(deck);
-  const evDeck=mkEventDeck();
-  await room.ref.set({
-    code:room.code,status:'waiting',n:_n,
-    players:[{name,color:P_COLORS[0]}],
-    deck,board:mkBoard(),evDeck,
-    cp:0,turn:1,di:1,ct:deck[0],
-    ac:null,tr:false,over:false,
-    costMult:1, // global cost multiplier (resets each turn)
-    ts:Date.now()
-  });
-  subscribe(); showWait(room.code);
+  if(!name){setErr('Preencha seu nome.');return;}
+  if(!_n){setErr('Selecione o número de jogadores.');return;}
+  setErr('Criando sala...');
+  try {
+    me.name=name; me.idx=0;
+    room.code=genCode(); room.n=_n; room.ref=db.ref('rooms/'+room.code);
+    const deck=mkDeck(); shuffle(deck);
+    const evDeck=mkEventDeck();
+    await room.ref.set({
+      code:room.code,status:'waiting',n:_n,
+      players:[{name,color:P_COLORS[0]}],
+      deck,board:mkBoard(),evDeck,
+      cp:0,turn:1,di:1,ct:deck[0],
+      ac:null,tr:false,over:false,
+      costMult:1,
+      ts:Date.now()
+    });
+    setErr('');
+    subscribe(); showWait(room.code);
+  } catch(e) {
+    console.error('createRoom error:', e);
+    setErr('Erro ao criar sala: ' + (e.message||e.toString()) + '. Verifique sua conexão.');
+  }
 }
 
 async function joinRoom(){
@@ -547,16 +564,21 @@ async function joinRoom(){
   if(!name){setErr('Preencha seu nome.');return;}
   if(code.length!==4){setErr('Código deve ter 4 caracteres.');return;}
   setErr('Conectando...');
-  const snap=await db.ref('rooms/'+code).get();
-  if(!snap.exists()){setErr('Sala não encontrada.');return;}
-  const r=snap.val();
-  if(r.status==='playing'){setErr('Partida já começou.');return;}
-  if(r.status==='finished'){setErr('Partida já encerrada.');return;}
-  const cur=(r.players||[]).length;
-  if(cur>=r.n){setErr('Sala cheia!');return;}
-  me.name=name; me.idx=cur; room.code=code; room.n=r.n; room.ref=db.ref('rooms/'+code);
-  await room.ref.child('players').child(me.idx).set({name,color:P_COLORS[me.idx]});
-  setErr(''); subscribe(); showWait(code);
+  try {
+    const snap=await db.ref('rooms/'+code).get();
+    if(!snap.exists()){setErr('Sala não encontrada.');return;}
+    const r=snap.val();
+    if(r.status==='playing'){setErr('Partida já começou.');return;}
+    if(r.status==='finished'){setErr('Partida já encerrada.');return;}
+    const cur=(r.players||[]).length;
+    if(cur>=r.n){setErr('Sala cheia!');return;}
+    me.name=name; me.idx=cur; room.code=code; room.n=r.n; room.ref=db.ref('rooms/'+code);
+    await room.ref.child('players').child(me.idx).set({name,color:P_COLORS[me.idx]});
+    setErr(''); subscribe(); showWait(code);
+  } catch(e) {
+    console.error('joinRoom error:', e);
+    setErr('Erro ao entrar na sala: ' + (e.message||e.toString()));
+  }
 }
 
 function showWait(code){
