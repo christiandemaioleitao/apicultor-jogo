@@ -78,7 +78,8 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .ev-btn-accept:disabled,.ev-btn-mitigate:disabled{opacity:.3;cursor:not-allowed;}
 
 /* REVEAL */
-#reveal-screen{position:fixed;inset:0;background:rgba(10,7,2,.94);z-index:250;display:flex;align-items:center;justify-content:center;}
+#reveal-screen{display:none;position:fixed;inset:0;background:rgba(10,7,2,.94);z-index:250;align-items:center;justify-content:center;}
+#reveal-screen.open{display:flex;}
 #reveal-screen.hidden{display:none;}
 .rv-box{background:#2A1E08;border:1px solid var(--border);border-radius:16px;padding:28px 36px;text-align:center;max-width:380px;width:90%;}
 .rv-whose{font-size:12px;color:var(--text2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:5px;}
@@ -279,7 +280,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 </div>
 
 <!-- REVEAL -->
-<div id="reveal-screen" class="hidden">
+<div id="reveal-screen">
   <div class="rv-box">
     <div class="rv-whose" id="rv-whose"></div>
     <div class="rv-title">Seu tile desta rodada:</div>
@@ -637,7 +638,7 @@ function onUpdate(r){
     // This path is now unused — reveal happens inline in setMode('tile')
   }
   // Always hide the reveal screen — it's now triggered only from setMode('tile')
-  document.getElementById('reveal-screen').classList.add('hidden');
+  document.getElementById('reveal-screen').classList.remove('open');
 
   if(my&&!r.tr) UI={mode:null,committed:false,pending:null};
 
@@ -754,7 +755,7 @@ function myTurn(){if(!G||G.cp!==me.idx){msg('Não é a sua vez!');return false;}
 async function confirmReveal(){
   // Player confirmed seeing the tile — now activate tile placement on board
   if(!myTurn())return;
-  document.getElementById('reveal-screen').classList.add('hidden');
+  document.getElementById('reveal-screen').classList.remove('open');
   UI.committed=true;
   await room.ref.update({tr:true});
   renderAll(G);
@@ -792,7 +793,7 @@ function setMode(m){
       :'Sem recursos';
     document.getElementById('rv-whose').textContent=`Você escolheu colocar um tile, ${me.name}!`;
     document.getElementById('rv-preview').innerHTML=`<div class="rv-icon">${td.icon}</div><div class="rv-name">${td.label}</div><div class="rv-yields">${ys}</div>`;
-    document.getElementById('reveal-screen').classList.remove('hidden');
+    document.getElementById('reveal-screen').classList.add('open');
     UI.mode='tile'; // mark mode but not yet committed — committed=true only after confirmReveal
   } else if(m==='polli'){
     UI.mode='polli';
@@ -914,7 +915,6 @@ async function installCol(id){
     const card=EVENT_CARDS.find(e=>e.id===pendingEventData.id);
     if(card) showEventOverlay(card, pendingEventData);
   }
-}
 }
 
 // ── Upgrade colmeia (add melgueira) ──
