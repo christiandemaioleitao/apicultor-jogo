@@ -31,6 +31,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .field-input::placeholder{color:var(--text3);}
 .btn-primary{width:100%;background:var(--honey);color:#1A1208;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;margin-bottom:8px;}
 .btn-primary:hover{background:var(--wax);}
+.btn-primary.locked{opacity:.35;cursor:not-allowed;background:var(--honey);}
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;}
 .btn-secondary{width:100%;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .btn-secondary:hover{background:var(--card2);color:var(--text);}
@@ -235,7 +236,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="pc-btn" onclick="selN(3)">3<span>jogadores</span></button>
       <button class="pc-btn" onclick="selN(4)">4<span>jogadores</span></button>
     </div>
-    <button class="btn-primary" id="btn-create" onclick="createRoom()" disabled>Criar Sala 🍯</button>
+    <button class="btn-primary locked" id="btn-create" onclick="createRoom()">Criar Sala 🍯</button>
     <div class="divider">ENTRAR EM SALA</div>
     <input class="field-input" id="inp-code" placeholder="Código da sala (ex: AB12)" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;font-size:18px;text-align:center;">
     <button class="btn-secondary" onclick="joinRoom()">Entrar na Sala →</button>
@@ -515,9 +516,7 @@ function upCreate(){
   const btn=document.getElementById('btn-create');
   if(!btn)return;
   const ok=nameVal.length>0 && _n>0;
-  btn.disabled=!ok;
-  btn.style.opacity=ok?'1':'0.35';
-  btn.style.cursor=ok?'pointer':'not-allowed';
+  btn.classList.toggle('locked',!ok);
 }
 function setErr(m){document.getElementById('lobby-err').textContent=m;}
 function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
