@@ -31,7 +31,6 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
 .field-input::placeholder{color:var(--text3);}
 .btn-primary{width:100%;background:var(--honey);color:#1A1208;border:none;border-radius:10px;padding:11px;font-size:14px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;transition:background .15s;margin-bottom:8px;}
 .btn-primary:hover{background:var(--wax);}
-.btn-primary.locked{opacity:.35;cursor:not-allowed;background:var(--honey);}
 .btn-primary:disabled{opacity:.35;cursor:not-allowed;}
 .btn-secondary{width:100%;background:transparent;color:var(--text2);border:1px solid var(--border);border-radius:10px;padding:10px;font-size:13px;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .15s;}
 .btn-secondary:hover{background:var(--card2);color:var(--text);}
@@ -237,7 +236,7 @@ body::before{content:'';position:fixed;inset:0;background-image:url("data:image/
       <button class="pc-btn" onclick="selN(3)">3<span>jogadores</span></button>
       <button class="pc-btn" onclick="selN(4)">4<span>jogadores</span></button>
     </div>
-    <button class="btn-primary locked" id="btn-create" onclick="createRoom()">Criar Sala 🍯</button>
+    <button class="btn-primary" id="btn-create" onclick="createRoom()">Criar Sala 🍯</button>
     <div class="divider">ENTRAR EM SALA</div>
     <input class="field-input" id="inp-code" placeholder="Código da sala (ex: AB12)" maxlength="4" style="text-transform:uppercase;letter-spacing:4px;font-size:18px;text-align:center;">
     <button class="btn-secondary" onclick="joinRoom()">Entrar na Sala →</button>
@@ -516,51 +515,60 @@ let costMultiplier=1;  // 1 or 2, set by "custos" event card, resets next turn
 // LOBBY
 // ════════════════════════════════════════════
 let _n=0;
+
 function selN(n){
   _n=n;
   document.querySelectorAll('.pc-btn').forEach((b,i)=>b.classList.toggle('sel',i===n-2));
-  upCreate();
 }
-function upCreate(){
-  const nameVal=(document.getElementById('inp-name')?.value||'').trim();
-  const btn=document.getElementById('btn-create');
-  if(!btn)return;
-  const ok=nameVal.length>0 && _n>0;
-  btn.classList.toggle('locked',!ok);
+
+function setErr(m){
+  const el=document.getElementById('lobby-err');
+  if(el) el.textContent=m;
 }
-function setErr(m){document.getElementById('lobby-err').textContent=m;}
-function genCode(){ const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789'; return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join(''); }
+
+function genCode(){
+  const c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  return Array.from({length:4},()=>c[Math.floor(Math.random()*c.length)]).join('');
+}
 
 async function createRoom(){
-  const name=document.getElementById('inp-name').value.trim();
+  const nameEl=document.getElementById('inp-name');
+  const name=(nameEl?.value||'').trim();
   if(!name){setErr('Preencha seu nome.');return;}
-  if(!_n){setErr('Selecione o número de jogadores.');return;}
+  if(!_n){setErr('Selecione o número de jogadores (2, 3 ou 4).');return;}
   setErr('Criando sala...');
+  const btn=document.getElementById('btn-create');
+  if(btn){btn.textContent='Aguarde...';btn.style.opacity='0.6';}
   try {
     me.name=name; me.idx=0;
-    room.code=genCode(); room.n=_n; room.ref=db.ref('rooms/'+room.code);
+    room.code=genCode(); room.n=_n;
+    room.ref=db.ref('rooms/'+room.code);
     const deck=mkDeck(); shuffle(deck);
     const evDeck=mkEventDeck();
     await room.ref.set({
-      code:room.code,status:'waiting',n:_n,
-      players:[{name,color:P_COLORS[0]}],
-      deck,board:mkBoard(),evDeck,
-      cp:0,turn:1,di:1,ct:deck[0],
-      ac:null,tr:false,over:false,
+      code:room.code, status:'waiting', n:_n,
+      players:[{name, color:P_COLORS[0]}],
+      deck, board:mkBoard(), evDeck,
+      cp:0, turn:1, di:1, ct:deck[0],
+      ac:null, tr:false, over:false,
       costMult:1,
       ts:Date.now()
     });
     setErr('');
-    subscribe(); showWait(room.code);
-  } catch(e) {
-    console.error('createRoom error:', e);
-    setErr('Erro ao criar sala: ' + (e.message||e.toString()) + '. Verifique sua conexão.');
+    subscribe();
+    showWait(room.code);
+  } catch(e){
+    console.error('createRoom error:',e);
+    setErr('Erro: '+(e.message||String(e)));
+    if(btn){btn.textContent='Criar Sala 🍯';btn.style.opacity='1';}
   }
 }
 
 async function joinRoom(){
-  const name=document.getElementById('inp-name').value.trim();
-  const code=document.getElementById('inp-code').value.trim().toUpperCase();
+  const nameEl=document.getElementById('inp-name');
+  const codeEl=document.getElementById('inp-code');
+  const name=(nameEl?.value||'').trim();
+  const code=(codeEl?.value||'').trim().toUpperCase();
   if(!name){setErr('Preencha seu nome.');return;}
   if(code.length!==4){setErr('Código deve ter 4 caracteres.');return;}
   setErr('Conectando...');
@@ -572,14 +580,31 @@ async function joinRoom(){
     if(r.status==='finished'){setErr('Partida já encerrada.');return;}
     const cur=(r.players||[]).length;
     if(cur>=r.n){setErr('Sala cheia!');return;}
-    me.name=name; me.idx=cur; room.code=code; room.n=r.n; room.ref=db.ref('rooms/'+code);
-    await room.ref.child('players').child(me.idx).set({name,color:P_COLORS[me.idx]});
-    setErr(''); subscribe(); showWait(code);
-  } catch(e) {
-    console.error('joinRoom error:', e);
-    setErr('Erro ao entrar na sala: ' + (e.message||e.toString()));
+    me.name=name; me.idx=cur;
+    room.code=code; room.n=r.n;
+    room.ref=db.ref('rooms/'+code);
+    await room.ref.child('players').child(me.idx).set({name, color:P_COLORS[me.idx]});
+    setErr('');
+    subscribe();
+    showWait(code);
+  } catch(e){
+    console.error('joinRoom error:',e);
+    setErr('Erro: '+(e.message||String(e)));
   }
 }
+
+// Attach inp-name oninput directly (script runs after DOM is ready)
+(function(){
+  const nameEl=document.getElementById('inp-name');
+  if(nameEl) nameEl.addEventListener('input', function(){
+    // Just clear any previous error as user types
+    setErr('');
+  });
+  const codeEl=document.getElementById('inp-code');
+  if(codeEl) codeEl.addEventListener('input', function(){
+    this.value=this.value.toUpperCase();
+  });
+})();
 
 function showWait(code){
   document.getElementById('lobby-screen').classList.add('hidden');
@@ -1973,12 +1998,6 @@ function handleTradeUpdates(r){
 }
 function goLobby(){if(room.listener&&room.ref)room.ref.off('value',room.listener);location.reload();}
 function msg(t){document.getElementById('msg-bar').textContent=t;}
-document.addEventListener('DOMContentLoaded',function(){
-  const nameEl=document.getElementById('inp-name');
-  if(nameEl) nameEl.addEventListener('input',upCreate);
-  const codeEl=document.getElementById('inp-code');
-  if(codeEl) codeEl.addEventListener('input',function(){this.value=this.value.toUpperCase();});
-});
 </script>
 </body>
 </html>
